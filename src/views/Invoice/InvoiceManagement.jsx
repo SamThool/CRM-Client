@@ -1,0 +1,307 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Box,
+  Typography,
+  Tabs,
+  Tab,
+  Divider,
+  Grid,
+  Card,
+  CardContent,
+  Button,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  IconButton,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Tooltip
+} from '@mui/material';
+import Breadcrumb from 'component/Breadcrumb';
+import { Link, useNavigate } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
+import Edit from '@mui/icons-material/Edit';
+import Delete from '@mui/icons-material/Delete';
+import Visibility from '@mui/icons-material/Visibility';
+import CloseIcon from '@mui/icons-material/Close';
+import Gst from './Gst/Gst';
+import NonGst from './NonGst/NonGst';
+import { get, put, remove } from '../../api/api';
+import AdvanceReciept from './Reciept';
+import PaymentDialog from './Payment';
+import { toast } from 'react-toastify';
+import InvoiceDetails from './InvoiceDetails';
+import { Receipt } from '@mui/icons-material';
+import { useSelector } from 'react-redux';
+import { setIn } from 'formik';
+
+const InvoiceManagement = () => {
+  const navigate = useNavigate();
+  const [value, setValue] = useState(0);
+  const [invoiceCategory, setInvoiceCategory] = useState('gst');
+  const [gstData, setGstData] = useState([]);
+  const [nonGstData, setNonGstData] = useState([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState(null);
+  const [viewType, setViewType] = useState(null);
+  const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
+  const [paymentInvoice, setPaymentInvoice] = useState(null);
+  const [admin, setAdmin] = useState(false);
+  const [invoicePermissionDetails,setInvoicePermissionDetails]=useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
+  useEffect(() => {
+    const loginRole=localStorage.getItem('loginRole');
+    if (loginRole === 'admin') {
+      setAdmin(true);
+    }
+    if (systemRights?.actionPermissions?.Invoice) {
+      setInvoicePermissionDetails(systemRights.actionPermissions.Invoice);
+    }
+    const fetchGstData = async () => {
+      const res = await get('invoiceRegistration');
+      if (res.status === true) {
+        const filteredData = res.invoices.filter((invoice) => invoice.gstType === 'gst');
+        const nonGstData = res.invoices.filter((invoice) => invoice.gstType === 'non-gst');
+        setGstData(filteredData || []);
+        setNonGstData(nonGstData || []);
+      }
+    };
+    fetchGstData();
+  }, [systemRights]);
+  console.log('invoicePermissionDetails', invoicePermissionDetails);
+
+  const handleEdit = (gstType, id) => {
+    if (gstType === 'gst') {
+      navigate(`/invoice-management/update-gst/${id}`);
+    } else {
+      navigate(`/invoice-management/update-non-gst/${id}`);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    const refreshTable = async () => {
+      const res = await get('invoiceRegistration');
+      if (res.status === true) {
+        const filteredData = res.invoices.filter((invoice) => invoice.gstType === 'gst');
+        const nonGstData = res.invoices.filter((invoice) => invoice.gstType === 'non-gst');
+        setGstData(filteredData || []);
+        setNonGstData(nonGstData || []);
+      }
+    };
+
+    const response = await remove(`invoiceRegistration/${id}`);
+    if (response.status === true) {
+      refreshTable();
+    }
+  };
+
+  const handlePaymentClick = (invoice) => {
+    setPaymentInvoice(invoice);
+    setOpenPaymentDialog(true);
+  };
+
+  const handlePaymentSubmit = async (paymentDetails) => {
+    try {
+      const updatedInvoice = {
+        ...paymentInvoice,
+        status: 'paid',
+        paymentDetails
+      };
+
+      await put(`invoiceRegistration/${paymentInvoice._id}`, updatedInvoice);
+      toast.success('Paid Successfully!');
+
+      const updateInvoiceList = (list) => list.map((inv) => (inv._id === paymentInvoice._id ? updatedInvoice : inv));
+
+      if (paymentInvoice.gstType === 'gst') {
+        setGstData((prev) => updateInvoiceList(prev));
+      } else {
+        setNonGstData((prev) => updateInvoiceList(prev));
+      }
+
+      setOpenPaymentDialog(false);
+      setPaymentInvoice(null);
+    } catch (error) {
+      console.error('Payment update failed:', error);
+    }
+  };
+
+  const renderInvoiceTable = () => {
+    const data = invoiceCategory === 'gst' ? gstData : nonGstData;
+
+    return (
+      <Box sx={{ width: '100%' }}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>SN</TableCell>
+              <TableCell>Client Name</TableCell>
+              <TableCell>Invoice No.</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {data.length > 0 ? (
+              data.map((invoice, index) => (
+                <TableRow key={invoice._id || index}>
+                  <TableCell>{index + 1}</TableCell>
+                  <TableCell>{invoice.clientName}</TableCell>
+                  <TableCell>{invoice.invoiceNumber}</TableCell>
+                  <TableCell>{new Date(invoice.date).toLocaleDateString()}</TableCell>
+                  <TableCell>{invoice.totalAmount}</TableCell>
+                  <TableCell>
+                    {invoice.status === 'paid' && invoice.paymentDetails?.paidAmount === invoice.totalAmount ? (
+                      <Button variant="contained" color="success" size="small" disabled>
+                        Paid
+                      </Button>
+                    ) : (
+                      <Button variant="contained" color="warning" size="small" onClick={() => handlePaymentClick(invoice)}>
+                        Unpaid
+                      </Button>
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    <Tooltip title="Invoice" arrow>
+                      <IconButton
+                        color="primary"
+                        onClick={() => {
+                          setSelectedInvoice(invoice);
+                          setViewType('invoice');
+                          setOpenDialog(true);
+                        }}
+                      >
+                        <Visibility />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Receipt" arrow>
+                      <IconButton
+                        color="primary"
+                        onClick={() => {
+                          setSelectedInvoice(invoice);
+                          setViewType('receipt');
+                          setOpenDialog(true);
+                        }}
+                      >
+                        <Visibility />
+                      </IconButton>
+                    </Tooltip>
+                    {(invoicePermissionDetails?.Edit===true || admin) && <IconButton onClick={() => handleEdit(invoice.gstType, invoice._id)} color="inherit">
+                      <Edit />
+                    </IconButton>}
+                   {(invoicePermissionDetails?.Delete===true || admin) && <IconButton onClick={() => handleDelete(invoice._id)} color="error">
+                      <Delete />
+                    </IconButton>}
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} align="center">
+                  No Invoice found
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Box>
+    );
+  };
+
+  return (
+    <>
+      <Breadcrumb>
+        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
+          Home
+        </Typography>
+        <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
+          Invoice Management
+        </Typography>
+      </Breadcrumb>
+
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Box display="flex" alignItems="center">
+                  <Typography variant="h6" m={3}>
+                    INVOICE
+                  </Typography>
+                  <RadioGroup row value={invoiceCategory} onChange={(e) => setInvoiceCategory(e.target.value)}>
+                    <FormControlLabel value="gst" control={<Radio />} label="GST" />
+                    <FormControlLabel value="nonGst" control={<Radio />} label="NON-GST" />
+                  </RadioGroup>
+                </Box>
+                {(invoicePermissionDetails?.Add===true || admin) && <Button variant="contained" color="primary" component={Link} to="/invoice-management/addInvoice">
+                  Add Invoice
+                </Button>}
+              </Box>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <Card sx={{ p: 2 }}>{renderInvoiceTable()}</Card>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
+      <DialogTitle
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          pr: 2
+        }}
+      >
+        {/* <IconButton
+    onClick={() => setOpenDialog(false)}
+    sx={{
+      color: (theme) => theme.palette.grey[500],
+      p: 0.5,
+    }}
+  >
+    <CloseIcon />
+  </IconButton> */}
+      </DialogTitle>
+
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="md">
+        <DialogTitle>
+          {viewType === 'invoice' ? 'Invoice Details' : 'Receipt'}
+          <IconButton
+            onClick={() => setOpenDialog(false)}
+            sx={{ position: 'absolute', right: 8, top: 8, color: (theme) => theme.palette.grey[500] }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {viewType === 'invoice' && <InvoiceDetails closeModal={() => setOpenDialog(false)} invoiceData={selectedInvoice} />}
+          {viewType === 'receipt' && <AdvanceReciept closeModal={() => setOpenDialog(false)} invoiceData={selectedInvoice} />}
+        </DialogContent>
+      </Dialog>
+
+      <PaymentDialog
+        open={openPaymentDialog}
+        onClose={() => setOpenPaymentDialog(false)}
+        invoice={paymentInvoice}
+        onSubmit={handlePaymentSubmit}
+      />
+    </>
+  );
+};
+
+export default InvoiceManagement;
