@@ -1,10 +1,11 @@
 import axios from 'axios';
 
 //  const REACT_APP_API_URL = 'https://mirai.isyncerp.com/api/';
-const REACT_APP_API_URL = 'http://localhost:5050/api/';
+const REACT_APP_API_URL = 'https://crm-server-l9o7.onrender.com/api/';
+// const REACT_APP_API_URL = 'http://localhost:5050/api/';
 export default REACT_APP_API_URL;
 
-// Get token 
+// Get token
 export const retrieveToken = () => {
   let token = '';
   document.cookie.split('; ').forEach((v) => {
@@ -15,10 +16,10 @@ export const retrieveToken = () => {
   return token;
 };
 
-// Get request API  
+// Get request API
 export const get = async (url) => {
   const token = retrieveToken();
-    console.log("Using Token:", token); // ✅ Log this
+  console.log('Using Token:', token); // ✅ Log this
 
   const response = await fetch(`${REACT_APP_API_URL}${url}`, {
     headers: {
@@ -31,11 +32,11 @@ export const get = async (url) => {
   //     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   //     'Content-Type': 'application/json'
   //   }
-  // }); 
+  // });
   return response.json();
 };
 
-// Post request API  
+// Post request API
 // export const post = async (url, data) => {
 //   const token = retrieveToken();
 //   const response = await fetch(`${REACT_APP_API_URL}${url}`, {
@@ -126,7 +127,7 @@ export const remove = async (url, ids) => {
 // <<<<<<< HEAD
 // Master's Api
 // export const axiosInstance = axios.create({
-//   baseURL: REACT_APP_API_URL, 
+//   baseURL: REACT_APP_API_URL,
 //   // headers: {
 //   //   'Content-Type': 'application/json'
 //   // }
