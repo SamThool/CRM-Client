@@ -19,20 +19,13 @@ export const retrieveToken = () => {
 // Get request API
 export const get = async (url) => {
   const token = retrieveToken();
-  console.log('Using Token:', token); // ✅ Log this
-
-  const response = await fetch(`${REACT_APP_API_URL}${url}`, {
+  const companyId = localStorage.getItem('companyId');
+  const response = await fetch(`${REACT_APP_API_URL}${url}?companyId=${encodeURIComponent(companyId)}`, {
     headers: {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
     }
   });
-  // const response = await fetch(`${REACT_APP_API_URL}${url}`, {
-  //   headers: {
-  //     ...(token ? { Authorization: `Bearer ${token}` } : {}),
-  //     'Content-Type': 'application/json'
-  //   }
-  // });
   return response.json();
 };
 
@@ -52,6 +45,7 @@ export const get = async (url) => {
 
 export const post = async (url, data) => {
   const token = retrieveToken();
+  const companyId = localStorage.getItem('companyId');
   console.log('Using Token (POST):', token);
 
   const isFormData = data instanceof FormData;
@@ -61,7 +55,7 @@ export const post = async (url, data) => {
     ...(isFormData ? {} : { 'Content-Type': 'application/json' })
   };
 
-  const response = await fetch(`${REACT_APP_API_URL}${url}`, {
+  const response = await fetch(`${REACT_APP_API_URL}${url}?companyId=${encodeURIComponent(companyId)}`, {
     method: 'POST',
     headers,
     body: isFormData ? data : JSON.stringify(data)
@@ -92,13 +86,14 @@ export const post = async (url, data) => {
 
 export const put = async (url, data) => {
   const token = retrieveToken();
+  const companyId = localStorage.getItem('companyId');
   const isFormData = data instanceof FormData;
   const headers = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
     ...(isFormData ? {} : { 'Content-Type': 'application/json' })
   };
 
-  const response = await fetch(`${REACT_APP_API_URL}${url}`, {
+  const response = await fetch(`${REACT_APP_API_URL}${url}?companyId=${encodeURIComponent(companyId)}`, {
     method: 'PUT',
     headers,
     body: isFormData ? data : JSON.stringify(data)

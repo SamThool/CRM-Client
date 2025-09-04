@@ -39,14 +39,14 @@ const SubProductCategory = () => {
   const [data, setData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
   const [productCategory, setProductCategory] = useState([]);
-  const [isAdmin,setAdmin]=useState(false);
-      const [subProductCategoryPermission,setSubProductCategoryPermission]=useState({
-            View: false,
-            Add: false,
-            Edit: false,
-            Delete: false
-          });
-      const systemRights = useSelector((state)=>state.systemRights.systemRights);
+  const [isAdmin, setAdmin] = useState(false);
+  const [subProductCategoryPermission, setSubProductCategoryPermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -67,12 +67,12 @@ const SubProductCategory = () => {
   };
   // use axiosInstance to fetch data from the server with useEffect
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["sub-product-category"]) {
-      setSubProductCategoryPermission(systemRights.actionPermissions["sub-product-category"]);
+    if (systemRights?.actionPermissions?.['sub-product-category']) {
+      setSubProductCategoryPermission(systemRights.actionPermissions['sub-product-category']);
     }
     get('SubProductCategory')
       .then((response) => {
@@ -143,7 +143,6 @@ const SubProductCategory = () => {
     }
   };
 
-
   const handleEdit = (index) => {
     const item = data[index];
     setForm({
@@ -169,9 +168,11 @@ const SubProductCategory = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Sub Product Categories</Typography>
-        {(subProductCategoryPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Category
-        </Button>}
+        {(subProductCategoryPermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Category
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -203,7 +204,7 @@ const SubProductCategory = () => {
             fullWidth
             margin="dense"
           >
-            {productCategory.map((item, index) => {
+            {productCategory?.map((item, index) => {
               return (
                 <MenuItem key={index} value={item.productName}>
                   {item.productName}
@@ -272,33 +273,37 @@ const SubProductCategory = () => {
                       <TableCell>{row.productName}</TableCell>
                       <TableCell>{row.subProductName}</TableCell>
                       <TableCell>
-                        {(subProductCategoryPermission.Edit===true || isAdmin) && <Button
-                          size="small"
-                          onClick={() => handleEdit(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px',
-                            mr: '5px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Edit />
-                          </IconButton>
-                        </Button>}
-                        {(subProductCategoryPermission.Delete===true || isAdmin) && <Button
-                          color="error"
-                          onClick={() => handleDelete(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Delete />
-                          </IconButton>
-                        </Button>}
+                        {(subProductCategoryPermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px',
+                              mr: '5px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(subProductCategoryPermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

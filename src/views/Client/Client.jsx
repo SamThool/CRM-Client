@@ -89,7 +89,7 @@ const Client = () => {
   const [positionList, setPositionList] = useState([]);
 
   const navigate = useNavigate();
-  console.log('Token:', document.cookie);
+  // console.log('Token:', document.cookie);
 
   const [isAdmin, setAdmin] = useState(false);
   const [clientPermission, setClientPermission] = useState({
@@ -133,7 +133,7 @@ const Client = () => {
     const fetchPositions = async () => {
       try {
         const res = await get('position');
-        console.log('admin position data', res);
+        // console.log('admin position data', res);
         if (res.data?.status === 'true') {
           setPositionList(res.data.data);
         }
@@ -176,10 +176,11 @@ const Client = () => {
         try {
           const res = await get('admin-clientRegistration');
           console.log('admin data', res);
-          if (res.data && res.status === 'true') {
-            const filteredData = res.data.filter((client) => client.createdBy === localStorage.getItem('Id'));
-            setClientList(filteredData);
-          }
+          // if (res.data && res.status === 'true') {
+          // const filteredData = res.data.filter((client) => client.createdBy === localStorage.getItem('Id'));
+          setClientList(res.data);
+          // console.log('filteredData data', filteredData);
+          // }
         } catch (err) {}
       };
       const fetchTypeOfAdminClientList = async () => {
@@ -390,7 +391,7 @@ const Client = () => {
         name: contactPerson.name || '',
         department: contactPerson.department || '', // admin already stores ID
         position: contactPerson.position || '', // admin already stores ID
-        email: contactPerson.email ||company.email|| '',
+        email: contactPerson.email || company.email || '',
         phone: contactPerson.phone || ''
       }
     });
@@ -854,7 +855,7 @@ const Client = () => {
                             <MenuItem value="">
                               <em>Select Department</em>
                             </MenuItem>
-                            {departmentList.map((dept) => (
+                            {departmentList?.map((dept) => (
                               <MenuItem key={dept._id} value={dept._id}>
                                 {dept.department}
                               </MenuItem>
@@ -875,7 +876,7 @@ const Client = () => {
                             <MenuItem value="">
                               <em>Select Position</em>
                             </MenuItem>
-                            {positionList.map((pos) => (
+                            {positionList?.map((pos) => (
                               <MenuItem key={pos._id} value={pos._id}>
                                 {pos.position}
                               </MenuItem>

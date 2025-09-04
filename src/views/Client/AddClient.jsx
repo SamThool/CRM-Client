@@ -1,16 +1,5 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  Grid,
-  TextField,
-  Button,
-  Typography,
-  Card,
-  IconButton,
-  CardContent,
-  Divider,
-  Box,
-  MenuItem
-} from '@mui/material';
+import React, { useState, useEffect, useCallback } from 'react';
+import { Grid, TextField, Button, Typography, Card, IconButton, CardContent, Divider, Box, MenuItem } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { FaTrash } from 'react-icons/fa';
@@ -28,9 +17,9 @@ const AddClient = () => {
   const [form, setForm] = useState(initialState());
   const [errors, setErrors] = useState({});
   const [clients, setClients] = useState([]);
-  const[positionData,setPositionData]=useState([]);
-  const[departmentData,setDepartmentData]=useState([]);
-  const [isRole,setRole]=useState('');
+  const [positionData, setPositionData] = useState([]);
+  const [departmentData, setDepartmentData] = useState([]);
+  const [isRole, setRole] = useState('');
   function initialState() {
     return {
       clientName: '',
@@ -53,51 +42,54 @@ const AddClient = () => {
       startDate: '',
       endDate: '',
       createdBy: localStorage.getItem('Id') || '',
-      contactPerson: [{
-        name: '',
-        department: '',
-        position: '',
-        email: '',
-        phone: ''
-      }],
+      companyId: localStorage.getItem('companyId') || '',
+      contactPerson: [
+        {
+          name: '',
+          department: '',
+          position: '',
+          email: '',
+          phone: ''
+        }
+      ]
     };
   }
 
   let pincodeTimeout = null;
 
-const handleChange = (e) => {
-  const { name, value, files } = e.target;
+  const handleChange = (e) => {
+    const { name, value, files } = e.target;
 
-  if (files && files[0]) {
-    if (name === 'logo') {
-      setForm({ ...form, logo: files[0] });
-      setLogoPreview(URL.createObjectURL(files[0]));
+    if (files && files[0]) {
+      if (name === 'logo') {
+        setForm({ ...form, logo: files[0] });
+        setLogoPreview(URL.createObjectURL(files[0]));
+      }
+      return;
     }
-    return;
-  }
 
-  if (name === 'pincode') {
-    clearTimeout(pincodeTimeout);
-    setForm({ ...form, [name]: value }); 
+    if (name === 'pincode') {
+      clearTimeout(pincodeTimeout);
+      setForm({ ...form, [name]: value });
 
-    if (value.match(/^\d{6}$/)) {
-      // Set a timeout to call the fetch function after the user finishes typing
-      pincodeTimeout = setTimeout(() => {
-        fetchPincodeDetails(value); 
-      }, 500);
+      if (value.match(/^\d{6}$/)) {
+        // Set a timeout to call the fetch function after the user finishes typing
+        pincodeTimeout = setTimeout(() => {
+          fetchPincodeDetails(value);
+        }, 500);
+      }
+      return;
     }
-    return;
-  }
 
-  if (name.includes('.')) {
-    const [key, index, field] = name.split('.');
-    const updatedContacts = [...form.contactPerson];
-    updatedContacts[parseInt(index)][field] = value;
-    setForm({ ...form, contactPerson: updatedContacts });
-  } else {
-    setForm({ ...form, [name]: value });
-  }
-};
+    if (name.includes('.')) {
+      const [key, index, field] = name.split('.');
+      const updatedContacts = [...form.contactPerson];
+      updatedContacts[parseInt(index)][field] = value;
+      setForm({ ...form, contactPerson: updatedContacts });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
+  };
 
   const handleContactChange = (index, field, value) => {
     const updatedContacts = [...form.contactPerson];
@@ -106,15 +98,18 @@ const handleChange = (e) => {
   };
 
   const addContact = () => {
-    setForm(prevForm => ({
+    setForm((prevForm) => ({
       ...prevForm,
-      contactPerson: [...prevForm.contactPerson, {
-        name: '',
-        department: '',
-        position: '',
-        email: '',
-        phone: ''
-      }]
+      contactPerson: [
+        ...prevForm.contactPerson,
+        {
+          name: '',
+          department: '',
+          position: '',
+          email: '',
+          phone: ''
+        }
+      ]
     }));
   };
 
@@ -123,9 +118,9 @@ const handleChange = (e) => {
     updatedContacts.splice(index, 1);
     setForm({ ...form, contactPerson: updatedContacts });
 
-    setErrors(prevErrors => {
+    setErrors((prevErrors) => {
       const updatedErrors = { ...prevErrors };
-      Object.keys(updatedErrors).forEach(key => {
+      Object.keys(updatedErrors).forEach((key) => {
         if (key.startsWith(`contactPerson.${index}`)) {
           delete updatedErrors[key];
         }
@@ -149,7 +144,7 @@ const handleChange = (e) => {
     if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = 'Required';
     if (!form.emergencyContactNo?.match(/^\d{10}$/)) newErrors.emergencyContactNo = 'Must be 10 digits';
     if (!form.website) newErrors.website = 'Required';
-    if(isRole==='super-admin' && !form.clientType) newErrors.clientType='Required';
+    if (isRole === 'super-admin' && !form.clientType) newErrors.clientType = 'Required';
     if (!form.officeAddress) newErrors.officeAddress = 'Required';
     if (!form.pincode?.match(/^\d{6}$/)) newErrors.pincode = 'Must be 6 digits';
     if (!form.city) newErrors.city = 'Required';
@@ -179,8 +174,8 @@ const handleChange = (e) => {
       return;
     }
     try {
-      const role=localStorage.getItem('loginRole');
-      if(role==='admin'){
+      const role = localStorage.getItem('loginRole');
+      if (role === 'admin') {
         const res = await post('admin-clientRegistration', form);
         if (res.status === true) {
           toast.success('Client registered');
@@ -190,7 +185,7 @@ const handleChange = (e) => {
         } else {
           toast.error(res.message || 'Failed to submit');
         }
-      }else if(role==='super-admin'){
+      } else if (role === 'super-admin') {
         const res = await post('clientRegistration', form);
         if (res.status === true) {
           toast.success('Client registered');
@@ -201,7 +196,6 @@ const handleChange = (e) => {
           toast.error(res.message || 'Failed to submit');
         }
       }
-      
     } catch (e) {
       console.error(e);
       toast.error('Submission error');
@@ -212,7 +206,7 @@ const handleChange = (e) => {
     try {
       const response = await fetch(`https://api.postalpincode.in/pincode/${pincode}`);
       const data = await response.json();
-  
+
       if (data[0].Status === 'Success') {
         const { District, State, Country } = data[0].PostOffice[0];
         setForm((prevForm) => ({
@@ -245,39 +239,37 @@ const handleChange = (e) => {
   const fetchClientTypes = async () => {
     const res = await get('typeOfClient');
     if (res.status === 'true') {
-      setClients(res.data.map(item => ({ id: item._id, typeOfClient: item.typeOfClient })));
+      setClients(res.data.map((item) => ({ id: item._id, typeOfClient: item.typeOfClient })));
     }
   };
 
-// Fetch all positions from backend
+  // Fetch all positions from backend
   const fetchPositions = async () => {
     try {
       const response = await get('position');
-      console.log('Position data: ', response.data)
+      console.log('Position data: ', response.data);
       setPositionData(response.data);
     } catch (error) {
       console.error(error);
     }
   };
 
-
-   // Fetch all departments from backend
-    const fetchDepartments = async () => {
-      try {
-        const response = await get('department');
-        console.log("Department data:", response.data)
-        setDepartmentData(response.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    useEffect(() => {
-  console.log("🍪 Cookies:", document.cookie);
-}, []);
-
- 
+  // Fetch all departments from backend
+  const fetchDepartments = async () => {
+    try {
+      const response = await get('department');
+      console.log('Department data:', response.data);
+      setDepartmentData(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   useEffect(() => {
-    const role=localStorage.getItem('loginRole')
+    console.log('🍪 Cookies:', document.cookie);
+  }, []);
+
+  useEffect(() => {
+    const role = localStorage.getItem('loginRole');
     setRole(role);
     fetchClientTypes();
     fetchPositions();
@@ -287,15 +279,21 @@ const handleChange = (e) => {
   return (
     <>
       <Breadcrumb>
-        <Typography component={Link} to="/" variant="subtitle2" color="inherit">Home</Typography>
-        <Typography variant="subtitle2" color="primary">Client</Typography>
+        <Typography component={Link} to="/" variant="subtitle2" color="inherit">
+          Home
+        </Typography>
+        <Typography variant="subtitle2" color="primary">
+          Client
+        </Typography>
       </Breadcrumb>
 
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
           <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
             <Typography variant="h5">Client Registration</Typography>
-            <Button variant="contained" onClick={() => navigate('/client')}><ArrowBack /></Button>
+            <Button variant="contained" onClick={() => navigate('/client')}>
+              <ArrowBack />
+            </Button>
           </Grid>
 
           <Card>
@@ -315,8 +313,8 @@ const handleChange = (e) => {
                   { label: 'Pincode', name: 'pincode' },
                   { label: 'City', name: 'city' },
                   { label: 'State', name: 'state' },
-                  { label: 'Country', name: 'country' },
-                ].map(field => (
+                  { label: 'Country', name: 'country' }
+                ].map((field) => (
                   <Grid item xs={12} sm={3} key={field.name}>
                     <TextField
                       label={field.label}
@@ -331,25 +329,29 @@ const handleChange = (e) => {
                   </Grid>
                 ))}
 
-                {isRole==='super-admin' && <Grid item xs={12} sm={3}>
-                  <TextField
-                    select
-                    label="Client Type"
-                    name="clientType"
-                    value={form.clientType}
-                    onChange={handleChange}
-                    error={!!errors.clientType}
-                    helperText={errors.clientType}
-                    fullWidth
-                    required
-                  >
-                    {clients.map((type) => (
-                      <MenuItem key={type.id} value={type.id}>{type.typeOfClient}</MenuItem>
-                    ))}
-                  </TextField>
-                </Grid>}
+                {isRole === 'super-admin' && (
+                  <Grid item xs={12} sm={3}>
+                    <TextField
+                      select
+                      label="Client Type"
+                      name="clientType"
+                      value={form.clientType}
+                      onChange={handleChange}
+                      error={!!errors.clientType}
+                      helperText={errors.clientType}
+                      fullWidth
+                      required
+                    >
+                      {clients.map((type) => (
+                        <MenuItem key={type.id} value={type.id}>
+                          {type.typeOfClient}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                )}
 
-                <Grid item xs={12} sm={isRole==='admin'?6:3}>
+                <Grid item xs={12} sm={isRole === 'admin' ? 6 : 3}>
                   <TextField type="file" label="Logo" name="logo" onChange={handleChange} fullWidth InputLabelProps={{ shrink: true }} />
                   {logoPreview && (
                     <Box position="relative" mt={2}>
@@ -375,13 +377,31 @@ const handleChange = (e) => {
                 </Grid>
 
                 <Grid item xs={12} sm={2.5}>
-                  <TextField type="date" name="startDate" label="Start Date" value={form.startDate} onChange={handleChange}
-                    error={!!errors.startDate} helperText={errors.startDate} fullWidth InputLabelProps={{ shrink: true }} />
+                  <TextField
+                    type="date"
+                    name="startDate"
+                    label="Start Date"
+                    value={form.startDate}
+                    onChange={handleChange}
+                    error={!!errors.startDate}
+                    helperText={errors.startDate}
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
                 </Grid>
 
                 <Grid item xs={12} sm={2.5}>
-                  <TextField type="date" name="endDate" label="End Date" value={form.endDate} onChange={handleChange}
-                    error={!!errors.endDate} helperText={errors.endDate} fullWidth InputLabelProps={{ shrink: true }} />
+                  <TextField
+                    type="date"
+                    name="endDate"
+                    label="End Date"
+                    value={form.endDate}
+                    onChange={handleChange}
+                    error={!!errors.endDate}
+                    helperText={errors.endDate}
+                    fullWidth
+                    InputLabelProps={{ shrink: true }}
+                  />
                 </Grid>
               </Grid>
             </CardContent>
@@ -389,7 +409,9 @@ const handleChange = (e) => {
 
           <Divider sx={{ my: 2 }} />
 
-          <Typography variant="h5" gutterBottom>Contact Person</Typography>
+          <Typography variant="h5" gutterBottom>
+            Contact Person
+          </Typography>
           <Card>
             <CardContent>
               {form.contactPerson.map((person, index) => (
@@ -447,10 +469,10 @@ const handleChange = (e) => {
 
                   <Grid item xs={12} sm={1} display="flex" alignItems="center">
                     <IconButton color="primary" onClick={addContact}>
-                      <AddIcon fontSize="large"/>
+                      <AddIcon fontSize="large" />
                     </IconButton>
                     <IconButton color="error" onClick={() => removeContact(index)} disabled={form.contactPerson.length === 1}>
-                      <DeleteIcon fontSize="large"/>
+                      <DeleteIcon fontSize="large" />
                     </IconButton>
                   </Grid>
                 </Grid>

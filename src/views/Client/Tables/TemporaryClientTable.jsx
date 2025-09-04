@@ -93,19 +93,17 @@ import { toast } from 'react-toastify';
 
 //todo: new data
 
-const TemporaryClientTable = ({ clientList = [], refreshClients,clientPermission,isAdmin }) => {
+const TemporaryClientTable = ({ clientList = [], refreshClients, clientPermission, isAdmin }) => {
   const navigate = useNavigate();
 
   // Safely filter Temporary clients without mutating props
-  const temporaryClients = Array.isArray(clientList)
-    ? clientList.filter((client) => client?.clientType?.typeOfClient === 'Temporary')
-    : [];
+  const temporaryClients = Array.isArray(clientList) ? clientList.filter((client) => client?.clientType?.typeOfClient === 'Temporary') : [];
 
   const handleDeleteClient = async (id) => {
     try {
       const role = localStorage.getItem('loginRole');
       if (role === 'super-admin') {
-        await remove(`clientRegistration/${id}`, {credentials: 'include'});
+        await remove(`clientRegistration/${id}`, { credentials: 'include' });
         toast.success('Client deleted!');
         refreshClients();
       } else if (role === 'admin') {
@@ -143,35 +141,39 @@ const TemporaryClientTable = ({ clientList = [], refreshClients,clientPermission
                       <TableCell>{entry.clientName}</TableCell>
                       <TableCell>{entry?.contactPerson?.[0]?.name || 'N/A'}</TableCell>
                       <TableCell>{entry.officialPhoneNo}</TableCell>
-                      <TableCell>{entry?.contactPerson?.[0]?.email || 'N/A'}</TableCell>
+                      <TableCell>{entry?.officialMailId}</TableCell>
                       <TableCell>
                         {entry.endDate
                           ? new Intl.DateTimeFormat('en-US', {
                               year: 'numeric',
                               month: 'short',
-                              day: 'numeric',
+                              day: 'numeric'
                             }).format(new Date(entry.endDate))
                           : 'N/A'}
                       </TableCell>
                       <TableCell sx={{ display: 'flex', flexWrap: 'nowrap' }}>
-                        {(clientPermission.Edit===true || isAdmin || localStorage.getItem('loginRole')==='super-admin') && <Button
-                          size="small"
-                          sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
-                          onClick={() => navigate(`/client/editClient/${entry._id}`)}
-                        >
-                          <IconButton color="inherit">
-                            <Edit />
-                          </IconButton>
-                        </Button>}
-                        {(clientPermission.Delete===true || isAdmin || localStorage.getItem('loginRole')==='super-admin') && <Button
-                          color="error"
-                          sx={{ padding: '1px', minWidth: '24px', height: '24px' }}
-                          onClick={() => handleDeleteClient(entry._id)}
-                        >
-                          <IconButton color="inherit">
-                            <Delete />
-                          </IconButton>
-                        </Button>}
+                        {(clientPermission.Edit === true || isAdmin || localStorage.getItem('loginRole') === 'super-admin') && (
+                          <Button
+                            size="small"
+                            sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
+                            onClick={() => navigate(`/client/editClient/${entry._id}`)}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(clientPermission.Delete === true || isAdmin || localStorage.getItem('loginRole') === 'super-admin') && (
+                          <Button
+                            color="error"
+                            sx={{ padding: '1px', minWidth: '24px', height: '24px' }}
+                            onClick={() => handleDeleteClient(entry._id)}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))

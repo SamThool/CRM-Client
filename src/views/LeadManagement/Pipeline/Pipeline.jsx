@@ -1,20 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Grid,
-  TextField,
-  Button,
-  Typography,
-  Card,
-  CardContent,
-  Stack,
-  MenuItem,
-  IconButton,
-} from '@mui/material';
+import { Box, Grid, TextField, Button, Typography, Card, CardContent, Stack, MenuItem, IconButton } from '@mui/material';
 import { Link } from 'react-router-dom';
 import Breadcrumb from 'component/Breadcrumb';
 import { toast, ToastContainer } from 'react-toastify';
-import { get, post, remove } from "../../../api/api.js"
+import { get, post, remove } from '../../../api/api.js';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 
 const Pipeline = () => {
@@ -63,9 +52,7 @@ const Pipeline = () => {
       const leadStaff = `${lead.assignTo?.basicDetails?.firstName || ''} ${lead.assignTo?.basicDetails?.lastName || ''}`.toLowerCase();
       const leadProduct = lead.productService?.productName?.toLowerCase() || '';
       const leadProspects = (lead.Client ? 'client' : lead.Prospect ? 'prospect' : 'new lead').toLowerCase();
-      const leadStatus = typeof lead.leadstatus === 'object'
-        ? lead.leadstatus?.LeadStatus?.toLowerCase()
-        : lead.leadstatus?.toLowerCase();
+      const leadStatus = typeof lead.leadstatus === 'object' ? lead.leadstatus?.LeadStatus?.toLowerCase() : lead.leadstatus?.toLowerCase();
 
       return (
         (!staffName || leadStaff.includes(staffName.toLowerCase())) &&
@@ -99,9 +86,9 @@ const Pipeline = () => {
 
   // Group leads by status id for display
   const groupedLeadsByStatus = Object.fromEntries(
-    data.map((status) => {
+    (data || []).map((status) => {
       const statusId = status._id;
-      const matchingLeads = filteredData.filter((lead) => {
+      const matchingLeads = (filteredData || []).filter((lead) => {
         const leadStatusId = typeof lead.leadstatus === 'object' ? lead.leadstatus._id : lead.leadstatus;
         return leadStatusId === statusId;
       });
@@ -112,7 +99,7 @@ const Pipeline = () => {
   // Drag logic
   const onDragStart = (e, lead) => {
     setDraggedLead(lead);
-    e.dataTransfer.effectAllowed = "copy";
+    e.dataTransfer.effectAllowed = 'copy';
   };
 
   const onDragOver = (e) => {
@@ -148,7 +135,7 @@ const Pipeline = () => {
 
   // Delete lead
   const handleDeleteLead = async (leadId) => {
-    if (!window.confirm("Are you sure you want to delete this lead?")) return;
+    if (!window.confirm('Are you sure you want to delete this lead?')) return;
     try {
       await remove(`lead/${leadId}`);
       setLeads((prevLeads) => prevLeads.filter((lead) => lead._id !== leadId));
@@ -182,21 +169,21 @@ const Pipeline = () => {
                     <Box mb={1} fontWeight="bold" textTransform="uppercase">
                       Staff Name
                     </Box>
-                    <TextField
-                      select
-                      label="Staff Name"
-                      name="staffName"
-                      value={filters.staffName}
-                      onChange={handleFilterChange}
-                      fullWidth
-                    >
+                    <TextField select label="Staff Name" name="staffName" value={filters.staffName} onChange={handleFilterChange} fullWidth>
                       <MenuItem value="">All</MenuItem>
-                      {[...new Set(leads.map(lead =>
-                        `${lead.assignTo?.basicDetails?.firstName || ''} ${lead.assignTo?.basicDetails?.lastName || ''}`.trim()
-       
-                      ))].filter(Boolean).map((name, idx) => (
-                        <MenuItem key={idx} value={name}>{name}</MenuItem>
-                      ))}
+                      {[
+                        ...new Set(
+                          leads.map((lead) =>
+                            `${lead.assignTo?.basicDetails?.firstName || ''} ${lead.assignTo?.basicDetails?.lastName || ''}`.trim()
+                          )
+                        )
+                      ]
+                        .filter(Boolean)
+                        .map((name, idx) => (
+                          <MenuItem key={idx} value={name}>
+                            {name}
+                          </MenuItem>
+                        ))}
                     </TextField>
                   </Grid>
 
@@ -214,8 +201,10 @@ const Pipeline = () => {
                       fullWidth
                     >
                       <MenuItem value="">All</MenuItem>
-                      {[...new Set(leads.map(lead => lead.productService?.productName).filter(Boolean))].map((product, idx) => (
-                        <MenuItem key={idx} value={product}>{product}</MenuItem>
+                      {[...new Set(leads.map((lead) => lead.productService?.productName).filter(Boolean))].map((product, idx) => (
+                        <MenuItem key={idx} value={product}>
+                          {product}
+                        </MenuItem>
                       ))}
                     </TextField>
                   </Grid>
@@ -225,18 +214,13 @@ const Pipeline = () => {
                     <Box mb={1} fontWeight="bold" textTransform="uppercase">
                       Prospects
                     </Box>
-                    <TextField
-                      select
-                      label="Prospects"
-                      name="prospects"
-                      value={filters.prospects}
-                      onChange={handleFilterChange}
-                      fullWidth
-                    >
+                    <TextField select label="Prospects" name="prospects" value={filters.prospects} onChange={handleFilterChange} fullWidth>
                       <MenuItem value="">All</MenuItem>
                       {/* Use lowercase values for consistency */}
                       {['client', 'prospect', 'new lead'].map((type) => (
-                        <MenuItem key={type} value={type}>{type.charAt(0).toUpperCase() + type.slice(1)}</MenuItem>
+                        <MenuItem key={type} value={type}>
+                          {type.charAt(0).toUpperCase() + type.slice(1)}
+                        </MenuItem>
                       ))}
                     </TextField>
                   </Grid>
@@ -246,16 +230,9 @@ const Pipeline = () => {
                     <Box mb={1} fontWeight="bold" textTransform="uppercase">
                       Status
                     </Box>
-                    <TextField
-                      select
-                      label="Status"
-                      name="status"
-                      value={filters.status}
-                      onChange={handleFilterChange}
-                      fullWidth
-                    >
+                    <TextField select label="Status" name="status" value={filters.status} onChange={handleFilterChange} fullWidth>
                       <MenuItem value="">All</MenuItem>
-                      {data.map((s) => (
+                      {data?.map((s) => (
                         <MenuItem key={s._id} value={s.LeadStatus}>
                           {s.LeadStatus}
                         </MenuItem>
@@ -269,7 +246,7 @@ const Pipeline = () => {
                       variant="contained"
                       color="primary"
                       size="small"
-                      style={{ width: "60px", height: "40px" }}
+                      style={{ width: '60px', height: '40px' }}
                       onClick={applyFilters} // Trigger filtering
                     >
                       Get
@@ -280,8 +257,8 @@ const Pipeline = () => {
                       color="secondary"
                       sx={{
                         backgroundColor: 'red',
-                        width: "60px",
-                        height: "40px",
+                        width: '60px',
+                        height: '40px',
                         color: 'white',
                         borderColor: 'red',
                         '&:hover': {
@@ -303,14 +280,14 @@ const Pipeline = () => {
 
       <Box sx={{ overflowX: 'auto', mt: 2 }}>
         <Stack direction="row" spacing={2}>
-          {[...data].reverse().map((status) => (
+          {(data ? [...data].reverse() : []).map((status) => (
             <Box
               key={status._id}
               sx={{ minWidth: 340, maxWidth: 340, flexShrink: 0 }}
               onDragOver={onDragOver}
               onDrop={(e) => onDrop(e, status._id)}
             >
-              <Card sx={{ bgcolor: status.colorCode, display: 'flex', flexDirection: 'column', height: "900px" }}>
+              <Card sx={{ bgcolor: status.colorCode, display: 'flex', flexDirection: 'column', height: '900px' }}>
                 <CardContent sx={{ flexGrow: 1, overflow: 'auto' }}>
                   <Typography
                     variant="h6"
@@ -337,7 +314,7 @@ const Pipeline = () => {
                         backgroundColor: '#fff',
                         boxShadow: 2,
                         cursor: 'grab',
-                        position: 'relative',
+                        position: 'relative'
                       }}
                       draggable="true"
                       onDragStart={(e) => onDragStart(e, lead)}
@@ -368,22 +345,18 @@ const Pipeline = () => {
                       </Typography>
 
                       <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
-                        <strong>STAFF NAME:</strong> {(
-                          lead.assignTo?.basicDetails?.firstName ||
-                          lead.assignTo?.basicDetails?.lastName
-                        ) ?
-                          `${lead.assignTo?.basicDetails?.firstName || ''} ${lead.assignTo?.basicDetails?.lastName || ''}`.trim()
+                        <strong>STAFF NAME:</strong>{' '}
+                        {lead.assignTo?.basicDetails?.firstName || lead.assignTo?.basicDetails?.lastName
+                          ? `${lead.assignTo?.basicDetails?.firstName || ''} ${lead.assignTo?.basicDetails?.lastName || ''}`.trim()
                           : 'N/A'}
                       </Typography>
 
                       <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
-                        <strong>STATUS:</strong>{' '}
-                        {typeof lead.leadstatus === 'object' ? lead.leadstatus.LeadStatus : lead.leadstatus}
+                        <strong>STATUS:</strong> {typeof lead.leadstatus === 'object' ? lead.leadstatus.LeadStatus : lead.leadstatus}
                       </Typography>
 
                       <Typography variant="body2" sx={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                        <MonetizationOnIcon sx={{ fontSize: '1rem', color: '#003366' }} />:
-                        ₹{lead.projectValue || 'N/A'}
+                        <MonetizationOnIcon sx={{ fontSize: '1rem', color: '#003366' }} />: ₹{lead.projectValue || 'N/A'}
                       </Typography>
 
                       <Typography variant="body2" sx={{ color: '#888888', fontSize: '0.75rem' }}>

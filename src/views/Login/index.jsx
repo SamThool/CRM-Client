@@ -75,7 +75,7 @@ const Login = () => {
         }
 
         if (!response) throw new Error('Login failed. Please try again!');
-
+        console.log(response);
         const data = response.data;
         const role = data.role;
         const token = data.token;
@@ -84,6 +84,7 @@ const Login = () => {
 
         // Store token
         localStorage.setItem('token', token);
+        localStorage.setItem('companyId', data.adminId);
         const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
         expirationDate.setHours(0, 0, 0, 0);
         // document.cookie = `hmsToken=${token}; expires=${expirationDate.toUTCString()}; path=/; SameSite=Lax`;

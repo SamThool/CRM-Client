@@ -30,7 +30,7 @@ import value from 'assets/scss/_themes-vars.module.scss';
 // axiosInstance fetch data from the server
 // import { axiosInstance } from '../../../api/api.js';
 // import axios from 'axios'
-import { get, post, put, remove} from "../../../api/api.js"
+import { get, post, put, remove } from '../../../api/api.js';
 import { useSelector } from 'react-redux';
 
 const LeadType = () => {
@@ -39,15 +39,14 @@ const LeadType = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([{ LeadType: 'Type' }]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-  const [leadTypePermission,setLeadTypePermission]=useState({
-      View: false,
-      Add: false,
-      Edit: false,
-      Delete: false
-    });
-  const systemRights = useSelector((state)=>state.systemRights.systemRights);
-      
+  const [isAdmin, setAdmin] = useState(false);
+  const [leadTypePermission, setLeadTypePermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -69,12 +68,12 @@ const LeadType = () => {
   };
 
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["lead-type"]) {
-      setLeadTypePermission(systemRights.actionPermissions["lead-type"]);
+    if (systemRights?.actionPermissions?.['lead-type']) {
+      setLeadTypePermission(systemRights.actionPermissions['lead-type']);
     }
     fetchLeadTypes();
   }, [systemRights]);
@@ -144,9 +143,11 @@ const LeadType = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Lead Type</Typography>
-        {(leadTypePermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Lead Type
-        </Button>}
+        {(leadTypePermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Lead Type
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -211,7 +212,7 @@ const LeadType = () => {
       </Dialog>
 
       {/* Table */}
-      {data.length > 0 && (
+      {data?.length > 0 && (
         <Card>
           <CardContent>
             <Box sx={{ overflowX: 'auto' }}>
@@ -229,33 +230,37 @@ const LeadType = () => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{row.LeadType}</TableCell>
                       <TableCell>
-                        {(leadTypePermission.Edit===true || isAdmin) && <Button
-                          size="small"
-                          onClick={() => handleEdit(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px',
-                            mr: '5px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Edit />
-                          </IconButton>
-                        </Button>}
-                        {(leadTypePermission.Delete===true || isAdmin) && <Button
-                          color="error"
-                          onClick={() => handleDelete(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Delete />
-                          </IconButton>
-                        </Button>}
+                        {(leadTypePermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px',
+                              mr: '5px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(leadTypePermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

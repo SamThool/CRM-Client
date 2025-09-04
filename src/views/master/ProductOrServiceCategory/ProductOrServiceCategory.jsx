@@ -34,15 +34,14 @@ const ProductOrServiceCategory = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-    const [productCategoryPermission,setProductCategoryPermission]=useState({
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false
-        });
-    const systemRights = useSelector((state)=>state.systemRights.systemRights);
-  
+  const [isAdmin, setAdmin] = useState(false);
+  const [productCategoryPermission, setProductCategoryPermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -53,16 +52,16 @@ const ProductOrServiceCategory = () => {
 
   // use axiosInstance to fetch data from the server with useEffect
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["product-or-service-category"]) {
-      setProductCategoryPermission(systemRights.actionPermissions["product-or-service-category"]);
+    if (systemRights?.actionPermissions?.['product-or-service-category']) {
+      setProductCategoryPermission(systemRights.actionPermissions['product-or-service-category']);
     }
     const fetchData = async () => {
       try {
-        const response = await get('/productOrServiceCategory');
+        const response = await get('productOrServiceCategory');
 
         console.log('Full API Response:', response.data); // 👀 should show { status: 'true', data: [...] }
 
@@ -136,7 +135,7 @@ const ProductOrServiceCategory = () => {
           }
         } else {
           // Add case
-          console.log('form is',form);
+          console.log('form is', form);
           const response = await post('/productOrServiceCategory', form);
           console.log('New Category from API:', response.data); // 🔍 debug
           const newCategory = response.data;
@@ -183,7 +182,7 @@ const ProductOrServiceCategory = () => {
     setEditIndex(index);
     setOpen(true);
   };
-console.log('productCategoryPermission',productCategoryPermission);
+  console.log('productCategoryPermission', productCategoryPermission);
   return (
     <div>
       <Breadcrumb>
@@ -197,9 +196,11 @@ console.log('productCategoryPermission',productCategoryPermission);
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Product/Service Categories</Typography>
-        {(productCategoryPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Category
-        </Button>}
+        {(productCategoryPermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Category
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}

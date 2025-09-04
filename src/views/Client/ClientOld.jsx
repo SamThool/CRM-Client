@@ -142,7 +142,6 @@
 //     setOpen(true);
 //   };
 
-
 //   const handleChange = (e) => {
 //     const { name, value, files } = e.target;
 
@@ -336,7 +335,7 @@
 
 //                             <TableCell sx={{
 //                                   display:'flex',
-//                                   flexWrap: 'nowrap',   
+//                                   flexWrap: 'nowrap',
 //                               }}>
 //                                 <Button size="small"  sx={{
 //                                   padding: '1px', // Reduced padding
@@ -525,7 +524,7 @@
 //                       <CancelIcon /> {/* Cancel icon */}
 //                     </IconButton>
 //                   </Button>
-        
+
 //                   <Button
 //                     onClick={handleSubmit}
 //                     variant="contained"
@@ -547,11 +546,6 @@
 // };
 
 // export default Client;
-
-
-
-
-
 
 //! newer updated data
 
@@ -664,7 +658,6 @@ const ClientOld = () => {
       }
     } catch (err) {
       console.log(err);
-       
     }
   };
 
@@ -744,41 +737,37 @@ const ClientOld = () => {
     }
   };
 
-  
-
   const handleEditClient = (client) => {
-  setForm({
-    clientName: client.clientName || '',
-    officialPhoneNo: client.officialPhoneNo || '',
-    altPhoneNo: client.altPhoneNo || '',
-    officialMailId: client.officialMailId || '',
-    altMailId: client.altMailId || '',
-    emergencyContactPerson: client.emergencyContactPerson || '',
-    emergencyContactNo: client.emergencyContactNo || '',
-    website: client.website || '',
-    gstNo: client.gstNo || '',
-    panNo: client.panNo || '',
-    logo: null,
-    officeAddress: client.officeAddress || '',
-    pincode: client.pincode || '',
-    city: client.city || '',
-    state: client.state || '',
-    country: client.country || '',
-    clientType: client.clientType && client.clientType._id
-      ? client.clientType._id
-      : (typeof client.clientType === 'string' ? client.clientType : ''),
-    contactPerson: {
-      name: client.contactPerson?.name || '',
-      department: client.contactPerson?.department || '',
-      position: client.contactPerson?.position || '',
-      email: client.contactPerson?.email || '',
-      phone: client.contactPerson?.phone || ''
-    }
-  });
-  setEditClientId(client._id);
-  setOpen(true);
-};
-
+    setForm({
+      clientName: client.clientName || '',
+      officialPhoneNo: client.officialPhoneNo || '',
+      altPhoneNo: client.altPhoneNo || '',
+      officialMailId: client.officialMailId || '',
+      altMailId: client.altMailId || '',
+      emergencyContactPerson: client.emergencyContactPerson || '',
+      emergencyContactNo: client.emergencyContactNo || '',
+      website: client.website || '',
+      gstNo: client.gstNo || '',
+      panNo: client.panNo || '',
+      logo: null,
+      officeAddress: client.officeAddress || '',
+      pincode: client.pincode || '',
+      city: client.city || '',
+      state: client.state || '',
+      country: client.country || '',
+      clientType:
+        client.clientType && client.clientType._id ? client.clientType._id : typeof client.clientType === 'string' ? client.clientType : '',
+      contactPerson: {
+        name: client.contactPerson?.name || '',
+        department: client.contactPerson?.department || '',
+        position: client.contactPerson?.position || '',
+        email: client.contactPerson?.email || '',
+        phone: client.contactPerson?.phone || ''
+      }
+    });
+    setEditClientId(client._id);
+    setOpen(true);
+  };
 
   const handleDeleteClient = async (id) => {
     try {
@@ -909,17 +898,25 @@ const ClientOld = () => {
       </Breadcrumb>
 
       <Grid container spacing={gridSpacing}>
-       <Grid item xs={12}>
-                  <label htmlFor="">Type of Client</label>
-                  <RadioGroup row value={clientList} onChange={(e) => setClientList(e.target.value)}>
-                    <FormControlLabel value="prospect" control={<Radio />} label="Temparory" />
-                    <FormControlLabel value="client" control={<Radio />} label="Permanent" />
-                  </RadioGroup>
-                </Grid>
+        <Grid item xs={12}>
+          <label htmlFor="">Type of Client</label>
+          <RadioGroup row value={clientList} onChange={(e) => setClientList(e.target.value)}>
+            <FormControlLabel value="prospect" control={<Radio />} label="Temparory" />
+            <FormControlLabel value="client" control={<Radio />} label="Permanent" />
+          </RadioGroup>
+        </Grid>
         <Grid item xs={12}>
           <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
             <Typography variant="h5">Client Details</Typography>
-            <Button variant="contained" startIcon={<Add />} onClick={() => { setForm(initialState); setOpen(true); setEditClientId(null); }}>
+            <Button
+              variant="contained"
+              startIcon={<Add />}
+              onClick={() => {
+                setForm(initialState);
+                setOpen(true);
+                setEditClientId(null);
+              }}
+            >
               Add Client
             </Button>
           </Grid>
@@ -936,7 +933,7 @@ const ClientOld = () => {
                         <TableCell>Contact Person</TableCell>
                         <TableCell>Contact No</TableCell>
                         <TableCell>Email</TableCell>
-                        <TableCell>License Valid</TableCell>
+                        <TableCell>License Validdd</TableCell>
                         <TableCell>Actions</TableCell>
                       </TableRow>
                     </TableHead>
@@ -945,17 +942,27 @@ const ClientOld = () => {
                         <TableRow key={entry._id || index}>
                           <TableCell>{index + 1}</TableCell>
                           <TableCell>{entry.clientName}</TableCell>
-                          <TableCell>{typeOfClientList.find(t => t._id === entry.clientType)?.typeOfClient || ''}</TableCell>
+                          <TableCell>{typeOfClientList.find((t) => t._id === entry.clientType)?.typeOfClient || ''}</TableCell>
                           <TableCell>{entry.officialPhoneNo}</TableCell>
                           <TableCell>{entry.gstNo}</TableCell>
                           <TableCell sx={{ display: 'flex', flexWrap: 'nowrap' }}>
-                            <Button size="small" sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
-                              onClick={() => handleEditClient(entry)}>
-                              <IconButton color='inherit'><Edit /></IconButton>
+                            <Button
+                              size="small"
+                              sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
+                              onClick={() => handleEditClient(entry)}
+                            >
+                              <IconButton color="inherit">
+                                <Edit />
+                              </IconButton>
                             </Button>
-                            <Button color="error" sx={{ padding: '1px', minWidth: '24px', height: '24px' }}
-                              onClick={() => handleDeleteClient(entry._id)}>
-                              <IconButton color='inherit'><Delete /></IconButton>
+                            <Button
+                              color="error"
+                              sx={{ padding: '1px', minWidth: '24px', height: '24px' }}
+                              onClick={() => handleDeleteClient(entry._id)}
+                            >
+                              <IconButton color="inherit">
+                                <Delete />
+                              </IconButton>
                             </Button>
                           </TableCell>
                         </TableRow>
@@ -969,12 +976,23 @@ const ClientOld = () => {
         </Grid>
       </Grid>
 
-      <Dialog open={open} onClose={() => { setOpen(false); setEditClientId(null); }} maxWidth="md" fullWidth>
+      <Dialog
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setEditClientId(null);
+        }}
+        maxWidth="md"
+        fullWidth
+      >
         <DialogTitle>
           {editClientId ? 'Edit Client' : 'Add Client'}
           <IconButton
             aria-label="close"
-            onClick={() => { setOpen(false); setEditClientId(null); }}
+            onClick={() => {
+              setOpen(false);
+              setEditClientId(null);
+            }}
             sx={{
               position: 'absolute',
               right: 8,
@@ -1123,11 +1141,15 @@ const ClientOld = () => {
         </DialogContent>
         <DialogActions sx={{ pr: 3, pb: 2 }}>
           <Button
-            onClick={() => { setOpen(false); setEditClientId(null); }}
+            onClick={() => {
+              setOpen(false);
+              setEditClientId(null);
+            }}
             variant="contained"
             color="error"
             sx={{
-              minWidth: '40px', padding: '2px',
+              minWidth: '40px',
+              padding: '2px'
             }}
           >
             <IconButton color="inherit">
@@ -1138,12 +1160,12 @@ const ClientOld = () => {
             onClick={handleClientSubmit}
             variant="contained"
             sx={{
-              minWidth: '40px', padding: '2px', backgroundColor: value.primaryLight
+              minWidth: '40px',
+              padding: '2px',
+              backgroundColor: value.primaryLight
             }}
           >
-            <IconButton color="inherit">
-              {editClientId ? <EditIcon /> : <SaveIcon />}
-            </IconButton>
+            <IconButton color="inherit">{editClientId ? <EditIcon /> : <SaveIcon />}</IconButton>
           </Button>
         </DialogActions>
       </Dialog>

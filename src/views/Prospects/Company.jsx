@@ -33,7 +33,6 @@ import { Edit, Delete, Refresh, ContactPhone, Business, LocationOn, PersonAdd } 
 import { useSelector } from 'react-redux';
 import { post } from '../../api/api';
 
-
 const Company = () => {
   const navigate = useNavigate();
 
@@ -57,8 +56,8 @@ const Company = () => {
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["prospects"]) {
-      setCompanyPermission(systemRights.actionPermissions["prospects"]);
+    if (systemRights?.actionPermissions?.['prospects']) {
+      setCompanyPermission(systemRights.actionPermissions['prospects']);
     }
     fetchCompanies();
   }, [systemRights]);
@@ -81,7 +80,7 @@ const Company = () => {
 
       const response = await get('prospect');
 
-      console.log('prospect data:', response.data);
+      console.log('prospect data:', response);
       if (response && response.status === 'true' && Array.isArray(response.data)) {
         setCompanies(response.data);
       } else {
@@ -112,120 +111,69 @@ const Company = () => {
 
   const [isDisableConvertClient, setDisableConvertClient] = useState(null);
 
-// const handleConvertToClient = async (company, index) => {
-//   try {
-//     const formData = {
-//       clientName: company.companyName || '',
-//       officialPhoneNo: company.phoneNo || '',
-//       altPhoneNo: company.altPhoneNo || '',
-//       officialMailId: company.email || '',
-//       altMailId: company.altEmail || '',
-//       emergencyContactPerson: '',
-//       emergencyContactNo: '',
-//       website: company.website || '',
-//       gstNo: company.gstNo || '',
-//       panNo: company.panNo || '',
-//       logo: null,
-//       officeAddress: company.address || '',
-//       pincode: company.pincode || '',
-//       city: company.city || '',
-//       state: company.state || '',
-//       country: company.country || '',
-//       startDate: '',
-//       endDate: '',
-//       createdBy: localStorage.getItem('Id') || '',
-//       contactPerson: (company.contacts && company.contacts.length > 0 ? company.contacts : []).map(c => ({
-//         name: c.name || '',
-//         department: c.department || '',
-//         position: c.designation || c.position || '',
-//         email: c.email || '',
-//         phone: c.phone || ''
-//       }))
-//     };
+  const handleConvertToClient = async (company, index) => {
+    try {
+      // Step 1: Generate current date and +6 months
+      const today = new Date();
+      const sixMonthsLater = new Date();
+      sixMonthsLater.setMonth(today.getMonth() + 6);
 
-//     setDisableConvertClient(index);
-//     const response = await post('admin-clientRegistration', formData);
+      const formatCustomDate = (date) =>
+        date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: '2-digit'
+        });
 
-//     console.log('Payload contactPerson:', response.data);
-//     if (response.status === true) {
-//       toast.success('Converted to client successfully');
-//       fetchCompanies();
-//     } else {
-//       toast.error('Failed to convert to client');
-//     }
-//   } catch (error) {
-//     console.error('Convert error:', error);
-//     toast.error('Error while converting to client');
-//   } finally {
-//     setDisableConvertClient(null);
-//   }
-// };
+      const formattedStartDate = formatCustomDate(today);
+      const formattedEndDate = formatCustomDate(sixMonthsLater);
 
-const handleConvertToClient = async (company, index) => {
-  try {
-    // Step 1: Generate current date and +6 months
-    const today = new Date();
-    const sixMonthsLater = new Date();
-    sixMonthsLater.setMonth(today.getMonth() + 6);
+      const formData = {
+        clientName: company.companyName || '',
+        officialPhoneNo: company.phoneNo || '',
+        altPhoneNo: company.altPhoneNo || '',
+        officialMailId: company.email || '',
+        altMailId: company.altEmail || '',
+        emergencyContactPerson: '',
+        emergencyContactNo: '',
+        website: company.website || '',
+        gstNo: company.gstNo || '',
+        panNo: company.panNo || '',
+        logo: null,
+        officeAddress: company.address || '',
+        pincode: company.pincode || '',
+        city: company.city || '',
+        state: company.state || '',
+        country: company.country || '',
+        startDate: formattedStartDate, // ✅ formatted properly
+        endDate: formattedEndDate, // ✅ formatted properly
+        createdBy: localStorage.getItem('Id') || '',
+        contactPerson: (company.contacts && company.contacts.length > 0 ? company.contacts : []).map((c) => ({
+          name: c.name || '',
+          department: c.department || '',
+          position: c.designation || c.position || '',
+          email: c.email || '',
+          phone: c.phone || ''
+        }))
+      };
 
-    
-    const formatCustomDate = (date) =>
-      date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: '2-digit'
-      });
+      setDisableConvertClient(index);
+      const response = await post('admin-clientRegistration', formData);
 
-    const formattedStartDate = formatCustomDate(today);
-    const formattedEndDate = formatCustomDate(sixMonthsLater);
-
-    const formData = {
-      clientName: company.companyName || '',
-      officialPhoneNo: company.phoneNo || '',
-      altPhoneNo: company.altPhoneNo || '',
-      officialMailId: company.email || '',
-      altMailId: company.altEmail || '',
-      emergencyContactPerson: '',
-      emergencyContactNo: '',
-      website: company.website || '',
-      gstNo: company.gstNo || '',
-      panNo: company.panNo || '',
-      logo: null,
-      officeAddress: company.address || '',
-      pincode: company.pincode || '',
-      city: company.city || '',
-      state: company.state || '',
-      country: company.country || '',
-      startDate: formattedStartDate, // ✅ formatted properly
-      endDate: formattedEndDate,     // ✅ formatted properly
-      createdBy: localStorage.getItem('Id') || '',
-      contactPerson: (company.contacts && company.contacts.length > 0 ? company.contacts : []).map(c => ({
-        name: c.name || '',
-        department: c.department || '',
-        position: c.designation || c.position || '',
-        email: c.email || '',
-        phone: c.phone || ''
-      }))
-    };
-
-    setDisableConvertClient(index);
-    const response = await post('admin-clientRegistration', formData);
-
-    console.log('Payload contactPerson:', response.data);
-    if (response.status === true) {
-      toast.success('Converted to client successfully');
-      fetchCompanies();
-    } else {
-      toast.error('Failed to convert to client');
+      console.log('Payload contactPerson:', response.data);
+      if (response.status === true) {
+        toast.success('Converted to client successfully');
+        fetchCompanies();
+      } else {
+        toast.error('Failed to convert to client');
+      }
+    } catch (error) {
+      console.error('Convert error:', error);
+      toast.error('Error while converting to client');
+    } finally {
+      setDisableConvertClient(null);
     }
-  } catch (error) {
-    console.error('Convert error:', error);
-    toast.error('Error while converting to client');
-  } finally {
-    setDisableConvertClient(null);
-  }
-};
-
+  };
 
   const handleChangePage = (event, newPage) => setPage(newPage);
 
@@ -260,15 +208,17 @@ const handleConvertToClient = async (company, index) => {
                     label="Search"
                     variant="outlined"
                     size="small"
-                  // value={searchTerm}
-                  // onChange={handleSearch}
+                    // value={searchTerm}
+                    // onChange={handleSearch}
                   />
                   <Button variant="outlined" color="primary" onClick={fetchCompanies} startIcon={<Refresh />} disabled={loading}>
                     Refresh
                   </Button>
-                  {(companyPermission.Add === true || isAdmin) && <Button variant="contained" color="primary" component={Link} to="/prospects/AddCompany" startIcon={<AddIcon />}>
-                    Add Prospect
-                  </Button>}
+                  {(companyPermission.Add === true || isAdmin) && (
+                    <Button variant="contained" color="primary" component={Link} to="/prospects/AddCompany" startIcon={<AddIcon />}>
+                      Add Prospect
+                    </Button>
+                  )}
                 </Box>
               </Box>
 
@@ -293,7 +243,7 @@ const handleConvertToClient = async (company, index) => {
                         <TableCell>Location</TableCell>
                         <TableCell>Registration</TableCell>
                         <TableCell>Network</TableCell>
-                        <TableCell align='center'>Action</TableCell>
+                        <TableCell align="center">Action</TableCell>
                       </TableRow>
                     </TableHead>
                     <TableBody>
@@ -302,7 +252,7 @@ const handleConvertToClient = async (company, index) => {
                           <TableRow key={company._id} sx={{ verticalAlign: 'top' }}>
                             <TableCell>{page * rowsPerPage + index + 1}</TableCell>
                             <TableCell>
-                              <Box sx={{ display: 'flex', flexDirection: 'column' }} >
+                              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
                                 <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                                   {company.companyName || 'N/A'}
                                 </Typography>
@@ -357,25 +307,29 @@ const handleConvertToClient = async (company, index) => {
                             </TableCell>
                             <TableCell>
                               <Box display="flex" alignItems="center" justifyContent="center">
-                                {(companyPermission.Edit === true || isAdmin) && <Button
-                                  size="small"
-                                  color="primary"
-                                  onClick={() => handleEdit(company._id)}
-                                  // component={Link}
-                                  // to={`/Company/editCompany/${company._id}`}
+                                {(companyPermission.Edit === true || isAdmin) && (
+                                  <Button
+                                    size="small"
+                                    color="primary"
+                                    onClick={() => handleEdit(company._id)}
+                                    // component={Link}
+                                    // to={`/Company/editCompany/${company._id}`}
 
-                                  sx={{ height: '24px', whiteSpace: 'nowrap', minWidth: '12px' }}
-                                >
-                                  <Edit />
-                                </Button>}
-                                {(companyPermission.Delete === true || isAdmin) && <Button
-                                  size="small"
-                                  color="error"
-                                  onClick={() => handleDelete(company._id)}
-                                  sx={{ height: '24px', whiteSpace: 'nowrap', minWidth: '12px' }}
-                                >
-                                  <Delete />
-                                </Button>}
+                                    sx={{ height: '24px', whiteSpace: 'nowrap', minWidth: '12px' }}
+                                  >
+                                    <Edit />
+                                  </Button>
+                                )}
+                                {(companyPermission.Delete === true || isAdmin) && (
+                                  <Button
+                                    size="small"
+                                    color="error"
+                                    onClick={() => handleDelete(company._id)}
+                                    sx={{ height: '24px', whiteSpace: 'nowrap', minWidth: '12px' }}
+                                  >
+                                    <Delete />
+                                  </Button>
+                                )}
                                 <Tooltip title="Convert to Client" arrow>
                                   {/* <Button
                                   size="small"
@@ -394,7 +348,6 @@ const handleConvertToClient = async (company, index) => {
                                   >
                                     <PersonAdd />
                                   </IconButton>
-
                                 </Tooltip>
                               </Box>
                             </TableCell>

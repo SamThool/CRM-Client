@@ -27,7 +27,7 @@ import theme from 'assets/scss/_themes-vars.module.scss';
 import value from 'assets/scss/_themes-vars.module.scss';
 
 // import { axiosInstance } from '../../../api/api.js';
-import { get, post, put, remove } from "../../../api/api.js"
+import { get, post, put, remove } from '../../../api/api.js';
 import { useSelector } from 'react-redux';
 
 const Department = () => {
@@ -36,14 +36,14 @@ const Department = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-  const [departmentPermission,setDepartmentPermission]=useState({
-      View: false,
-      Add: false,
-      Edit: false,
-      Delete: false
+  const [isAdmin, setAdmin] = useState(false);
+  const [departmentPermission, setDepartmentPermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
   });
-  const systemRights = useSelector((state)=>state.systemRights.systemRights);
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -56,20 +56,20 @@ const Department = () => {
   const fetchDepartments = async () => {
     try {
       const response = await get('department');
-      console.log("Department data:", response.data)
+      console.log('Department data:', response.data);
       setData(response.data);
     } catch (error) {
       console.error(error);
     }
   };
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
-        if (loginRole === 'admin') {
-        setAdmin(true);
-        }
-        if (systemRights?.actionPermissions?.["departments"]) {
-        setDepartmentPermission(systemRights.actionPermissions["departments"]);
-        }
+    const loginRole = localStorage.getItem('loginRole');
+    if (loginRole === 'admin') {
+      setAdmin(true);
+    }
+    if (systemRights?.actionPermissions?.['departments']) {
+      setDepartmentPermission(systemRights.actionPermissions['departments']);
+    }
     fetchDepartments();
   }, [systemRights]);
 
@@ -136,9 +136,11 @@ const Department = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Department</Typography>
-        {(departmentPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add department
-        </Button>}
+        {(departmentPermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add department
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -184,7 +186,7 @@ const Department = () => {
       </Dialog>
 
       {/* Table */}
-      {data.length > 0 && (
+      {data?.length > 0 && (
         <Card>
           <CardContent>
             <Table>
@@ -201,20 +203,24 @@ const Department = () => {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{row.department}</TableCell>
                     <TableCell>
-                      {(departmentPermission.Edit===true || isAdmin) && <Button
-                        size="small"
-                        onClick={() => handleEdit(index)}
-                        sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
-                      >
-                        <IconButton color="inherit">
-                          <Edit />
-                        </IconButton>
-                      </Button>}
-                      {(departmentPermission.Delete===true || isAdmin) && <Button color="error" onClick={() => handleDelete(index)} sx={{ padding: '1px', minWidth: '24px', height: '24px' }}>
-                        <IconButton color="inherit">
-                          <Delete />
-                        </IconButton>
-                      </Button>}
+                      {(departmentPermission.Edit === true || isAdmin) && (
+                        <Button
+                          size="small"
+                          onClick={() => handleEdit(index)}
+                          sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
+                        >
+                          <IconButton color="inherit">
+                            <Edit />
+                          </IconButton>
+                        </Button>
+                      )}
+                      {(departmentPermission.Delete === true || isAdmin) && (
+                        <Button color="error" onClick={() => handleDelete(index)} sx={{ padding: '1px', minWidth: '24px', height: '24px' }}>
+                          <IconButton color="inherit">
+                            <Delete />
+                          </IconButton>
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

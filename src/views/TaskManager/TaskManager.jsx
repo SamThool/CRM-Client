@@ -80,19 +80,17 @@ const TaskManager = () => {
   });
   const systemRights = useSelector((state) => state.systemRights.systemRights);
 
-
   useEffect(() => {
     const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["task-manager"]) {
-      setTaskManagementPermission(systemRights.actionPermissions["task-manager"]);
+    if (systemRights?.actionPermissions?.['task-manager']) {
+      setTaskManagementPermission(systemRights.actionPermissions['task-manager']);
     }
     const companyName = localStorage.getItem('loginName');
-    setCompany(companyName)
+    setCompany(companyName);
   }, [systemRights]);
-
 
   useEffect(() => {
     async function fetchTasks() {
@@ -127,7 +125,7 @@ const TaskManager = () => {
     const fetchStatusOptions = async () => {
       try {
         const res = await get('taskStatus');
-        console.log('roes is ', res)
+        console.log('roes is ', res);
         setStatusOptions(res.data);
       } catch (error) {
         console.error('Failed to fetch status options', error);
@@ -204,8 +202,6 @@ const TaskManager = () => {
     setFilteredData(updatedFilteredData);
   }, [data, filters]);
 
-
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -236,7 +232,6 @@ const TaskManager = () => {
     setErrors({});
     setEditIndex(null);
   };
-
 
   const handleDelete = async (index) => {
     const task = data[index];
@@ -272,16 +267,11 @@ const TaskManager = () => {
       startDate: task.startDate ? new Date(task.startDate) : null,
       endDate: task.endDate ? new Date(task.endDate) : null,
       createdBy: task.createdBy ?? '',
-      assignedTo: Array.isArray(task.assignedTo)
-        ? task.assignedTo.map((a) => a._id)
-        : []
+      assignedTo: Array.isArray(task.assignedTo) ? task.assignedTo.map((a) => a._id) : []
     });
     setEditIndex(index);
     setOpen(true);
   };
-
-
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -305,7 +295,7 @@ const TaskManager = () => {
           client: form.client,
           assignedTo: form.assignedTo,
           startDate: form.startDate ? form.startDate.toISOString() : null,
-          endDate: form.endDate ? form.endDate.toISOString() : null,
+          endDate: form.endDate ? form.endDate.toISOString() : null
         };
         await put(`task-manager/update/${id}`, updatePayload);
         toast.success('Task updated!');
@@ -323,7 +313,7 @@ const TaskManager = () => {
           status: payload.status,
           title: payload.title
         };
-        console.log('sanitized payload is', sanitizedPayload)
+        console.log('sanitized payload is', sanitizedPayload);
         const response = await post('task-manager', sanitizedPayload);
         if (response.success === true) {
           toast.success('Task created!');
@@ -359,41 +349,34 @@ const TaskManager = () => {
     }
   };
 
+  useEffect(() => {
+    async function fetchCompany() {
+      try {
+        const rawRefId = localStorage.getItem('refId');
+        const refId = rawRefId?.replace(/^"|"$/g, '').trim(); // fix here
 
-useEffect(() => {
-  async function fetchCompany() {
-    try {
-      const rawRefId = localStorage.getItem('refId');
-      const refId = rawRefId?.replace(/^"|"$/g, '').trim(); // fix here
+        console.log('Sanitized refId:', refId);
 
-      console.log('Sanitized refId:', refId);
+        const response = await get('clientRegistration');
+        console.log('API Response:', response.data);
 
-      const response = await get('clientRegistration');
-      console.log('API Response:', response.data);
+        if ((response.status === true || response.status === 'true') && Array.isArray(response.data)) {
+          const companyData = response.data.find((c) => c._id === refId);
+          console.log('Matched companyData:', companyData);
 
-      if ((response.status === true || response.status === 'true') && Array.isArray(response.data)) {
-        const companyData = response.data.find((c) => c._id === refId);
-        console.log('Matched companyData:', companyData);
-
-        if (companyData) {
-          setCompany(companyData);
-        } else {
-          console.warn('Company not found for refId:', refId);
+          if (companyData) {
+            setCompany(companyData);
+          } else {
+            console.warn('Company not found for refId:', refId);
+          }
         }
+      } catch (err) {
+        console.error('Error fetching company:', err);
       }
-    } catch (err) {
-      console.error('Error fetching company:', err);
     }
-  }
 
-  fetchCompany();
-}, []);
-
-
-
-
-
-
+    fetchCompany();
+  }, []);
 
   return (
     <>
@@ -425,7 +408,7 @@ useEffect(() => {
                   <Grid item xs={2}>
                     <TextField select label="Status" name="status" value={filters.status} onChange={handleFilterChange} fullWidth>
                       <MenuItem value="">All</MenuItem>
-                      {statusOptions.map((s) => (
+                      {statusOptions?.map((s) => (
                         <MenuItem key={s._id} value={s.TaskStatus}>
                           {s.TaskStatus}
                         </MenuItem>
@@ -463,20 +446,20 @@ useEffect(() => {
                       fullWidth
                     >
                       <MenuItem value="">All</MenuItem>
-                      {[...new Set(filteredData.map((task) => task.employeeName))]
-                        .filter(Boolean)
-                        .map((name, index) => (
-                          <MenuItem key={index} value={name}>
-                            {name}
-                          </MenuItem>
-                        ))}
+                      {[...new Set(filteredData.map((task) => task.employeeName))].filter(Boolean).map((name, index) => (
+                        <MenuItem key={index} value={name}>
+                          {name}
+                        </MenuItem>
+                      ))}
                     </TextField>
                   </Grid>
 
                   <Grid item xs={2} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                    {(taskManagementPermission.Add === true || isAdmin) && <Button size="large" variant="contained" onClick={handleOpen}>
-                      <AddIcon />
-                    </Button>}
+                    {(taskManagementPermission.Add === true || isAdmin) && (
+                      <Button size="large" variant="contained" onClick={handleOpen}>
+                        <AddIcon />
+                      </Button>
+                    )}
                   </Grid>
                 </Grid>
               </Box>
@@ -496,7 +479,7 @@ useEffect(() => {
                       <TableRow
                         sx={{
                           backgroundColor: '#f5f5f5',
-                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                          boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
                         }}
                       >
                         <TableCell sx={{ width: 30, px: 1.5, py: 0.8 }}>SN</TableCell>
@@ -512,7 +495,7 @@ useEffect(() => {
                             overflow: 'hidden',
                             textOverflow: 'ellipsis',
                             px: 1.5,
-                            py: 0.8,
+                            py: 0.8
                           }}
                         >
                           Assigned To
@@ -544,7 +527,7 @@ useEffect(() => {
                                 const colorMap = {
                                   high: { color: '#d32f2f', backgroundColor: '#fdecea' },
                                   medium: { color: '#f57c00', backgroundColor: '#fff3e0' },
-                                  low: { color: '#1976d2', backgroundColor: '#e3f2fd' },
+                                  low: { color: '#1976d2', backgroundColor: '#e3f2fd' }
                                 };
                                 const selected = colorMap[priority] || colorMap['low'];
                                 return (
@@ -557,7 +540,7 @@ useEffect(() => {
                                       fontWeight: 500,
                                       fontSize: '0.75rem',
                                       color: selected.color,
-                                      backgroundColor: selected.backgroundColor,
+                                      backgroundColor: selected.backgroundColor
                                     }}
                                   >
                                     {task.priority?.priorityName || 'N/A'}
@@ -565,9 +548,7 @@ useEffect(() => {
                                 );
                               })()}
                             </TableCell>
-                            <TableCell sx={{ px: 1.5, py: 0.8 }}>
-                              {task?.client?.clientName}
-                            </TableCell>
+                            <TableCell sx={{ px: 1.5, py: 0.8 }}>{task?.client?.clientName}</TableCell>
                             <TableCell sx={{ px: 1.5, py: 0.8 }}>
                               <Box
                                 sx={{
@@ -590,41 +571,37 @@ useEffect(() => {
                               </Box>
                             </TableCell>
 
-
                             <TableCell sx={{ px: 1.5, py: 0.8 }}>{task.employeeName}</TableCell>
                             <TableCell sx={{ px: 1, py: 0.6, fontSize: '0.75rem', lineHeight: 1.2 }}>
-                              {task.assignedTo
-                                .map(
-                                  (item) =>
-                                    `${item.basicDetails.firstName} ${item.basicDetails.lastName}`
-                                )
-                                .join(',')}
+                              {task.assignedTo.map((item) => `${item.basicDetails.firstName} ${item.basicDetails.lastName}`).join(',')}
                             </TableCell>
 
                             <TableCell sx={{ px: 1.5, py: 0.8 }}>
                               {new Date(task.startDate).toLocaleDateString('en-GB', {
                                 day: '2-digit',
                                 month: 'short',
-                                year: 'numeric',
+                                year: 'numeric'
                               })}
                             </TableCell>
                             <TableCell sx={{ px: 1.5, py: 0.8 }}>
                               {new Date(task.endDate).toLocaleDateString('en-GB', {
                                 day: '2-digit',
                                 month: 'short',
-                                year: 'numeric',
+                                year: 'numeric'
                               })}
                             </TableCell>
+                            <TableCell sx={{ px: 1.5, py: 0.8 }}>{company.clientName || 'N/A'}</TableCell>
                             <TableCell sx={{ px: 1.5, py: 0.8 }}>
-                             {company.clientName || 'N/A'}
-                            </TableCell>
-                            <TableCell sx={{ px: 1.5, py: 0.8 }}>
-                              {(taskManagementPermission.Edit === true || isAdmin) && <IconButton color="primary" onClick={() => handleEdit(index)}>
-                                <EditIcon />
-                              </IconButton>}
-                              {(taskManagementPermission.Delete === true || isAdmin) && <IconButton color="error" onClick={() => handleDelete(index)}>
-                                <DeleteIcon />
-                              </IconButton>}
+                              {(taskManagementPermission.Edit === true || isAdmin) && (
+                                <IconButton color="primary" onClick={() => handleEdit(index)}>
+                                  <EditIcon />
+                                </IconButton>
+                              )}
+                              {(taskManagementPermission.Delete === true || isAdmin) && (
+                                <IconButton color="error" onClick={() => handleDelete(index)}>
+                                  <DeleteIcon />
+                                </IconButton>
+                              )}
                             </TableCell>
                           </TableRow>
                         ))
@@ -641,18 +618,10 @@ useEffect(() => {
               </Box>
             </CardContent>
           </Card>
-
         </Grid>
       </Grid>
       {/* Add/Edit Task Modal */}
-      <Dialog
-        open={open}
-        onClose={() => setOpen(false)}
-        maxWidth="md"
-        fullWidth
-        key={editIndex !== null ? `edit-${editIndex}` : 'create'}
-      >
-
+      <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth key={editIndex !== null ? `edit-${editIndex}` : 'create'}>
         <DialogTitle>
           {editIndex !== null ? 'Edit Task' : 'Add Task'}
           <IconButton
@@ -668,7 +637,7 @@ useEffect(() => {
           </IconButton>
         </DialogTitle>
         <DialogContent>
-          <Grid container spacing={2} sx={{ mt: 2,}}>
+          <Grid container spacing={2} sx={{ mt: 2 }}>
             <Grid item xs={4}>
               <TextField
                 label="Title"
@@ -681,7 +650,6 @@ useEffect(() => {
                 required
                 variant="outlined"
               />
-
             </Grid>
             <Grid item xs={4}>
               <TextField
@@ -714,7 +682,7 @@ useEffect(() => {
                 fullWidth
                 required
               >
-                {statusOptions.map((status) => (
+                {statusOptions?.map((status) => (
                   <MenuItem key={status._id} value={status._id}>
                     {status.TaskStatus}
                   </MenuItem>

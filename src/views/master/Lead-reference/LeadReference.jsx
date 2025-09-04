@@ -45,15 +45,15 @@ const LeadReference = () => {
   ]);
   const [editIndex, setEditIndex] = useState(null);
 
-  const [isAdmin,setAdmin]=useState(false);
-  const [leadReferencePermission,setLeadReferencePermission]=useState({
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false
-      });
-  const systemRights = useSelector((state)=>state.systemRights.systemRights);
-    
+  const [isAdmin, setAdmin] = useState(false);
+  const [leadReferencePermission, setLeadReferencePermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
+
   const validate = () => {
     const newErrors = {};
     if (!form.LeadReference) newErrors.LeadReference = 'Lead Reference is required';
@@ -63,12 +63,12 @@ const LeadReference = () => {
 
   // use axiosInstance to fetch data from the server with useEffect
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["lead-reference"]) {
-      setLeadReferencePermission(systemRights.actionPermissions["lead-reference"]);
+    if (systemRights?.actionPermissions?.['lead-reference']) {
+      setLeadReferencePermission(systemRights.actionPermissions['lead-reference']);
     }
     fetchLeadReferences();
   }, [systemRights]);
@@ -146,9 +146,11 @@ const LeadReference = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Lead Reference</Typography>
-        {(leadReferencePermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Lead Reference
-        </Button>}
+        {(leadReferencePermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Lead Reference
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -213,7 +215,7 @@ const LeadReference = () => {
       </Dialog>
 
       {/* Table */}
-      {data.length > 0 && (
+      {data?.length > 0 && (
         <Card>
           <CardContent>
             <Box sx={{ overflowX: 'auto' }}>
@@ -231,33 +233,37 @@ const LeadReference = () => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{row.LeadReference}</TableCell>
                       <TableCell>
-                        {(leadReferencePermission.Edit===true || isAdmin) && <Button
-                          size="small"
-                          onClick={() => handleEdit(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px',
-                            mr: '5px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Edit />
-                          </IconButton>
-                        </Button>}
-                        {(leadReferencePermission.Delete===true || isAdmin) && <Button
-                          color="error"
-                          onClick={() => handleDelete(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Delete />
-                          </IconButton>
-                        </Button>}
+                        {(leadReferencePermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px',
+                              mr: '5px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(leadReferencePermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
