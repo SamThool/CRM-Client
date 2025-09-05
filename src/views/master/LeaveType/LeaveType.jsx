@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Grid, TextField, Button, Typography, Card, CardContent, Dialog, DialogTitle,
-  DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, Box
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
+  Box
 } from '@mui/material';
 import Breadcrumb from 'component/Breadcrumb';
 import { Link } from 'react-router-dom';
@@ -15,9 +29,8 @@ import value from 'assets/scss/_themes-vars.module.scss';
 
 // axiosInstance
 // import { axiosInstance } from '../../../api/api.js';
-import { get, post, put, remove} from "../../../api/api"
+import { get, post, put, remove } from '../../../api/api';
 import { useSelector } from 'react-redux';
-
 
 const LeaveType = () => {
   const [form, setForm] = useState({
@@ -31,15 +44,14 @@ const LeaveType = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-  const [leaveTypePermission,setLeaveTypePermission]=useState({
-        View: false,
-        Add: false,
-        Edit: false,
-        Delete: false
-      });
-  const systemRights = useSelector((state)=>state.systemRights.systemRights);
-  
+  const [isAdmin, setAdmin] = useState(false);
+  const [leaveTypePermission, setLeaveTypePermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -52,13 +64,13 @@ const LeaveType = () => {
   };
 
   // use axiosInstance to fetch data from the server with useEffect
-  useEffect(()=>{
-    const loginRole=localStorage.getItem('loginRole');
+  useEffect(() => {
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["leave-type"]) {
-      setLeaveTypePermission(systemRights.actionPermissions["leave-type"]);
+    if (systemRights?.actionPermissions?.['leave-type']) {
+      setLeaveTypePermission(systemRights.actionPermissions['leave-type']);
     }
     const fetchData = async () => {
       try {
@@ -132,8 +144,7 @@ const LeaveType = () => {
     setOpen(true);
   };
 
-
-  console.log("data----",data)
+  console.log('data----', data);
   return (
     <div>
       <Breadcrumb>
@@ -147,9 +158,11 @@ const LeaveType = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Leave Type</Typography>
-        {(leaveTypePermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Leave Type
-        </Button>}
+        {(leaveTypePermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Leave Type
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -163,7 +176,7 @@ const LeaveType = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: (theme) => theme.palette.grey[500]
             }}
           >
             <Close />
@@ -226,7 +239,7 @@ const LeaveType = () => {
             color="error"
             sx={{
               minWidth: '40px',
-              padding: '2px',
+              padding: '2px'
             }}
           >
             <IconButton color="inherit">
@@ -244,9 +257,7 @@ const LeaveType = () => {
               backgroundColor: value.primaryLight
             }}
           >
-            <IconButton color="inherit">
-              {editIndex !== null ? <EditIcon /> : <SaveIcon />}
-            </IconButton>
+            <IconButton color="inherit">{editIndex !== null ? <EditIcon /> : <SaveIcon />}</IconButton>
           </Button>
         </DialogActions>
       </Dialog>
@@ -276,21 +287,37 @@ const LeaveType = () => {
                       <TableCell>{row.totalLeaves}</TableCell>
                       <TableCell>{row.leavesPerMonth}</TableCell>
                       <TableCell>
-                        {(leaveTypePermission.Edit===true || isAdmin) && <Button size="small"  onClick={() => handleEdit(index)} sx={{
-                          padding: '1px',
-                          minWidth: '24px',
-                          height: '24px',
-                          mr: '5px',
-                        }}>
-                          <IconButton  color='inherit'><Edit /></IconButton>
-                        </Button>}
-                        {(leaveTypePermission.Delete===true || isAdmin) && <Button color="error" onClick={() => handleDelete(index)} sx={{
-                          padding: '1px',
-                          minWidth: '24px',
-                          height: '24px'
-                        }}>
-                          <IconButton color='inherit'><Delete /></IconButton>
-                        </Button>}
+                        {(leaveTypePermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px',
+                              mr: '5px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(leaveTypePermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
