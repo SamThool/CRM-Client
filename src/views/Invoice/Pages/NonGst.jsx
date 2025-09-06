@@ -39,17 +39,16 @@ const NonGst = () => {
   const [open, setOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [discountType, setDiscountType] = useState('');
-   const [clientData,setClientData]=useState([]);
-    const[allProducts,setAllProducts]=useState([]);
-      const [bankOptions, setBankOptions] = useState([]);
-    
+  const [clientData, setClientData] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [bankOptions, setBankOptions] = useState([]);
 
   function initialFormState() {
     return {
-      gstType:'non-gst',
-      clientId:'',
+      gstType: 'non-gst',
+      clientId: '',
       clientName: '',
-      RecieptNo:'',
+      RecieptNo: '',
       invoiceNumber: '',
       date: null,
       clientEmail: '',
@@ -73,7 +72,7 @@ const NonGst = () => {
       discountAmount: '',
       totalAmount: '',
       roundUp: '',
-      selectedBankId:'',
+      selectedBankId: '',
       nameOnBankAccount: '',
       bankAccountNumber: '',
       bankName: '',
@@ -132,24 +131,23 @@ const NonGst = () => {
   const applyDiscountAndTotal = (draft) => {
     const subTotal = parseFloat(draft.subTotal) || 0;
     const discount = parseFloat(draft.discount) || 0;
-  
+
     // Calculate discount amount
     if (draft.discountType === 'percentage') {
       draft.discountAmount = ((subTotal * discount) / 100).toFixed(2);
     } else {
       draft.discountAmount = discount.toFixed(2);
     }
-  
+
     // Calculate total amount after discount
     draft.totalAmount = (subTotal - parseFloat(draft.discountAmount)).toFixed(2);
-  
+
     // Calculate round-up value
     const total = parseFloat(draft.totalAmount) || 0;
     // draft.roundUp = (Math.ceil(total) - total).toFixed(2);
-  
+
     // Calculate total rounded-up value (actual rounded total)
     draft.roundUp = Math.ceil(total).toFixed(2);
-  
   };
 
   const handleChange = (e, index = null) => {
@@ -198,18 +196,18 @@ const NonGst = () => {
     setOpen(true);
   };
 
-  const handleSubmit = async() => {
-      console.log('gst form', form);
-      const response = await post('invoiceRegistration',form);
-      if(response.status===true){
-        console.log('response', response);
-        toast.success("GST Invoice created successfully");
-      }
-      else{
-        console.error(response.message);
-        toast.error(response.message);
-      }
-      setOpen(false);
+  const handleSubmit = async () => {
+    console.log('gst form', form);
+    const response = await post('invoiceRegistration', form);
+    if (response.status === true) {
+      console.log('response', response);
+      toast.success('GST Invoice created successfully');
+      navigate('/invoice-management');
+    } else {
+      console.error(response.message);
+      toast.error(response.message);
+    }
+    setOpen(false);
   };
 
   const handleClose = () => {
@@ -232,7 +230,7 @@ const NonGst = () => {
     if (!form.date) {
       newErrors.date = 'Date is Required';
     }
-    
+
     if (!form.clientEmail) {
       newErrors.clientEmail = 'Email is Required';
     } else if (!form.clientEmail.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)) {
@@ -246,13 +244,13 @@ const NonGst = () => {
     } else if (!/^\d{6}$/.test(form.clientPincode)) {
       newErrors.clientPincode = 'Pincode must be a 6-digit number';
     }
-    if (!form.clientState){
+    if (!form.clientState) {
       newErrors.clientState = 'State is Required';
     }
-    if (!form.clientCity){
+    if (!form.clientCity) {
       newErrors.clientCity = 'City is Required';
     }
-    if (!form.clientCountry){
+    if (!form.clientCountry) {
       newErrors.clientCountry = 'Country is Required';
     }
 
@@ -296,15 +294,15 @@ const NonGst = () => {
       rate: '',
       productAmount: ''
     };
-  
+
     const updatedProducts = [...form.products];
     updatedProducts.splice(index + 1, 0, newProduct);
-  
+
     const updatedSubTotal = updatedProducts.reduce((acc, curr) => {
       const amt = parseFloat(curr.productAmount || 0);
       return acc + amt;
     }, 0);
-  
+
     setForm({
       ...form,
       products: updatedProducts,
@@ -318,12 +316,12 @@ const NonGst = () => {
   const handleRemoveProduct = (index) => {
     const updatedProducts = [...form.products];
     updatedProducts.splice(index, 1);
-  
+
     const updatedSubTotal = updatedProducts.reduce((acc, curr) => {
       const amount = parseFloat(curr.productAmount || 0);
       return acc + amount;
     }, 0);
-  
+
     setForm({
       ...form,
       products: updatedProducts,
@@ -334,90 +332,86 @@ const NonGst = () => {
     });
   };
 
-  useEffect(()=>{
-    setForm(pre => ({ ...pre, date: new Date() }));
-    const fetchClientDetails=async()=>{
-      const response=await get('admin-clientRegistration')
-      if(response.status==='true'){
-        const filteredData=response.data.filter((client)=>client.createdBy===localStorage.getItem('Id'));
-        console.log('gst response client is',filteredData);
-        setClientData(filteredData)
+  useEffect(() => {
+    setForm((pre) => ({ ...pre, date: new Date() }));
+    const fetchClientDetails = async () => {
+      const response = await get('admin-clientRegistration');
+      if (response.status === 'true') {
+        const filteredData = response.data.filter((client) => client.createdBy === localStorage.getItem('Id'));
+        console.log('gst response client is', filteredData);
+        setClientData(filteredData);
       }
-    }
-    const fetchProductCategory=async()=>{
-      const response=await get('productOrServiceCategory');
-      console.log('product category is',response);
-      if(response.status==='true'){
-        setAllProducts(response.data)
+    };
+    const fetchProductCategory = async () => {
+      const response = await get('productOrServiceCategory');
+      console.log('product category is', response);
+      if (response.status === 'true') {
+        setAllProducts(response.data);
       }
-    }
-      const fetchInvoiceNo = async () => {
-        const response = await get('invoiceRegistration');
-        if (response.status === true) {
-          const nonGstData = response.invoices.filter(item => item.gstType === 'non-gst');
-          const all_invoice_no = nonGstData.map(item => item.invoiceNumber?.trim());
-          const all_reciept_no = nonGstData.map(item => item.RecieptNo?.trim());
-          console.log('all recipet no',all_reciept_no)
-      
-          // Extract numeric part of valid invoice numbers like #10001
-          const validNumbers = all_invoice_no
-            .filter(num => /^#\d+$/.test(num))
-            .map(num => parseInt(num.replace('#', '')));
-          
-      
-          // Extract numeric part of valid receipt numbers like REC0001
-          const validRecieptNo = all_reciept_no
-            .filter(num => /^REC\d{3}$/.test(num)) // Matches "REC0001", "REC0023"
-            .map(num => parseInt(num.replace('REC', '')));
-          console.log('valid reciept no is',validRecieptNo)
-      
-          // Calculate next invoice number
-          let nextNumber;
-          if (validNumbers.length === 0) {
-            nextNumber = `#1001`;
-          } else {
-            const maxNumber = Math.max(...validNumbers);
-            nextNumber = `#${maxNumber + 1}`;
-          }
-      
-          // Calculate next receipt number
-          let nextRecieptNo;
-          if (validRecieptNo.length === 0) {
-            nextRecieptNo = `REC001`;
-          } else {
-            const maxReciept = Math.max(...validRecieptNo);
-            const next = (maxReciept + 1).toString().padStart(3, '0'); // e.g., 24 → "0025"
-            nextRecieptNo = `REC${next}`;
-          }
-      
-          console.log('Next invoice number:', nextNumber);
-          console.log('Next receipt number:', nextRecieptNo);
-      
-          // Update form state
-          setForm(p => ({
-            ...p,
-            invoiceNumber: nextNumber,
-            RecieptNo: nextRecieptNo
-          }));
-        }
-      };
+    };
+    const fetchInvoiceNo = async () => {
+      const response = await get('invoiceRegistration');
+      if (response.status === true) {
+        const nonGstData = response.invoices.filter((item) => item.gstType === 'non-gst');
+        const all_invoice_no = nonGstData.map((item) => item.invoiceNumber?.trim());
+        const all_reciept_no = nonGstData.map((item) => item.RecieptNo?.trim());
+        console.log('all recipet no', all_reciept_no);
 
-      const fetchBankDetails = async () => {
-          try {
-            const response = await get('bankDetails');
-            console.log('response bank details is', response);
-            setBankOptions(response.data);
-          } catch (err) {
-            console.log('err', err);
-          }
-        };
-    
-      
-      fetchInvoiceNo()
-    fetchProductCategory()
+        // Extract numeric part of valid invoice numbers like #10001
+        const validNumbers = all_invoice_no.filter((num) => /^#\d+$/.test(num)).map((num) => parseInt(num.replace('#', '')));
+
+        // Extract numeric part of valid receipt numbers like REC0001
+        const validRecieptNo = all_reciept_no
+          .filter((num) => /^REC\d{3}$/.test(num)) // Matches "REC0001", "REC0023"
+          .map((num) => parseInt(num.replace('REC', '')));
+        console.log('valid reciept no is', validRecieptNo);
+
+        // Calculate next invoice number
+        let nextNumber;
+        if (validNumbers.length === 0) {
+          nextNumber = `#1001`;
+        } else {
+          const maxNumber = Math.max(...validNumbers);
+          nextNumber = `#${maxNumber + 1}`;
+        }
+
+        // Calculate next receipt number
+        let nextRecieptNo;
+        if (validRecieptNo.length === 0) {
+          nextRecieptNo = `REC001`;
+        } else {
+          const maxReciept = Math.max(...validRecieptNo);
+          const next = (maxReciept + 1).toString().padStart(3, '0'); // e.g., 24 → "0025"
+          nextRecieptNo = `REC${next}`;
+        }
+
+        console.log('Next invoice number:', nextNumber);
+        console.log('Next receipt number:', nextRecieptNo);
+
+        // Update form state
+        setForm((p) => ({
+          ...p,
+          invoiceNumber: nextNumber,
+          RecieptNo: nextRecieptNo
+        }));
+      }
+    };
+
+    const fetchBankDetails = async () => {
+      try {
+        const response = await get('bankDetails');
+        console.log('response bank details is', response);
+        setBankOptions(response.data);
+      } catch (err) {
+        console.log('err', err);
+      }
+    };
+
+    fetchInvoiceNo();
+    fetchProductCategory();
     fetchClientDetails();
     fetchBankDetails();
-  },[])
+  }, []);
 
   return (
     <>
@@ -445,38 +439,37 @@ const NonGst = () => {
 
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={4}>
-                    <TextField
-                      select
-                      label="Client Name"
-                      name="clientId"
-                      value={form.clientId}
-                      onChange={(e) => {
-                        const selectedClient = clientData.find(c => c._id === e.target.value);
-                        setForm((prev) => ({
-                          ...prev,
-                          clientId: e.target.value,
-                          clientName: selectedClient?.clientName || '',
-                          clientGst: selectedClient?.gstNo || '',
-                          clientEmail: selectedClient?.officialMailId || '',
-                          clientAddress: selectedClient?.officeAddress || '',
-                          clientPincode: selectedClient?.pincode || '',
-                          clientState: selectedClient?.state || '',
-                          clientCity: selectedClient?.city || '',
-                          clientCountry: selectedClient?.country || ''
-                        }));
-                      }}
-                      fullWidth
-                      required
-                      error={!!errors.clientId}
-                      helperText={errors.clientId}
-                    >
-                      {clientData?.map((client, index) => (
-                        <MenuItem key={index} value={client._id}>
-                          {client.clientName}
-                        </MenuItem>
-                      ))}
-                    </TextField>
-
+                      <TextField
+                        select
+                        label="Client Name"
+                        name="clientId"
+                        value={form.clientId}
+                        onChange={(e) => {
+                          const selectedClient = clientData.find((c) => c._id === e.target.value);
+                          setForm((prev) => ({
+                            ...prev,
+                            clientId: e.target.value,
+                            clientName: selectedClient?.clientName || '',
+                            clientGst: selectedClient?.gstNo || '',
+                            clientEmail: selectedClient?.officialMailId || '',
+                            clientAddress: selectedClient?.officeAddress || '',
+                            clientPincode: selectedClient?.pincode || '',
+                            clientState: selectedClient?.state || '',
+                            clientCity: selectedClient?.city || '',
+                            clientCountry: selectedClient?.country || ''
+                          }));
+                        }}
+                        fullWidth
+                        required
+                        error={!!errors.clientId}
+                        helperText={errors.clientId}
+                      >
+                        {clientData?.map((client, index) => (
+                          <MenuItem key={index} value={client._id}>
+                            {client.clientName}
+                          </MenuItem>
+                        ))}
+                      </TextField>
                     </Grid>
                     <Grid item xs={12} md={4}>
                       <TextField
@@ -488,7 +481,7 @@ const NonGst = () => {
                         required
                         error={!!errors.invoiceNumber}
                         helperText={errors.invoiceNumber}
-                        InputProps={{readOnly:true}}
+                        InputProps={{ readOnly: true }}
                       />
                     </Grid>
                     <Grid item xs={12} md={4}>
@@ -706,13 +699,11 @@ const NonGst = () => {
                         <Select
                           label="Select Bank"
                           onChange={(e) => {
-                            const selectedBank = bankOptions.find(
-                              (bank) => bank._id === e.target.value
-                            );
+                            const selectedBank = bankOptions.find((bank) => bank._id === e.target.value);
                             if (selectedBank) {
                               setForm((prev) => ({
                                 ...prev,
-                                selectedBankId:selectedBank._id,
+                                selectedBankId: selectedBank._id,
                                 nameOnBankAccount: selectedBank.accountName,
                                 bankAccountNumber: selectedBank.accountNumber,
                                 bankName: selectedBank.bankName,
@@ -740,7 +731,7 @@ const NonGst = () => {
                         error={!!errors.nameOnBankAccount}
                         helperText={errors.nameOnBankAccount}
                         placeholder="Bank Holder Name"
-                      InputProps={{ readOnly: true }}
+                        InputProps={{ readOnly: true }}
                       />
                     </Grid>
                     <Grid item xs={12} sm={4}>

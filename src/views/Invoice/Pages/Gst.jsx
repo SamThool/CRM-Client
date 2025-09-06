@@ -40,7 +40,7 @@ const Gst = () => {
   const [form, setForm] = useState(initialFormState());
   const [open, setOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
-  const [selectedValue, setSelectedValue] = useState();
+  const [selectedValue, setSelectedValue] = useState('igst');
   const [discountType, setDiscountType] = useState('');
   const [clientData, setClientData] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
@@ -48,7 +48,7 @@ const Gst = () => {
 
   function initialFormState() {
     return {
-      gstType: 'gst',
+      gstType: 'igst',
       clientId: '',
       clientName: '',
       RecieptNo: '',
@@ -74,11 +74,11 @@ const Gst = () => {
       discount: '',
       totalAmount: '',
       roundUp: '',
-      igstPercent: '',
+      igstPercent: '18',
       igstAmount: '',
-      cgstIgstPercentage: '',
+      cgstIgstPercentage: '9',
       cgstIgstAmount: '',
-      sgstPercentage: '',
+      sgstPercentage: '9',
       sgstAmount: '',
 
       // banking details
@@ -153,20 +153,31 @@ const Gst = () => {
     /* roundUp untouched here */
   };
 
-  // 4️⃣ called ONLY when tax % changes
-  const applyTaxAndRound = (draft) => {
+  const applyTaxAndRound = (draft, taxType = selectedValue) => {
     const base = parseFloat(draft.totalAmount) || 0;
 
-    const igst = (base * (parseFloat(draft.igstPercent) || 0)) / 100;
-    const cgst = (base * (parseFloat(draft.cgstIgstPercentage) || 0)) / 100;
-    const sgst = (base * (parseFloat(draft.sgstPercentage) || 0)) / 100;
+    if (taxType === 'igst') {
+      const igst = (base * (parseFloat(draft.igstPercent) || 0)) / 100;
+      draft.igstAmount = igst.toFixed(2);
+      draft.cgstIgstAmount = '';
+      draft.sgstAmount = '';
 
-    draft.igstAmount = igst.toFixed(2);
-    draft.cgstIgstAmount = cgst.toFixed(2);
-    draft.sgstAmount = sgst.toFixed(2);
+      draft.grandTotal = (base + igst).toFixed(2);
+    }
 
-    draft.roundUp = Math.round(base + igst + cgst + sgst);
-    /* totalAmount untouched here */
+    if (taxType === 'sgst_cgst') {
+      const cgst = (base * (parseFloat(draft.cgstIgstPercentage) || 0)) / 100;
+      const sgst = (base * (parseFloat(draft.sgstPercentage) || 0)) / 100;
+
+      draft.cgstIgstAmount = cgst.toFixed(2);
+      draft.sgstAmount = sgst.toFixed(2);
+      draft.igstAmount = '';
+
+      draft.grandTotal = (base + cgst + sgst).toFixed(2);
+    }
+
+    // Round off AFTER taxes
+    draft.roundUp = Math.round(parseFloat(draft.grandTotal) || 0);
   };
 
   const handleChange = (e, index = null) => {
@@ -209,18 +220,8 @@ const Gst = () => {
 
       // a) Discount-related → update `totalAmount`
       if (name === 'discount' || name === 'discountType') {
-        if (!draft.discount || draft.discount === '0') {
-          // No discount → total = subtotal
-          draft.totalAmount = draft.subTotal;
-        } else {
-          // Discount entered → apply discount logic
-          applyDiscountAndTotal(draft);
-        }
-
-        // ✅ Always update roundUp with 18% GST on totalAmount
-        const gstPercent = 18;
-        const gstAmount = (parseFloat(draft.totalAmount) || 0) * (gstPercent / 100);
-        draft.roundUp = (parseFloat(draft.totalAmount) || 0) + gstAmount;
+        applyDiscountAndTotal(draft); // <--- recompute subtotal, discount, total
+        applyTaxAndRound(draft, selectedValue); // <--- then recompute GST + roundUp
       }
 
       // b) Tax-related → update `roundUp`
@@ -237,7 +238,7 @@ const Gst = () => {
           const gstAmount = (parseFloat(draft.totalAmount) || 0) * (gstPercent / 100);
           draft.roundUp = (parseFloat(draft.totalAmount) || 0) + gstAmount;
         }
-        applyTaxAndRound(draft);
+        applyTaxAndRound(draft, selectedValue);
       }
 
       return draft;
@@ -250,6 +251,7 @@ const Gst = () => {
     if (response.status === true) {
       console.log('response', response);
       toast.success('GST Invoice created successfully');
+      navigate('/invoice-management');
     } else {
       console.error(response.message);
       toast.error(response.message);
@@ -371,24 +373,13 @@ const Gst = () => {
     const updatedProducts = [...form.products];
     updatedProducts.splice(index + 1, 0, newProduct);
 
-    const updatedSubTotal = updatedProducts.reduce((acc, curr) => {
-      const amt = parseFloat(curr.productAmount || 0);
-      return acc + amt;
-    }, 0);
+    setForm((prev) => {
+      const draft = { ...prev, products: updatedProducts };
+      draft.subTotal = calculateSubtotal(updatedProducts).toFixed(2);
 
-    setForm({
-      ...form,
-      products: updatedProducts,
-      subTotal: updatedSubTotal.toFixed(2),
-      discount: '',
-      totalAmount: '',
-      roundUp: '',
-      igstPercent: '',
-      igstAmount: '',
-      cgstIgstPercentage: '',
-      cgstIgstAmount: '',
-      sgstPercentage: '',
-      sgstAmount: ''
+      applyDiscountAndTotal(draft); // keep discount + total
+      applyTaxAndRound(draft, selectedValue); // keep GST + roundUp
+      return draft;
     });
   };
 
@@ -396,24 +387,13 @@ const Gst = () => {
     const updatedProducts = [...form.products];
     updatedProducts.splice(index, 1);
 
-    const updatedSubTotal = updatedProducts.reduce((acc, curr) => {
-      const amount = parseFloat(curr.productAmount || 0);
-      return acc + amount;
-    }, 0);
+    setForm((prev) => {
+      const draft = { ...prev, products: updatedProducts };
+      draft.subTotal = calculateSubtotal(updatedProducts).toFixed(2);
 
-    setForm({
-      ...form,
-      products: updatedProducts,
-      subTotal: updatedSubTotal || '',
-      discount: '',
-      totalAmount: '',
-      roundUp: '',
-      igstPercent: '',
-      igstAmount: '',
-      cgstIgstPercentage: '',
-      cgstIgstAmount: '',
-      sgstPercentage: '',
-      sgstAmount: ''
+      applyDiscountAndTotal(draft); // keep discount + total
+      applyTaxAndRound(draft, selectedValue); // keep GST + roundUp
+      return draft;
     });
   };
 
@@ -437,7 +417,8 @@ const Gst = () => {
     const fetchInvoiceNo = async () => {
       const response = await get('invoiceRegistration');
       if (response.status === true) {
-        const GstData = response.invoices.filter((item) => item.gstType === 'gst');
+        const GstData = response.invoices.filter((item) => item.gstType === 'gst' || item.gstType === 'igst');
+
         const all_invoice_no = GstData.map((item) => item.invoiceNumber?.trim());
         const all_reciept_no = GstData.map((item) => item.RecieptNo?.trim());
 
@@ -496,17 +477,18 @@ const Gst = () => {
     fetchBankDetails();
   }, []);
 
+  useEffect(() => {
+    setForm((prev) => {
+      const draft = { ...prev };
+      if (parseFloat(draft.totalAmount) > 0) {
+        applyTaxAndRound(draft, selectedValue);
+      }
+      return draft;
+    });
+  }, [form.totalAmount, selectedValue, form.igstPercent, form.cgstIgstPercentage, form.sgstPercentage]);
+
   return (
     <>
-      {/* <Breadcrumb>
-        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
-          Home
-        </Typography>
-        <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-          Non-GST
-        </Typography>
-      </Breadcrumb> */}
-
       <Grid container spacing={gridSpacing}>
         <Grid item xs={12}>
           <Grid container justifyContent="space-" alignItems="center" sx={{ mb: 2 }}>
@@ -605,239 +587,246 @@ const Gst = () => {
                     </Grid>
                   ))}
 
-                  <Grid item xs={12} sx={{ mt: 2 }}>
-                    <Typography variant="h6" color="primary">
-                      Product Details
-                    </Typography>
-                  </Grid>
-
-                  {form?.products?.map((productItem, index) => (
-                    <Box
-                      key={index}
-                      container
-                      margin={2}
-                      borderRadius={2}
-                      display={'flex'}
-                      justifyContent={'center'}
-                      alignItems={'center'}
-                      sx={{ backgroundColor: '#E1F3F3' }}
-                      padding={1}
-                    >
-                      <Grid key={index} container spacing={gridSpacing}>
-                        <Grid item xs={12} md={2}>
-                          <TextField
-                            select
-                            label="Product"
-                            name="product"
-                            value={form.products[index]?.product || ''}
-                            onChange={(e) => handleChange(e, index)}
-                            fullWidth
-                            required
-                            error={!!errors.product}
-                            helperText={errors.product}
-                          >
-                            {allProducts.map((p, i) => (
-                              <MenuItem key={i} value={p.productName}>
-                                {p.productName}
-                              </MenuItem>
-                            ))}
-                          </TextField>
-                        </Grid>
-
-                        <Grid item xs={12} md={3}>
-                          <TextField
-                            label="Description"
-                            name="description"
-                            value={form.products[index]?.description || ''}
-                            onChange={(e) => handleChange(e, index)}
-                            fullWidth
-                            required
-                          ></TextField>
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                          <TextField
-                            label="Qty"
-                            name="quantity"
-                            value={form.products[index]?.quantity || ''}
-                            onChange={(e) => handleChange(e, index)}
-                            fullWidth
-                            required
-                          ></TextField>
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                          <TextField
-                            label="Rate"
-                            name="rate"
-                            value={form.products[index]?.rate || ''}
-                            onChange={(e) => handleChange(e, index)}
-                            fullWidth
-                            required
-                          ></TextField>
-                        </Grid>
-
-                        <Grid item xs={12} md={2}>
-                          <TextField
-                            label="Amount"
-                            name="productAmount"
-                            value={form.products[index]?.productAmount || ''}
-                            onChange={(e) => handleChange(e, index)}
-                            fullWidth
-                            required
-                          ></TextField>
-                        </Grid>
-                        <Grid item xs={12} md={1} display={'flex'} justifyContent={'center'} alignItems={'center'}>
-                          <Button
-                            size="small"
-                            sx={{
-                              padding: '3px', // Reduced padding
-                              minWidth: '24px', // Set minimum width
-                              height: '24px',
-                              mr: '10px'
-                            }}
-                            onClick={() => handleAddProduct(index)}
-                          >
-                            <IconButton color="inherit">
+                  <Grid sx={{ width: '100%' }}>
+                    {/* Product Details */}
+                    <Grid item xs={12} sx={{ mt: 2, ml: 2 }}>
+                      <Typography variant="h6" color="primary">
+                        Product Details
+                      </Typography>
+                    </Grid>
+                    {form.products.map((productItem, index) => (
+                      <Box key={index} margin={2} borderRadius={2} sx={{ backgroundColor: '#E1F3F3', padding: 1 }}>
+                        <Grid container spacing={gridSpacing}>
+                          <Grid item xs={12} md={2}>
+                            <TextField
+                              select
+                              label="Product"
+                              name="product"
+                              value={productItem.product}
+                              onChange={(e) => handleChange(e, index)}
+                              fullWidth
+                              required
+                            >
+                              {allProducts.map((p, i) => (
+                                <MenuItem key={i} value={p.productName}>
+                                  {p.productName}
+                                </MenuItem>
+                              ))}
+                            </TextField>
+                          </Grid>
+                          <Grid item xs={12} md={3}>
+                            <TextField
+                              label="Description"
+                              name="description"
+                              value={productItem.description}
+                              onChange={(e) => handleChange(e, index)}
+                              fullWidth
+                              required
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={2}>
+                            <TextField
+                              label="Qty"
+                              name="quantity"
+                              value={productItem.quantity}
+                              onChange={(e) => handleChange(e, index)}
+                              fullWidth
+                              required
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={2}>
+                            <TextField
+                              label="Rate"
+                              name="rate"
+                              value={productItem.rate}
+                              onChange={(e) => handleChange(e, index)}
+                              fullWidth
+                              required
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={2}>
+                            <TextField
+                              label="Amount"
+                              name="productAmount"
+                              value={productItem.productAmount}
+                              onChange={(e) => handleChange(e, index)}
+                              fullWidth
+                              required
+                            />
+                          </Grid>
+                          <Grid item xs={12} md={1} display="flex" justifyContent="center" alignItems="center">
+                            <IconButton color="inherit" onClick={() => handleAddProduct(index)}>
                               <Add />
                             </IconButton>
-                          </Button>
-                          {form.products.length > 1 && (
-                            <Button
-                              size="small"
-                              sx={{
-                                padding: '3px', // Reduced padding
-                                minWidth: '24px', // Set minimum width
-                                height: '24px',
-                                mr: '10px'
-                              }}
-                              onClick={() => handleRemoveProduct(index)}
-                            >
-                              <IconButton color="error">
+                            {form.products.length > 1 && (
+                              <IconButton color="error" onClick={() => handleRemoveProduct(index)}>
                                 <Delete />
                               </IconButton>
-                            </Button>
-                          )}
+                            )}
+                          </Grid>
                         </Grid>
+                      </Box>
+                    ))}
+                  </Grid>
+                  <Grid container spacing={2} sx={{ mb: 2 }}>
+                    {[
+                      { label: 'Subtotal', name: 'subTotal' },
+                      { label: 'Discount Type', name: 'discountType' },
+                      { label: discountType === 'percentage' ? 'Discount (%)' : 'Discount (₹)', name: 'discount' },
+                      { label: 'Total', name: 'totalAmount' }
+                      // { label: 'Round Up', name: 'roundUp' }
+                    ].map((field) => (
+                      <Grid item sx={{ width: '100%', ml: 2 }} md={2.4} key={field.name}>
+                        {field.name === 'discountType' ? (
+                          <FormControl fullWidth>
+                            <InputLabel>Discount Type</InputLabel>
+                            <Select
+                              name="discountType"
+                              value={discountType}
+                              onChange={(e) => {
+                                setDiscountType(e.target.value);
+                                setForm((prev) => ({
+                                  ...prev,
+                                  discountType: e.target.value,
+                                  discount: '' // Reset discount field
+                                }));
+                              }}
+                            >
+                              <MenuItem value="percentage">Percentage (%)</MenuItem>
+                              <MenuItem value="value">Value (₹)</MenuItem>
+                            </Select>
+                          </FormControl>
+                        ) : (
+                          <TextField
+                            label={field.label}
+                            name={field.name}
+                            value={form[field.name]}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                            error={!!errors[field.name]}
+                            helperText={errors[field.name]}
+                          />
+                        )}
                       </Grid>
-                    </Box>
-                  ))}
+                    ))}
+                  </Grid>
+                  <Grid container spacing={2} sx={{ mb: 2, ml: 2 }}>
+                    {/* Tax Details */}
+                    <RadioGroup
+                      row
+                      value={selectedValue}
+                      onChange={(e) => {
+                        const newValue = e.target.value;
+                        setSelectedValue(newValue);
 
-                  {[
-                    { label: 'Subtotal', name: 'subTotal' },
-                    { label: 'Discount Type', name: 'discountType' },
-                    { label: discountType === 'percentage' ? 'Discount (%)' : 'Discount (₹)', name: 'discount' },
-                    { label: 'Total', name: 'totalAmount' },
+                        setForm((prev) => {
+                          const draft = { ...prev };
 
-                    { label: 'Round Up', name: 'roundUp' }
-                  ].map((field) => (
-                    <Grid item xs={12} md={2.4} key={field.name}>
-                      {field.name === 'discountType' ? (
-                        <FormControl fullWidth>
-                          <InputLabel>Discount Type</InputLabel>
-                          <Select
-                            name="discountType"
-                            value={discountType}
-                            onChange={(e) => {
-                              setDiscountType(e.target.value);
-                              setForm((prev) => ({
-                                ...prev,
-                                discountType: e.target.value,
-                                discount: '' // reset discount field
-                              }));
-                            }}
-                          >
-                            <MenuItem value="percentage">Percentage (%)</MenuItem>
-                            <MenuItem value="value">Value (₹)</MenuItem>
-                          </Select>
-                        </FormControl>
-                      ) : (
-                        <TextField
-                          label={field.label}
-                          name={field.name}
-                          value={form[field.name]}
-                          onChange={handleChange}
-                          fullWidth
-                          required
-                          error={!!errors[field.name]}
-                          helperText={errors[field.name]}
-                        />
-                      )}
-                    </Grid>
-                  ))}
+                          // 🔑 update gstType based on radio
+                          draft.gstType = newValue === 'igst' ? 'igst' : 'gst';
 
-                  <Grid mt={1} ml={3.6} xs={12} md={2}>
-                    <RadioGroup row value={form.taxType} onChange={(e) => setSelectedValue(e.target.value)} name="taxType" sx={{ mt: 1 }}>
+                          applyTaxAndRound(draft, newValue);
+                          return draft;
+                        });
+                      }}
+                      name="taxType"
+                    >
                       <FormControlLabel value="igst" control={<Radio />} label="IGST" />
                       <FormControlLabel value="sgst_cgst" control={<Radio />} label="SGST/CGST" />
                     </RadioGroup>
+
+                    {selectedValue === 'igst' && (
+                      <>
+                        <Grid item xs={12} md={2}>
+                          <TextField
+                            label="IGST (%)"
+                            name="igstPercent"
+                            value={form.igstPercent}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={2.6}>
+                          <TextField
+                            label="IGST Amount"
+                            name="igstAmount"
+                            value={form.igstAmount}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                          />
+                        </Grid>
+                      </>
+                    )}
+                    {selectedValue === 'sgst_cgst' && (
+                      <>
+                        <Grid item xs={12} md={2}>
+                          <TextField
+                            label="CGST (%)"
+                            name="cgstIgstPercentage"
+                            value={form.cgstIgstPercentage}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={2.6}>
+                          <TextField
+                            label="CGST Amount"
+                            name="cgstIgstAmount"
+                            value={form.cgstIgstAmount}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                          <TextField
+                            label="SGST (%)"
+                            name="sgstPercentage"
+                            value={form.sgstPercentage}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                          />
+                        </Grid>
+                        <Grid item xs={12} md={3}>
+                          <TextField
+                            label="SGST Amount"
+                            name="sgstAmount"
+                            value={form.sgstAmount}
+                            onChange={handleChange}
+                            fullWidth
+                            required
+                          />
+                        </Grid>
+                      </>
+                    )}
                   </Grid>
-                  {selectedValue === 'igst' && (
-                    <>
-                      <Grid item xs={12} md={2}>
-                        <TextField
-                          label="IGST(18%"
-                          name="igstPercent"
-                          value={form.igstPercent}
-                          onChange={handleChange}
-                          fullWidth
-                          required
-                        ></TextField>
-                      </Grid>
-                      <Grid item xs={12} md={2.6}>
-                        <TextField
-                          label="IGST Amount"
-                          name="igstAmount"
-                          value={form.igstAmount}
-                          onChange={handleChange}
-                          fullWidth
-                          required
-                        ></TextField>
-                      </Grid>
-                    </>
-                  )}
-                  {selectedValue === 'sgst_cgst' && (
-                    <>
-                      <Grid item xs={12} md={2}>
-                        <TextField
-                          label="CGST/IGST(9%)"
-                          name="cgstIgstPercentage"
-                          value={form.cgstIgstPercentage}
-                          onChange={handleChange}
-                          fullWidth
-                          required
-                        ></TextField>
-                      </Grid>
-                      <Grid item xs={12} md={2.6}>
-                        <TextField
-                          label="CGST/IGST Amount"
-                          name="cgstIgstAmount"
-                          value={form.cgstIgstAmount}
-                          onChange={handleChange}
-                          fullWidth
-                          required
-                        ></TextField>
-                      </Grid>
-                      <Grid item xs={12} md={2}>
-                        <TextField
-                          label="SGST(9%)"
-                          name="sgstPercentage"
-                          value={form.sgstPercentage}
-                          onChange={handleChange}
-                          fullWidth
-                          required
-                        ></TextField>
-                      </Grid>
-                      <Grid item xs={12} md={3}>
-                        <TextField
-                          label="SGST Amount"
-                          name="sgstAmount"
-                          value={form.sgstAmount}
-                          onChange={handleChange}
-                          fullWidth
-                          required
-                        ></TextField>
-                      </Grid>
-                    </>
-                  )}
+                  <Grid container spacing={2} sx={{ mb: 2, ml: 2 }}>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        label="Grand Total"
+                        name="grandTotal"
+                        value={form.grandTotal}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Grid>
+                    <Grid item xs={12} md={3}>
+                      <TextField
+                        label="Round Off"
+                        name="roundUp"
+                        value={form.roundUp}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                        InputProps={{ readOnly: true }}
+                      />
+                    </Grid>
+                  </Grid>
 
                   <Grid item xs={12} sx={{ mt: 2 }}>
                     <Typography variant="h6" color="primary">

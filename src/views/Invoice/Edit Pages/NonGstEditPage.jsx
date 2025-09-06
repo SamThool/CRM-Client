@@ -11,7 +11,7 @@ import {
   IconButton,
   InputLabel,
   Select,
-  FormControl,
+  FormControl
 } from '@mui/material';
 import { Add, ArrowBack, Delete } from '@mui/icons-material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
@@ -41,8 +41,8 @@ function initialFormState() {
         description: '',
         quantity: '',
         rate: '',
-        productAmount: '',
-      },
+        productAmount: ''
+      }
     ],
     subTotal: '',
     discountType: 'percentage',
@@ -56,7 +56,7 @@ function initialFormState() {
     bankName: '',
     branchName: '',
     ifscCode: '',
-    panCardNo: '',
+    panCardNo: ''
   };
 }
 
@@ -76,8 +76,7 @@ const NonGstEditPage = () => {
     setForm((prev) => ({ ...prev, date: value }));
   };
 
-  const calculateSubtotal = (products) =>
-    products.reduce((acc, p) => acc + (parseFloat(p.productAmount) || 0), 0);
+  const calculateSubtotal = (products) => products.reduce((acc, p) => acc + (parseFloat(p.productAmount) || 0), 0);
 
   const applyDiscountAndTotal = (draft) => {
     const subTotal = parseFloat(draft.subTotal) || 0;
@@ -130,10 +129,10 @@ const NonGstEditPage = () => {
     const { name, value } = e.target;
 
     // Handle client selection
-    if (name === "clientId") {
-      const selectedClient = clientData.find(client => client._id === value);
+    if (name === 'clientId') {
+      const selectedClient = clientData.find((client) => client._id === value);
       if (selectedClient) {
-        setForm(prev => ({
+        setForm((prev) => ({
           ...prev,
           clientId: value,
           clientName: selectedClient.clientName,
@@ -245,6 +244,7 @@ const NonGstEditPage = () => {
     const response = await put(`invoiceRegistration/${id}`, form);
     if (response.status === true) {
       toast.success('Non-GST Invoice updated successfully!');
+      navigate('/invoice-management');
     } else {
       toast.error('Update failed!');
     }
@@ -264,7 +264,7 @@ const NonGstEditPage = () => {
           bankName: response.invoice.selectedBankId?.bankName || '',
           branchName: response.invoice.selectedBankId?.branchName || '',
           ifscCode: response.invoice.selectedBankId?.IFSCcode || '',
-          panCardNo: response.invoice.selectedBankId?.PanNo || '',
+          panCardNo: response.invoice.selectedBankId?.PanNo || ''
         });
         setSelectedBankId(response.invoice.selectedBankId?._id || '');
       }
@@ -272,9 +272,7 @@ const NonGstEditPage = () => {
     const fetchClientDetails = async () => {
       const response = await get('admin-clientRegistration');
       if (response.status === 'true') {
-        const filteredData = response.data.filter(
-          (client) => client.createdBy === localStorage.getItem('Id')
-        );
+        const filteredData = response.data.filter((client) => client.createdBy === localStorage.getItem('Id'));
         setClientData(filteredData);
       }
     };
@@ -303,11 +301,7 @@ const NonGstEditPage = () => {
         <Grid item xs={12}>
           <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
             <Typography variant="h5">Non-GST (Update)</Typography>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => navigate('/invoice-management')}
-            >
+            <Button variant="contained" color="primary" onClick={() => navigate('/invoice-management')}>
               <ArrowBack />
             </Button>
           </Grid>
@@ -374,7 +368,7 @@ const NonGstEditPage = () => {
                     { label: 'Pincode', name: 'clientPincode' },
                     { label: 'State', name: 'clientState' },
                     { label: 'City', name: 'clientCity' },
-                    { label: 'Country', name: 'clientCountry' },
+                    { label: 'Country', name: 'clientCountry' }
                   ].map((field) => (
                     <Grid item xs={12} md={field.name === 'clientAddress' ? 9 : 3} key={field.name}>
                       <TextField
@@ -472,7 +466,7 @@ const NonGstEditPage = () => {
                     { label: 'Discount Type', name: 'discountType' },
                     { label: discountType === 'percentage' ? 'Discount (%)' : 'Discount (₹)', name: 'discount' },
                     { label: 'Total', name: 'totalAmount' },
-                    { label: 'Round Up', name: 'roundUp' },
+                    { label: 'Round Up', name: 'roundUp' }
                   ].map((field) => (
                     <Grid item xs={12} md={2.4} key={field.name}>
                       {field.name === 'discountType' ? (
@@ -487,7 +481,7 @@ const NonGstEditPage = () => {
                                 const updatedForm = {
                                   ...prev,
                                   discountType: e.target.value,
-                                  discount: '',
+                                  discount: ''
                                 };
                                 applyDiscountAndTotal(updatedForm);
                                 return updatedForm;
@@ -555,7 +549,7 @@ const NonGstEditPage = () => {
                     { label: 'Bank Name', name: 'bankName' },
                     { label: 'Branch Name', name: 'branchName' },
                     { label: 'IFSC Code', name: 'ifscCode' },
-                    { label: 'PAN Card Number', name: 'panCardNo' },
+                    { label: 'PAN Card Number', name: 'panCardNo' }
                   ].map((field) => (
                     <Grid item xs={12} sm={4} key={field.name}>
                       <TextField

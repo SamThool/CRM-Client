@@ -40,6 +40,7 @@ import InvoiceDetails from './InvoiceDetails';
 import { Receipt } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { setIn } from 'formik';
+import { data } from 'views/OPDQueue/data';
 
 const InvoiceManagement = () => {
   const navigate = useNavigate();
@@ -53,7 +54,7 @@ const InvoiceManagement = () => {
   const [openPaymentDialog, setOpenPaymentDialog] = useState(false);
   const [paymentInvoice, setPaymentInvoice] = useState(null);
   const [admin, setAdmin] = useState(false);
-  const [invoicePermissionDetails,setInvoicePermissionDetails]=useState({
+  const [invoicePermissionDetails, setInvoicePermissionDetails] = useState({
     View: false,
     Add: false,
     Edit: false,
@@ -61,7 +62,7 @@ const InvoiceManagement = () => {
   });
   const systemRights = useSelector((state) => state.systemRights.systemRights);
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
@@ -71,7 +72,7 @@ const InvoiceManagement = () => {
     const fetchGstData = async () => {
       const res = await get('invoiceRegistration');
       if (res.status === true) {
-        const filteredData = res.invoices.filter((invoice) => invoice.gstType === 'gst');
+        const filteredData = res.invoices.filter((invoice) => invoice.gstType === 'gst' || invoice.gstType === 'igst');
         const nonGstData = res.invoices.filter((invoice) => invoice.gstType === 'non-gst');
         setGstData(filteredData || []);
         setNonGstData(nonGstData || []);
@@ -79,7 +80,6 @@ const InvoiceManagement = () => {
     };
     fetchGstData();
   }, [systemRights]);
-  console.log('invoicePermissionDetails', invoicePermissionDetails);
 
   const handleEdit = (gstType, id) => {
     if (gstType === 'gst') {
@@ -115,7 +115,6 @@ const InvoiceManagement = () => {
     try {
       const updatedInvoice = {
         ...paymentInvoice,
-        status: 'paid',
         paymentDetails
       };
 
@@ -132,6 +131,7 @@ const InvoiceManagement = () => {
 
       setOpenPaymentDialog(false);
       setPaymentInvoice(null);
+      // fetchGstData();
     } catch (error) {
       console.error('Payment update failed:', error);
     }
@@ -140,6 +140,7 @@ const InvoiceManagement = () => {
   const renderInvoiceTable = () => {
     const data = invoiceCategory === 'gst' ? gstData : nonGstData;
 
+    console.log(data);
     return (
       <Box sx={{ width: '100%' }}>
         <Table>
@@ -164,9 +165,13 @@ const InvoiceManagement = () => {
                   <TableCell>{new Date(invoice.date).toLocaleDateString()}</TableCell>
                   <TableCell>{invoice.totalAmount}</TableCell>
                   <TableCell>
-                    {invoice.status === 'paid' && invoice.paymentDetails?.paidAmount === invoice.totalAmount ? (
+                    {invoice.status === 'paid' ? (
                       <Button variant="contained" color="success" size="small" disabled>
                         Paid
+                      </Button>
+                    ) : invoice.paymentDetails?.paidAmount > 0 ? (
+                      <Button variant="contained" color="info" size="small" onClick={() => handlePaymentClick(invoice)}>
+                        Partially Paid
                       </Button>
                     ) : (
                       <Button variant="contained" color="warning" size="small" onClick={() => handlePaymentClick(invoice)}>
@@ -177,6 +182,7 @@ const InvoiceManagement = () => {
                   <TableCell>
                     <Tooltip title="Invoice" arrow>
                       <IconButton
+                        disabled={invoice.status !== 'paid'}
                         color="primary"
                         onClick={() => {
                           setSelectedInvoice(invoice);
@@ -199,12 +205,16 @@ const InvoiceManagement = () => {
                         <Visibility />
                       </IconButton>
                     </Tooltip>
-                    {(invoicePermissionDetails?.Edit===true || admin) && <IconButton onClick={() => handleEdit(invoice.gstType, invoice._id)} color="inherit">
-                      <Edit />
-                    </IconButton>}
-                   {(invoicePermissionDetails?.Delete===true || admin) && <IconButton onClick={() => handleDelete(invoice._id)} color="error">
-                      <Delete />
-                    </IconButton>}
+                    {(invoicePermissionDetails?.Edit === true || admin) && (
+                      <IconButton onClick={() => handleEdit(invoice.gstType, invoice._id)} color="inherit">
+                        <Edit />
+                      </IconButton>
+                    )}
+                    {(invoicePermissionDetails?.Delete === true || admin) && (
+                      <IconButton onClick={() => handleDelete(invoice._id)} color="error">
+                        <Delete />
+                      </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
               ))
@@ -246,9 +256,11 @@ const InvoiceManagement = () => {
                     <FormControlLabel value="nonGst" control={<Radio />} label="NON-GST" />
                   </RadioGroup>
                 </Box>
-                {(invoicePermissionDetails?.Add===true || admin) && <Button variant="contained" color="primary" component={Link} to="/invoice-management/addInvoice">
-                  Add Invoice
-                </Button>}
+                {(invoicePermissionDetails?.Add === true || admin) && (
+                  <Button variant="contained" color="primary" component={Link} to="/invoice-management/addInvoice">
+                    Add Invoice
+                  </Button>
+                )}
               </Box>
               <Grid container spacing={2}>
                 <Grid item xs={12}>

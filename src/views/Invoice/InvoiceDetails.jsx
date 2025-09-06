@@ -477,12 +477,10 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                   <div style={labelTextStyle}>TOTAL AFTER DISCOUNT&nbsp;:</div>
                   <div>₹ {(invoiceData.totalAmount || 0).toFixed(2)}</div>
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '0.9rem' }}>
+                {/* <div style={{ display: 'flex', flexDirection: 'row', gap: '0.9rem' }}>
                   <div style={labelTextStyle}>ROUND UP&nbsp;:</div>
                   <div>₹ {(invoiceData.roundUp || 0).toFixed(2)}</div>
-                </div>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                </div> */}
                 <div style={{ display: 'flex', gap: '0.9rem', alignItems: 'flex-start' }}>
                   <div style={labelTextStyle}>SUB TOTAL&nbsp;:</div>
 
@@ -491,6 +489,33 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                 <div style={{ display: 'flex', flexDirection: 'row', gap: '0.9rem' }}>
                   <div style={labelTextStyle}>DISCOUNT ({invoiceData.discount || 0}%)&nbsp;:</div>
                   <div>₹ {(invoiceData.discountAmount || 0).toFixed(2)}</div>
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', marginTop: '0.5rem' }}>
+                {/* GST Type Check */}
+                {invoiceData.gstType === 'igst' ? (
+                  <div style={{ display: 'flex', gap: '0.9rem', alignItems: 'flex-start' }}>
+                    <div style={labelTextStyle}>IGST ({invoiceData.igst || 0}%)&nbsp;:</div>
+                    <div>₹ {(invoiceData.igstAmount || 0).toFixed(2)}</div>
+                  </div>
+                ) : invoiceData.gstType === 'gst' ? (
+                  <>
+                    <div style={{ display: 'flex', gap: '0.9rem', alignItems: 'flex-start' }}>
+                      <div style={labelTextStyle}>CGST ({invoiceData.cgst || 0}%)&nbsp;:</div>
+                      <div>₹ {(invoiceData.cgstIgstAmount || 0).toFixed(2)}</div>
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.9rem', alignItems: 'flex-start' }}>
+                      <div style={labelTextStyle}>SGST ({invoiceData.sgst || 0}%)&nbsp;:</div>
+                      <div>₹ {(invoiceData.sgstAmount || 0).toFixed(2)}</div>
+                    </div>
+                  </>
+                ) : null}
+
+                {/* Grand Total */}
+                <div style={{ display: 'flex', gap: '0.9rem', alignItems: 'flex-start', marginTop: '0.5rem', fontWeight: 'bold' }}>
+                  <div style={labelTextStyle}>GRAND TOTAL&nbsp;:</div>
+                  <div>₹ {(invoiceData.roundUp || invoiceData.totalAmount || 0).toFixed(2)}</div>
                 </div>
               </div>
             </div>

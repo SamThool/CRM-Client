@@ -12,12 +12,15 @@ import {
   Box,
   Divider
 } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
+  const navigate = useNavigate();
   const [mode, setMode] = useState('');
   const [amount, setAmount] = useState('');
   const [transactionId, setTransactionId] = useState('');
   const [bankName, setBankName] = useState('');
+
   const [date, setDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split('T')[0];
@@ -47,6 +50,7 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
     setSubmittedData(paymentDetails); // <-- store locally
     onSubmit(paymentDetails);
     // Optionally, you could keep the dialog open to show submitted details
+    navigate('/invoice-management');
   };
 
   const showTransactionFields = ['Cheque', 'NEFT/RTGS', 'Online'].includes(mode);
@@ -60,23 +64,15 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
       <DialogContent>
         <Grid container spacing={2} mb={2} mt={2}>
           <Grid item xs={12} sm={6}>
-            <Typography fontWeight="bold">
-              Total Amount :- ₹{invoice?.totalAmount || 0}
-            </Typography>
+            {/* <Typography fontWeight="bold">Total without GST :- ₹{invoice?.totalAmount || 0}</Typography> */}
+            <Typography fontWeight="bold">Grand Total :- ₹{invoice?.roundUp || 0}</Typography>
             <Typography fontWeight="bold" mt={1}>
-              Invoice Balance Amount :- ₹{invoice?.balance || 0}
+              Invoice Balance Amount :- ₹{invoice?.roundUp - invoice?.totalPaidAmount || 0}
             </Typography>
           </Grid>
 
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              label="Mode of Payment"
-              fullWidth
-              value={mode}
-              onChange={(e) => setMode(e.target.value)}
-              required
-            >
+            <TextField select label="Mode of Payment" fullWidth value={mode} onChange={(e) => setMode(e.target.value)} required>
               <MenuItem value="">Select</MenuItem>
               <MenuItem value="Cash">Cash</MenuItem>
               <MenuItem value="Cheque">Cheque</MenuItem>
@@ -101,12 +97,7 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
           {/* Bank Name for Cheque */}
           {isCheque && (
             <Grid item xs={12} sm={6}>
-              <TextField
-                label="Bank Name"
-                fullWidth
-                value={bankName}
-                onChange={(e) => setBankName(e.target.value)}
-              />
+              <TextField label="Bank Name" fullWidth value={bankName} onChange={(e) => setBankName(e.target.value)} />
             </Grid>
           )}
 
@@ -124,12 +115,7 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  label="Amount"
-                  fullWidth
-                  value={amount}
-                  onChange={(e) => setAmount(e.target.value)}
-                />
+                <TextField label="Amount" fullWidth value={amount} onChange={(e) => setAmount(e.target.value)} />
               </Grid>
             </>
           )}
@@ -151,20 +137,15 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
 
               {submittedData.transactionId && (
                 <Typography>
-                  {submittedData.paymentMode === 'Cheque' ? 'Cheque No' : 'Transaction ID'}:{' '}
-                  <strong>{submittedData.transactionId}</strong>
+                  {submittedData.paymentMode === 'Cheque' ? 'Cheque No' : 'Transaction ID'}: <strong>{submittedData.transactionId}</strong>
                 </Typography>
               )}
-              {submittedData.paymentBankName
-
-                && (
-                  <Typography>
-                    Bank Name: <strong>{submittedData.paymentBankName}</strong>
-                  </Typography>
-                )}
-              <Typography>
-                {/* Date: <strong>{submittedData.paymentDate}</strong> */}
-              </Typography>
+              {submittedData.paymentBankName && (
+                <Typography>
+                  Bank Name: <strong>{submittedData.paymentBankName}</strong>
+                </Typography>
+              )}
+              <Typography>{/* Date: <strong>{submittedData.paymentDate}</strong> */}</Typography>
               <Typography>
                 Amount: <strong>₹{submittedData.paidAmount}</strong>
               </Typography>
@@ -173,34 +154,15 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
         )}
       </DialogContent>
 
-
-
-
-
-
-
-
-
-
-
-
-
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose} variant="outlined">
           Close
         </Button>
-        <Button
-          onClick={handleSave}
-          variant="contained"
-          color="primary"
-          disabled={!mode || !date || (!amount && !isWaveOff)}
-        >
+        <Button onClick={handleSave} variant="contained" color="primary" disabled={!mode || !date || (!amount && !isWaveOff)}>
           Submit
         </Button>
       </DialogActions>
     </Dialog>
-
-
   );
 };
 
