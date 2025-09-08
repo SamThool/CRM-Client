@@ -188,7 +188,7 @@ const AdvanceReciept = ({ closeModal, invoiceData }) => {
               </TableContainer>
 
               {/* Payment Mode */}
-              <Table size="small" sx={{ border: '1px solid #ddd', borderCollapse: 'collapse', width: '50%', marginTop: 2 }}>
+              {/* <Table size="small" sx={{ border: '1px solid #ddd', borderCollapse: 'collapse', width: '50%', marginTop: 2 }}>
                 <TableHead>
                   <TableRow>
                     <TableCell sx={{ fontWeight: 'bold', textAlign: 'center' }}>Payment Mode</TableCell>
@@ -201,7 +201,7 @@ const AdvanceReciept = ({ closeModal, invoiceData }) => {
                     <TableCell sx={{ textAlign: 'center' }}>{payment?.transactionId || 'N/A'}</TableCell>
                   </TableRow>
                 </TableBody>
-              </Table>
+              </Table> */}
             </div>
           ))
         ) : (

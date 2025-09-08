@@ -529,10 +529,10 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                   &nbsp;&nbsp;&nbsp;{invoiceData.currency === 'INR' ? 'Only' : ''}
                 </p>
               </div>
-              <Box sx={{ marginTop: '0.5rem', width: '35%' }}>
+              {/* <Box sx={{ marginTop: '0.5rem', width: '35%' }}>
                 {' '}
                 <Table size="small" sx={{ border: '1px solid #ddd', borderCollapse: 'collapse' }}>
-                  <TableHead>
+                   <TableHead>
                     <TableRow sx={{ height: '28px' }}>
                       {' '}
                       <TableCell
@@ -546,7 +546,7 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                         Transaction ID
                       </TableCell>
                     </TableRow>
-                  </TableHead>
+                  </TableHead> 
                   <TableBody>
                     <TableRow sx={{ height: '25px' }}>
                       {' '}
@@ -559,7 +559,7 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                     </TableRow>
                   </TableBody>
                 </Table>
-              </Box>
+              </Box> */}
             </div>
 
             <div>

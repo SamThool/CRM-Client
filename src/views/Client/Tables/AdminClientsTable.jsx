@@ -21,7 +21,7 @@ const AdminClientsTable = ({ clientList, refreshClients, handleEditClient, handl
                   <TableCell>Contact Person</TableCell>
                   <TableCell>Contact No</TableCell>
                   <TableCell>Email</TableCell>
-                  <TableCell>License Valid</TableCell>
+                  {/* <TableCell>License Valid</TableCell> */}
                   <TableCell>Actions</TableCell>
                 </TableRow>
               </TableHead>
@@ -33,7 +33,7 @@ const AdminClientsTable = ({ clientList, refreshClients, handleEditClient, handl
                     <TableCell>{entry.contactPerson?.[0]?.name || 'N/A'}</TableCell>
                     <TableCell>{entry.officialPhoneNo}</TableCell>
                     <TableCell>{entry.contactPerson?.[0]?.email || 'N/A'}</TableCell>
-                    <TableCell>
+                    {/* <TableCell>
                       {entry?.endDate
                         ? new Intl.DateTimeFormat('en-US', {
                             year: 'numeric',
@@ -41,7 +41,7 @@ const AdminClientsTable = ({ clientList, refreshClients, handleEditClient, handl
                             day: 'numeric'
                           }).format(new Date(entry.endDate))
                         : 'N/A'}
-                    </TableCell>
+                    </TableCell> */}
                     <TableCell sx={{ display: 'flex', flexWrap: 'nowrap' }}>
                       {/* Edit Button */}
                       <IconButton size="small" color="primary" onClick={() => handleEditClient(entry)} sx={{ mr: 1 }}>

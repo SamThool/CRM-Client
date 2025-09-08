@@ -150,10 +150,12 @@ const AddClient = () => {
     if (!form.city) newErrors.city = 'Required';
     if (!form.state) newErrors.state = 'Required';
     if (!form.country) newErrors.country = 'Required';
-    if (!form.startDate) newErrors.startDate = 'Required';
-    if (!form.endDate) newErrors.endDate = 'Required';
-    if (form.startDate && form.endDate && new Date(form.startDate) > new Date(form.endDate)) {
-      newErrors.startDate = 'Start cannot be after End';
+    if (isRole !== 'admin') {
+      if (!form.startDate) newErrors.startDate = 'Required';
+      if (!form.endDate) newErrors.endDate = 'Required';
+      if (form.startDate && form.endDate && new Date(form.startDate) > new Date(form.endDate)) {
+        newErrors.startDate = 'Start cannot be after End';
+      }
     }
 
     form.contactPerson.forEach((person, index) => {
@@ -376,33 +378,37 @@ const AddClient = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={2.5}>
-                  <TextField
-                    type="date"
-                    name="startDate"
-                    label="Start Date"
-                    value={form.startDate}
-                    onChange={handleChange}
-                    error={!!errors.startDate}
-                    helperText={errors.startDate}
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
+                {isRole !== 'admin' && (
+                  <>
+                    <Grid item xs={12} sm={2.5}>
+                      <TextField
+                        type="date"
+                        name="startDate"
+                        label="Start Date"
+                        value={form.startDate}
+                        onChange={handleChange}
+                        error={!!errors.startDate}
+                        helperText={errors.startDate}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
 
-                <Grid item xs={12} sm={2.5}>
-                  <TextField
-                    type="date"
-                    name="endDate"
-                    label="End Date"
-                    value={form.endDate}
-                    onChange={handleChange}
-                    error={!!errors.endDate}
-                    helperText={errors.endDate}
-                    fullWidth
-                    InputLabelProps={{ shrink: true }}
-                  />
-                </Grid>
+                    <Grid item xs={12} sm={2.5}>
+                      <TextField
+                        type="date"
+                        name="endDate"
+                        label="End Date"
+                        value={form.endDate}
+                        onChange={handleChange}
+                        error={!!errors.endDate}
+                        helperText={errors.endDate}
+                        fullWidth
+                        InputLabelProps={{ shrink: true }}
+                      />
+                    </Grid>
+                  </>
+                )}
               </Grid>
             </CardContent>
           </Card>
