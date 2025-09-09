@@ -37,14 +37,14 @@ const Network = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-  const [networkPermission,setNetworkPermission]=useState({
-      View: false,
-      Add: false,
-      Edit: false,
-      Delete: false
+  const [isAdmin, setAdmin] = useState(false);
+  const [networkPermission, setNetworkPermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
   });
-  const systemRights = useSelector((state)=>state.systemRights.systemRights);
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -59,22 +59,38 @@ const Network = () => {
   const fetchNetworks = async () => {
     try {
       const response = await get('network');
-      // Map backend 'networkName' to frontend 'Network'
-      console.log("Network :", response.data)
-      setData(response.data.map((item) => ({ Network: item.networkName, _id: item._id })));
+
+      if (response?.data && Array.isArray(response.data) && response.data.length > 0) {
+        setData(
+          response.data.map((item) => ({
+            Network: item.networkName,
+            _id: item._id
+          }))
+        );
+      } else {
+        setData([]); // no data case
+      }
+
+      console.log('Network:', response);
     } catch (error) {
-      console.error(error);
+      if (error.response && error.response.status === 404) {
+        setData([]); // important: always reset to []
+        console.warn('No networks found (404). Setting data to empty array.');
+      } else {
+        console.error('Error fetching networks:', error);
+        setData([]); // fallback safety
+      }
     }
   };
 
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
-        if (loginRole === 'admin') {
-        setAdmin(true);
-        }
-        if (systemRights?.actionPermissions?.["network"]) {
-        setNetworkPermission(systemRights.actionPermissions["network"]);
-        }
+    const loginRole = localStorage.getItem('loginRole');
+    if (loginRole === 'admin') {
+      setAdmin(true);
+    }
+    if (systemRights?.actionPermissions?.['network']) {
+      setNetworkPermission(systemRights.actionPermissions['network']);
+    }
     fetchNetworks();
   }, [systemRights]);
 
@@ -123,8 +139,10 @@ const Network = () => {
   const handleDelete = async (index) => {
     try {
       const id = data[index]._id;
-      await remove(`network/${id}`);
-      fetchNetworks();
+      const res = await remove(`network/${id}`);
+      if (res.status) {
+        fetchNetworks();
+      }
     } catch (error) {
       console.error(error);
     }
@@ -143,9 +161,11 @@ const Network = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Network</Typography>
-        {(networkPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Network
-        </Button>}
+        {(networkPermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Network
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -215,7 +235,7 @@ const Network = () => {
       </Dialog>
 
       {/* Table */}
-      {data.length > 0 && (
+      {data.length > 0 ? (
         <Card>
           <CardContent>
             <Box sx={{ overflowX: 'auto' }}>
@@ -229,38 +249,39 @@ const Network = () => {
                 </TableHead>
                 <TableBody>
                   {data.map((row, index) => (
-                    <TableRow key={index}>
+                    <TableRow key={row._id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{row.Network}</TableCell>
+                      <TableCell>{row.Network}</TableCell>{' '}
                       <TableCell>
-                        {(networkPermission.Edit===true || isAdmin) && <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => handleEdit(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px',
-                            mr: '5px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Edit />
-                          </IconButton>
-                        </Button>}
-                        {(networkPermission.Delete===true || isAdmin) && <Button
-                          color="error"
-                          onClick={() => handleDelete(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Delete />
-                          </IconButton>
-                        </Button>}
+                        {' '}
+                        {(networkPermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            color="primary"
+                            onClick={() => handleEdit(index)}
+                            sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
+                          >
+                            {' '}
+                            <IconButton color="inherit">
+                              {' '}
+                              <Edit />{' '}
+                            </IconButton>{' '}
+                          </Button>
+                        )}{' '}
+                        {(networkPermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{ padding: '1px', minWidth: '24px', height: '24px' }}
+                          >
+                            {' '}
+                            <IconButton color="inherit">
+                              {' '}
+                              <Delete />{' '}
+                            </IconButton>{' '}
+                          </Button>
+                        )}{' '}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -269,6 +290,10 @@ const Network = () => {
             </Box>
           </CardContent>
         </Card>
+      ) : (
+        <Typography variant="body2" sx={{ mt: 2 }}>
+          No Networks Found
+        </Typography>
       )}
     </div>
   );

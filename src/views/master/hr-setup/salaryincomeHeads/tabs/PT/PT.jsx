@@ -24,8 +24,9 @@ import { useGetPTQuery, useAddPTMutation, useUpdatePTMutation, useDeletePTMutati
 import DeleteBtn from 'component/buttons/DeleteBtn';
 import EditBtn from 'component/buttons/EditBtn'; // Adjust path accordingly
 import { useSelector } from 'react-redux';
+import { baseApi } from 'services/baseApi';
 
-const PT = ({salaryIncomeHeadPermission,isAdmin}) => {
+const PT = ({ salaryIncomeHeadPermission, isAdmin }) => {
   const { data: ptData = [], refetch } = useGetPTQuery();
   const [addPT] = useAddPTMutation();
   const [updatePT] = useUpdatePTMutation();
@@ -35,11 +36,7 @@ const PT = ({salaryIncomeHeadPermission,isAdmin}) => {
   const [open, setOpen] = useState(false);
   const [currentRow, setCurrentRow] = useState(null);
 
-  
-
-
   useEffect(() => {
-    
     if (ptData.length) {
       setRows(ptData.map((row) => ({ ...row, isEditing: false })));
     }
@@ -168,7 +165,7 @@ const PT = ({salaryIncomeHeadPermission,isAdmin}) => {
         background: '#f5f5f5',
         minHeight: '100vh',
         display: 'flex',
-        justifyContent: "space-around",
+        justifyContent: 'space-around',
         alignItems: 'flex-start',
         boxSizing: 'border-box'
       }}
@@ -186,9 +183,11 @@ const PT = ({salaryIncomeHeadPermission,isAdmin}) => {
         }}
       >
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between', marginBottom: '20px' }}>
-          {(salaryIncomeHeadPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddRow}>
-            Add
-          </Button>}
+          {(salaryIncomeHeadPermission.Add === true || isAdmin) && (
+            <Button variant="contained" startIcon={<AddIcon />} onClick={handleAddRow}>
+              Add
+            </Button>
+          )}
           <TextField
             variant="outlined"
             size="small"
@@ -250,12 +249,16 @@ const PT = ({salaryIncomeHeadPermission,isAdmin}) => {
                       )}
                     </TableCell>
                     <TableCell>
-                      {(salaryIncomeHeadPermission.Edit===true || isAdmin) && <IconButton onClick={() => handleEdit(row)} color="primary">
-                        <EditBtn />
-                      </IconButton>}
-                      {(salaryIncomeHeadPermission.Delete===true || isAdmin) && <IconButton onClick={() => handleDelete(row.id, row._id)} color="error">
-                        <DeleteBtn />
-                      </IconButton>}
+                      {(salaryIncomeHeadPermission.Edit === true || isAdmin) && (
+                        <IconButton onClick={() => handleEdit(row)} color="primary">
+                          <EditBtn />
+                        </IconButton>
+                      )}
+                      {(salaryIncomeHeadPermission.Delete === true || isAdmin) && (
+                        <IconButton onClick={() => handleDelete(row.id, row._id)} color="error">
+                          <DeleteBtn />
+                        </IconButton>
+                      )}
                       <IconButton
                         type="submit"
                         title="save"

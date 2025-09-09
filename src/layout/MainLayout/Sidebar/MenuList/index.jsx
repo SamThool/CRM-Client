@@ -28,8 +28,8 @@ const MenuList = () => {
 
   const getDailyConfirmedAppointmentConsultantWise = async () => {
     const { refId: consultantId } = JSON.parse(localStorage.getItem('loginData'));
-    const response = await get(`opd-patient/getDailyConfirmedAppoitmentsConsultantWise/${consultantId}`);
-    setPatients(response?.data ? response.data : []);
+    // const response = await get(`opd-patient/getDailyConfirmedAppoitmentsConsultantWise/${consultantId}`);
+    setPatients([]);
   };
   const systemRights = useSelector((state) => state.systemRights.systemRights);
   const isLoading = useSelector((state) => state.systemRights.isLoading);
@@ -85,7 +85,7 @@ const MenuList = () => {
     // getSystemRights();
     getDailyConfirmedAppointmentConsultantWise();
   }, []);
-console.log('System Rights:', systemRights);
+  console.log('System Rights:', systemRights);
   // Pass action permissions to menu item filtering if needed downstream
   const filterMenuItems = (menuItems, authorizedIds, actionPermissions) => {
     return menuItems
@@ -204,7 +204,14 @@ console.log('System Rights:', systemRights);
     );
   }
 
-  return loginRole === 'Consultant' ? <List>{navItems}</List> : <>{navItems}<ToastContainer /></>;
+  return loginRole === 'Consultant' ? (
+    <List>{navItems}</List>
+  ) : (
+    <>
+      {navItems}
+      <ToastContainer />
+    </>
+  );
 };
 
 export default MenuList;

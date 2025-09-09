@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Grid, TextField, Button, Typography, Card, CardContent, Dialog, DialogTitle,
-  DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, Box
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
+  Box
 } from '@mui/material';
 import Breadcrumb from 'component/Breadcrumb';
 import { Link } from 'react-router-dom';
@@ -15,7 +29,7 @@ import value from 'assets/scss/_themes-vars.module.scss';
 
 // import { axiosInstance } from '../../../api/api.js';
 
-import { get, post, put, remove } from "../../../api/api.js"
+import { get, post, put, remove } from '../../../api/api.js';
 import { useSelector } from 'react-redux';
 
 const LeadStatus = () => {
@@ -35,15 +49,14 @@ const LeadStatus = () => {
     // }
   ]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-      const [leadStatusPermission,setLeadStatusPermission]=useState({
-          View: false,
-          Add: false,
-          Edit: false,
-          Delete: false
-        });
-    const systemRights = useSelector((state)=>state.systemRights.systemRights);
-    
+  const [isAdmin, setAdmin] = useState(false);
+  const [leadStatusPermission, setLeadStatusPermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -66,16 +79,15 @@ const LeadStatus = () => {
 
   // use axiosInstance to fetch data from the server with useEffect
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["lead-stauts"]) {
-      setLeadStatusPermission(systemRights.actionPermissions["lead-stauts"]);
+    if (systemRights?.actionPermissions?.['lead-stauts']) {
+      setLeadStatusPermission(systemRights.actionPermissions['lead-stauts']);
     }
     fetchLeadStatuses();
   }, [systemRights]);
-
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -144,9 +156,11 @@ const LeadStatus = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Lead Status</Typography>
-        {(leadStatusPermission?.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Lead Status
-        </Button>}
+        {(leadStatusPermission?.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Lead Status
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -160,7 +174,7 @@ const LeadStatus = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: (theme) => theme.palette.grey[500]
             }}
           >
             <Close />
@@ -194,11 +208,13 @@ const LeadStatus = () => {
               <TextField
                 label="Color Code"
                 name="colorCode"
+                type="color"
                 value={form.colorCode}
                 onChange={handleChange}
                 error={!!errors.colorCode}
-                helperText={errors.colorCode}
+                helperText={errors.colorCode || 'Pick a color'}
                 fullWidth
+                InputLabelProps={{ shrink: true }} // keeps label visible
               />
             </Grid>
           </Grid>
@@ -210,7 +226,7 @@ const LeadStatus = () => {
             color="error"
             sx={{
               minWidth: '40px',
-              padding: '2px',
+              padding: '2px'
             }}
           >
             <IconButton color="inherit">
@@ -227,9 +243,7 @@ const LeadStatus = () => {
               backgroundColor: value.primaryLight
             }}
           >
-            <IconButton color="inherit">
-              {editIndex !== null ? <EditIcon /> : <SaveIcon />}
-            </IconButton>
+            <IconButton color="inherit">{editIndex !== null ? <EditIcon /> : <SaveIcon />}</IconButton>
           </Button>
         </DialogActions>
       </Dialog>
@@ -262,28 +276,43 @@ const LeadStatus = () => {
                             height: 25,
                             backgroundColor: row.colorCode,
                             border: '2px solid #ccc ',
-                            borderRadius: '4px',
-                           
+                            borderRadius: '4px'
                           }}
                         />
                       </TableCell>
 
                       <TableCell>
-                        {(leadStatusPermission.Edit===true || isAdmin) && <Button size="small" onClick={() => handleEdit(index)} sx={{
-                          padding: '1px',
-                          minWidth: '24px',
-                          height: '24px',
-                          mr: '5px',
-                        }}>
-                          <IconButton color='inherit'><Edit /></IconButton>
-                        </Button>}
-                       {(leadStatusPermission.Delete===true || isAdmin) && <Button color="error" onClick={() => handleDelete(index)} sx={{
-                          padding: '1px',
-                          minWidth: '24px',
-                          height: '24px'
-                        }}>
-                          <IconButton color='inherit'><Delete /></IconButton>
-                        </Button>}
+                        {(leadStatusPermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px',
+                              mr: '5px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(leadStatusPermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}
