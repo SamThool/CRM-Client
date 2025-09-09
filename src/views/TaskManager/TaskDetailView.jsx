@@ -1,5 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Chip, Avatar, TextField, Button, Card, CardContent, Grid, Paper, MenuItem, Stack, Breadcrumbs } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Chip,
+  Avatar,
+  TextField,
+  Button,
+  Card,
+  CardContent,
+  Grid,
+  Paper,
+  MenuItem,
+  Stack,
+  Breadcrumbs
+} from '@mui/material';
 import ExpandMoreOutlinedIcon from '@mui/icons-material/ExpandMoreOutlined';
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
 import { Send } from '@mui/icons-material';
@@ -10,13 +24,19 @@ import { Link } from 'react-router-dom';
 
 const TaskDetailView = () => {
   const { id } = useParams();
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const [comment, setComment] = useState('');
   const [showDetails, setShowDetails] = useState(true);
   const [statusChanged, setStatusChanged] = useState('');
   const [statusOptions, setStatusOptions] = useState([]);
   const [taskData, setTaskData] = useState(null);
   const [statusHistory, setStatusHistory] = useState([]);
+
+  console.log(taskData);
+
+  // when you need it
+  const company = JSON.parse(localStorage.getItem('company') || '{}');
+  console.log(company);
 
   const toggleDetails = () => {
     setShowDetails((prev) => !prev);
@@ -106,7 +126,7 @@ const TaskDetailView = () => {
             Home
           </Typography>
           <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
-            Ticket Details
+            Task Details
           </Typography>
         </Breadcrumbs>
 
@@ -149,7 +169,7 @@ const TaskDetailView = () => {
                       // { label: 'Product', value: taskData?.product, isChip: true },
                       // { label: 'Phone Number', value: taskData?.phoneNumber },
                       { label: 'Employee Name', value: taskData?.employeeName },
-                      { label: 'Created By', value: taskData?.createdBy }
+                      { label: 'Created By', value: company?.Name }
                     ].map((field, index) => (
                       <Grid container py={1} key={index}>
                         <Grid item xs={5}>

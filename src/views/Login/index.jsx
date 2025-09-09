@@ -85,6 +85,9 @@ const Login = () => {
         // Store token
         localStorage.setItem('token', token);
         localStorage.setItem('companyId', data.adminId);
+        // when you set the company in localStorage
+        localStorage.setItem('company', JSON.stringify(data));
+
         const expirationDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
         expirationDate.setHours(0, 0, 0, 0);
         // document.cookie = `hmsToken=${token}; expires=${expirationDate.toUTCString()}; path=/; SameSite=Lax`;

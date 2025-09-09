@@ -1,8 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Grid, TextField, Button, Typography, Card, CardContent, Dialog, DialogTitle,
-  DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody,
-  IconButton, Box
+  Grid,
+  TextField,
+  Button,
+  Typography,
+  Card,
+  CardContent,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  IconButton,
+  Box
 } from '@mui/material';
 import Breadcrumb from 'component/Breadcrumb';
 import { Link } from 'react-router-dom';
@@ -15,7 +29,7 @@ import value from 'assets/scss/_themes-vars.module.scss';
 
 // import { axiosInstance } from '../../../api/api.js';
 
-import { get, post, put, remove } from "../../../api/api.js"
+import { get, post, put, remove } from '../../../api/api.js';
 import { useSelector } from 'react-redux';
 
 const TaskStatus = () => {
@@ -35,14 +49,14 @@ const TaskStatus = () => {
     // }
   ]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-  const [taskStatusPermission,setTaskStatusPermission]=useState({
-      View: false,
-      Add: false,
-      Edit: false,
-      Delete: false
-    });
-const systemRights = useSelector((state)=>state.systemRights.systemRights);
+  const [isAdmin, setAdmin] = useState(false);
+  const [taskStatusPermission, setTaskStatusPermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
+  });
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -65,16 +79,15 @@ const systemRights = useSelector((state)=>state.systemRights.systemRights);
 
   // use axiosInstance to fetch data from the server with useEffect
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
+    const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["Task Status"]) {
-      setTaskStatusPermission(systemRights.actionPermissions["Task Status"]);
+    if (systemRights?.actionPermissions?.['Task Status']) {
+      setTaskStatusPermission(systemRights.actionPermissions['Task Status']);
     }
     fetchTaskStatuses();
   }, [systemRights]);
-
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -143,9 +156,11 @@ const systemRights = useSelector((state)=>state.systemRights.systemRights);
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Task Status</Typography>
-        {(taskStatusPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Task Status
-        </Button>}
+        {(taskStatusPermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Task Status
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -159,7 +174,7 @@ const systemRights = useSelector((state)=>state.systemRights.systemRights);
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: (theme) => theme.palette.grey[500]
             }}
           >
             <Close />
@@ -193,11 +208,13 @@ const systemRights = useSelector((state)=>state.systemRights.systemRights);
               <TextField
                 label="Color Code"
                 name="colorCode"
-                value={form.colorCode}
+                type="color" // 🔥 color picker
+                value={form.colorCode || '#000000'} // fallback hex if empty
                 onChange={handleChange}
                 error={!!errors.colorCode}
                 helperText={errors.colorCode}
                 fullWidth
+                InputLabelProps={{ shrink: true }} // keeps label visible above picker
               />
             </Grid>
           </Grid>
@@ -209,7 +226,7 @@ const systemRights = useSelector((state)=>state.systemRights.systemRights);
             color="error"
             sx={{
               minWidth: '40px',
-              padding: '2px',
+              padding: '2px'
             }}
           >
             <IconButton color="inherit">
@@ -226,9 +243,7 @@ const systemRights = useSelector((state)=>state.systemRights.systemRights);
               backgroundColor: value.primaryLight
             }}
           >
-            <IconButton color="inherit">
-              {editIndex !== null ? <EditIcon /> : <SaveIcon />}
-            </IconButton>
+            <IconButton color="inherit">{editIndex !== null ? <EditIcon /> : <SaveIcon />}</IconButton>
           </Button>
         </DialogActions>
       </Dialog>
@@ -261,28 +276,43 @@ const systemRights = useSelector((state)=>state.systemRights.systemRights);
                             height: 25,
                             backgroundColor: row.colorCode,
                             border: '2px solid #ccc ',
-                            borderRadius: '4px',
-                           
+                            borderRadius: '4px'
                           }}
                         />
                       </TableCell>
 
                       <TableCell>
-                        {(taskStatusPermission.Edit===true || isAdmin) && <Button size="small" onClick={() => handleEdit(index)} sx={{
-                          padding: '1px',
-                          minWidth: '24px',
-                          height: '24px',
-                          mr: '5px',
-                        }}>
-                          <IconButton color='inherit'><Edit /></IconButton>
-                        </Button>}
-                        {(taskStatusPermission.Delete===true || isAdmin) && <Button color="error" onClick={() => handleDelete(index)} sx={{
-                          padding: '1px',
-                          minWidth: '24px',
-                          height: '24px'
-                        }}>
-                          <IconButton color='inherit'><Delete /></IconButton>
-                        </Button>}
+                        {(taskStatusPermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px',
+                              mr: '5px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(taskStatusPermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

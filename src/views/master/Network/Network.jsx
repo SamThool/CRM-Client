@@ -252,7 +252,6 @@ const Network = () => {
                     <TableRow key={row._id}>
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{row.Network}</TableCell>
-                      <TableCell>{row.Network}</TableCell>{' '}
                       <TableCell>
                         {' '}
                         {(networkPermission.Edit === true || isAdmin) && (

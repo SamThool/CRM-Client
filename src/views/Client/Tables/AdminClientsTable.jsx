@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 
 const AdminClientsTable = ({ clientList, refreshClients, handleEditClient, handleDeleteClient }) => {
   const navigate = useNavigate();
+  console.log(clientList);
 
   return (
     <Card>
@@ -32,7 +33,7 @@ const AdminClientsTable = ({ clientList, refreshClients, handleEditClient, handl
                     <TableCell>{entry.clientName}</TableCell>
                     <TableCell>{entry.contactPerson?.[0]?.name || 'N/A'}</TableCell>
                     <TableCell>{entry.officialPhoneNo}</TableCell>
-                    <TableCell>{entry.contactPerson?.[0]?.email || 'N/A'}</TableCell>
+                    <TableCell>{entry.officialMailId}</TableCell>
                     {/* <TableCell>
                       {entry?.endDate
                         ? new Intl.DateTimeFormat('en-US', {

@@ -61,6 +61,17 @@ const InvoiceManagement = () => {
     Delete: false
   });
   const systemRights = useSelector((state) => state.systemRights.systemRights);
+
+  const fetchInvoices = async () => {
+    const res = await get('invoiceRegistration');
+    if (res.status === true) {
+      const filteredData = res.invoices.filter((invoice) => invoice.gstType === 'gst' || invoice.gstType === 'igst');
+      const nonGstData = res.invoices.filter((invoice) => invoice.gstType === 'non-gst');
+      setGstData(filteredData || []);
+      setNonGstData(nonGstData || []);
+    }
+  };
+
   useEffect(() => {
     const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
@@ -79,6 +90,7 @@ const InvoiceManagement = () => {
       }
     };
     fetchGstData();
+    fetchInvoices();
   }, [systemRights]);
 
   const handleEdit = (gstType, id) => {
@@ -104,6 +116,7 @@ const InvoiceManagement = () => {
     if (response.status === true) {
       refreshTable();
     }
+    fetchInvoices();
   };
 
   const handlePaymentClick = (invoice) => {
@@ -131,6 +144,7 @@ const InvoiceManagement = () => {
 
       setOpenPaymentDialog(false);
       setPaymentInvoice(null);
+      fetchInvoices();
       // fetchGstData();
     } catch (error) {
       console.error('Payment update failed:', error);
@@ -182,7 +196,7 @@ const InvoiceManagement = () => {
                   <TableCell>
                     <Tooltip title="Invoice" arrow>
                       <IconButton
-                        disabled={invoice.status !== 'paid'}
+                        // disabled={invoice.status !== 'paid'}
                         color="primary"
                         onClick={() => {
                           setSelectedInvoice(invoice);

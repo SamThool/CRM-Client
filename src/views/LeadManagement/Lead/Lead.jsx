@@ -69,8 +69,8 @@ const Lead = () => {
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["lead"]) {
-      setLeadPermission(systemRights.actionPermissions["lead"]);
+    if (systemRights?.actionPermissions?.['lead']) {
+      setLeadPermission(systemRights.actionPermissions['lead']);
     }
     fetchLeadStatusOptions();
   }, [systemRights]);
@@ -98,7 +98,7 @@ const Lead = () => {
   async function getLeadData() {
     try {
       const response = await get('lead');
-      console.log('response data is', response.data)
+      console.log('response data is', response.data);
       setData(response.data || []);
     } catch (error) {
       toast.error('Failed to fetch lead data');
@@ -110,7 +110,6 @@ const Lead = () => {
     if (!window.confirm('Are you sure you want to delete this lead?')) return;
     try {
       await remove(`lead/${id}`);
-
 
       setData((prevData) => prevData.filter((item) => item._id !== id));
       toast.success('Lead deleted successfully');
@@ -211,7 +210,6 @@ const Lead = () => {
       const sixMonthsLater = new Date();
       sixMonthsLater.setMonth(today.getMonth() + 6);
 
-
       const formatCustomDate = (date) =>
         date.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -241,14 +239,14 @@ const Lead = () => {
         startDate: formattedStartDate,
         endDate: formattedEndDate,
         createdBy: localStorage.getItem('Id') || '',
-        contactPerson: (data.contact || []).map(c => ({
+        contactPerson: (data.contact || []).map((c) => ({
           name: c.name || '',
           department: c.department || '',
           position: c.designation || c.position || '',
           email: c.email || '',
           phone: c.phone || ''
         }))
-      }
+      };
       setDisableConvertClient(index);
       console.log('form data is conver to client', formData);
       const res = await post('admin-clientRegistration', formData);
@@ -259,13 +257,13 @@ const Lead = () => {
     } catch (err) {
       toast.error('convert to client failed!');
     }
-  }
+  };
 
   // color helper for leadstatus
   const getLeadStatusColor = (leadstatus) => {
     if (!leadstatus) return '#9e9e9e';
     // leadstatus can be populated object or string id
-    const statusObj = typeof leadstatus === "object" ? leadstatus : statusOptions.find(s => s._id === leadstatus);
+    const statusObj = typeof leadstatus === 'object' ? leadstatus : statusOptions.find((s) => s._id === leadstatus);
     return statusObj?.colorCode || '#9e9e9e';
   };
 
@@ -289,9 +287,11 @@ const Lead = () => {
                 <Typography variant="h6" gutterBottom>
                   Lead List
                 </Typography>
-                {(leadPermission.Add === true || isAdmin) && <Button variant="contained" color="primary" component={Link} to="/lead-management/AddLead">
-                  <AddIcon /> Add Lead
-                </Button>}
+                {(leadPermission.Add === true || isAdmin) && (
+                  <Button variant="contained" color="primary" component={Link} to="/lead-management/clien">
+                    <AddIcon /> Add Lead
+                  </Button>
+                )}
               </Box>
               <Table>
                 <TableHead>
@@ -323,9 +323,7 @@ const Lead = () => {
                         </TableCell>
                         <TableCell>{row.phoneNo}</TableCell>
                         <TableCell>{row.city}</TableCell>
-                        <TableCell>
-                          {row.Prospect?.companyName || row.Client?.clientName || row.newCompanyName || 'N/A'}
-                        </TableCell>
+                        <TableCell>{row.Prospect?.companyName || row.Client?.clientName || row.newCompanyName || 'N/A'}</TableCell>
                         <TableCell> {row.Client ? 'Client' : row.Prospect ? 'Prospect' : 'New Lead' || 'N/A'}</TableCell>
                         <TableCell>
                           <Box
@@ -343,7 +341,7 @@ const Lead = () => {
                               textAlign: 'center'
                             }}
                           >
-                            {row.leadstatus?.LeadStatus || statusOptions.find(opt => opt._id === row.leadstatus)?.LeadStatus || 'N/A'}
+                            {row.leadstatus?.LeadStatus || statusOptions.find((opt) => opt._id === row.leadstatus)?.LeadStatus || 'N/A'}
                           </Box>
                         </TableCell>
                         <TableCell>
@@ -352,24 +350,28 @@ const Lead = () => {
                         </TableCell>
                         <TableCell>
                           <Box display="flex" alignItems="center" justifyContent="center">
-                            {(leadPermission.Edit === true || isAdmin) && <Button
-                              size="small"
-                              component={Link}
-                              to={`/lead-management/EditLead/${row._id}`}
-                              startIcon={<Edit color="primary" />}
-                              sx={{ minWidth: '32px', height: '32px' }}
-                            />}
-                            {(leadPermission.Delete === true || isAdmin) && <Button
-                              size="small"
-                              startIcon={<Delete color="error" />}
-                              sx={{ minWidth: '32px', height: '32px' }}
-                              onClick={() => handleDeleteLead(row._id)}
-                            />}
+                            {(leadPermission.Edit === true || isAdmin) && (
+                              <Button
+                                size="small"
+                                component={Link}
+                                to={`/lead-management/EditLead/${row._id}`}
+                                startIcon={<Edit color="primary" />}
+                                sx={{ minWidth: '32px', height: '32px' }}
+                              />
+                            )}
+                            {(leadPermission.Delete === true || isAdmin) && (
+                              <Button
+                                size="small"
+                                startIcon={<Delete color="error" />}
+                                sx={{ minWidth: '32px', height: '32px' }}
+                                onClick={() => handleDeleteLead(row._id)}
+                              />
+                            )}
                             <IconButton onClick={() => handleopenAddFollowUp(row._id)}>
                               <InfoIcon sx={{ color: 'primary.main' }} />
                             </IconButton>
                             <Tooltip title="Convert to Client" arrow onClick={() => handleCoverToClient(row, index)}>
-                              <IconButton size="medium" variant="contained" color="success" disabled={isDisableConvertClient === index} >
+                              <IconButton size="medium" variant="contained" color="success" disabled={isDisableConvertClient === index}>
                                 <PersonAdd />
                               </IconButton>
                             </Tooltip>
@@ -482,9 +484,9 @@ const Lead = () => {
                                       <TableCell>{data.followupDate || 'N/A'}</TableCell>
                                       <TableCell>{data.followupTime || 'N/A'}</TableCell>
                                       <TableCell>
-                                        {statusOptions.find(opt => opt._id === data.leadstatus)?.LeadStatus
-                                          || data.leadstatus?.LeadStatus
-                                          || 'N/A'}
+                                        {statusOptions.find((opt) => opt._id === data.leadstatus)?.LeadStatus ||
+                                          data.leadstatus?.LeadStatus ||
+                                          'N/A'}
                                       </TableCell>
                                       <TableCell>{data.comment || 'N/A'}</TableCell>
                                       <TableCell>

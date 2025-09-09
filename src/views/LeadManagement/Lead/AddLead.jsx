@@ -29,7 +29,7 @@ const Lead = () => {
   const [leadCategory, setLeadCategory] = useState('prospect');
   const [form, setForm] = useState({
     contact: [],
-    newCompanyName: ''  // <-- new variable for new lead
+    newCompanyName: '' // <-- new variable for new lead
   });
   const [wantContact, setWantContact] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -291,6 +291,8 @@ const Lead = () => {
     const selectedId = e.target.value;
     const selectedCompany = prospects.find((p) => p._id === selectedId);
 
+    console.log(selectedCompany);
+
     if (selectedCompany) {
       setForm((prev) => ({
         ...prev,
@@ -302,7 +304,8 @@ const Lead = () => {
         city: selectedCompany.city,
         state: selectedCompany.state,
         country: selectedCompany.country,
-        notes: selectedCompany.notes
+        notes: selectedCompany.notes,
+        contact: selectedCompany.contacts
       }));
     }
   };
@@ -625,11 +628,7 @@ const Lead = () => {
               helperText={errors.leadstatus}
             >
               {statuses.map((s) => (
-                <MenuItem
-                  key={s._id}
-                  value={s._id}
-                  style={{ backgroundColor: s.colorCode, color: '#000000' }}
-                >
+                <MenuItem key={s._id} value={s._id} style={{ backgroundColor: s.colorCode, color: '#000000' }}>
                   {s.LeadStatus}
                 </MenuItem>
               ))}

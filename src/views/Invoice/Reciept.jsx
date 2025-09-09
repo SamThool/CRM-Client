@@ -28,7 +28,11 @@ const AdvanceReciept = ({ closeModal, invoiceData }) => {
   const { billingData } = useSelector((state) => state.opdBilling);
   const { PrintDataForAdvanceOPDReceipt } = useSelector((state) => state.opdBillingStates);
   const { hospitalData } = useSelector((state) => state.hospitalData);
+  const [company, setCompany] = useState({});
   const dispatch = useDispatch();
+  // when you need it
+  // const company = JSON.parse(localStorage.getItem('company') || '{}');
+  // console.log(company);
 
   const contentRef = useRef(null);
   const reactToPrint = useReactToPrint({ contentRef });
@@ -46,6 +50,35 @@ const AdvanceReciept = ({ closeModal, invoiceData }) => {
     // }
     dispatch(setInitialStates());
   };
+
+  useEffect(() => {
+    async function fetchCompany() {
+      try {
+        const rawRefId = localStorage.getItem('refId');
+        const refId = rawRefId?.replace(/^"|"$/g, '').trim(); // fix here
+
+        console.log('Sanitized refId:', refId);
+
+        const response = await get('clientRegistration');
+        console.log('API Response:', response.data);
+
+        if ((response.status === true || response.status === 'true') && Array.isArray(response.data)) {
+          const companyData = response.data.find((c) => c._id === refId);
+          console.log('Matched companyData:', companyData);
+
+          if (companyData) {
+            setCompany(companyData);
+          } else {
+            console.warn('Company not found for refId:', refId);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching company:', err);
+      }
+    }
+
+    fetchCompany();
+  }, []);
 
   function handleSave() {
     toast.success('Saved Successfully');
@@ -111,14 +144,13 @@ const AdvanceReciept = ({ closeModal, invoiceData }) => {
                   </Grid>
                   <Grid item xs={8} sx={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                     <Typography variant="body2" sx={{ color: '#555', fontSize: '0.8rem' }}>
-                      <strong>Address :</strong> {clientList?.officeAddress}, {clientList?.city}, {clientList?.state} -{' '}
-                      {clientList?.pincode}
+                      <strong>Address :</strong> {company?.officeAddress}, {company?.city}, {company?.state} - {company?.pincode}
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#555', fontSize: '0.8rem' }}>
-                      <strong>Contact:</strong> {clientList?.officialPhoneNo} | <strong>Email:</strong> {clientList?.officialMailId}
+                      <strong>Contact:</strong> {company?.officialPhoneNo} | <strong>Email:</strong> {company?.officialMailId}
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#555', fontSize: '0.8rem' }}>
-                      <strong>Website:</strong> {clientList?.website}
+                      <strong>Website:</strong> {company?.website}
                     </Typography>
                   </Grid>
                 </Grid>
