@@ -288,7 +288,7 @@ const Lead = () => {
                   Lead List
                 </Typography>
                 {(leadPermission.Add === true || isAdmin) && (
-                  <Button variant="contained" color="primary" component={Link} to="/lead-management/clien">
+                  <Button variant="contained" color="primary" component={Link} to="/lead-management/AddLead">
                     <AddIcon /> Add Lead
                   </Button>
                 )}
