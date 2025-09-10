@@ -28,52 +28,48 @@ function EmergencyAndQualificationInformation({ basicDetails, errors, handleUpda
     fetchDiploma();
     fetchGraduation();
     fetchPostGraduation();
-
-    
   }, []);
 
-    // Make sure emergencyContacts is always an array
-    const emergencyContacts = basicDetails.emergencyContacts || [
+  // Make sure emergencyContacts is always an array
+  const emergencyContacts = basicDetails.emergencyContacts || [
+    { emergencyContactPersonName: '', emergencyAddress: '', emergencyContactPersonMobileNumber: '' }
+  ];
+
+  // Add new contact
+  const addContact = () => {
+    const updated = [
+      ...emergencyContacts,
       { emergencyContactPersonName: '', emergencyAddress: '', emergencyContactPersonMobileNumber: '' }
     ];
-  
-    // Add new contact
-    const addContact = () => {
-      const updated = [
-        ...emergencyContacts,
-        { emergencyContactPersonName: '', emergencyAddress: '', emergencyContactPersonMobileNumber: '' }
-      ];
-      handleUpdate({
-        target: {
-          name: 'emergencyContacts',
-          value: updated
-        }
-      });
-    };
-  
-    // Remove contact by index
-    const removeContact = (idx) => {
-      const updated = emergencyContacts.filter((_, i) => i !== idx);
-      handleUpdate({
-        target: {
-          name: 'emergencyContacts',
-          value: updated
-        }
-      });
-    };
-  
-    // Change contact field
-    const handleContactChange = (idx, field, value) => {
-      const updated = emergencyContacts.map((c, i) =>
-        i === idx ? { ...c, [field]: value } : c
-      );
-      handleUpdate({
-        target: {
-          name: 'emergencyContacts',
-          value: updated
-        }
-      });
-    };
+    handleUpdate({
+      target: {
+        name: 'emergencyContacts',
+        value: updated
+      }
+    });
+  };
+
+  // Remove contact by index
+  const removeContact = (idx) => {
+    const updated = emergencyContacts.filter((_, i) => i !== idx);
+    handleUpdate({
+      target: {
+        name: 'emergencyContacts',
+        value: updated
+      }
+    });
+  };
+
+  // Change contact field
+  const handleContactChange = (idx, field, value) => {
+    const updated = emergencyContacts.map((c, i) => (i === idx ? { ...c, [field]: value } : c));
+    handleUpdate({
+      target: {
+        name: 'emergencyContacts',
+        value: updated
+      }
+    });
+  };
 
   const handleMultiSelectChange = (event, fieldName) => {
     const { value } = event.target;
@@ -88,68 +84,56 @@ function EmergencyAndQualificationInformation({ basicDetails, errors, handleUpda
   return (
     <div>
       {/* Emergency Contact Information Section */}
-      <Typography variant="h6" gutterBottom sx={{ marginBottom: 2, marginTop: 4
-       }}>
+      <Typography variant="h6" gutterBottom sx={{ marginBottom: 2, marginTop: 4 }}>
         Emergency Contact Information
       </Typography>
-      {
-        emergencyContacts.map((contact, index) => (
-          <Grid container spacing={2} mb={2} key={index}>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Contact Person Name"
-                name="emergencyContactPersonName"
-                fullWidth
-                value={contact.emergencyContactPersonName}
-                onChange={e => handleContactChange(index, 'emergencyContactPersonName', e.target.value)}
-                error={!!(errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonName)}
-                helperText={errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonName}
-              />
-            </Grid>
-            <Grid item xs={12} sm={8}>
-              <TextField
-                label="Emergency Address"
-                name="emergencyAddress"
-                fullWidth
-                value={contact.emergencyAddress}
-                onChange={e => handleContactChange(index, 'emergencyAddress', e.target.value)}
-                error={!!(errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyAddress)}
-                helperText={errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyAddress}
-              />
-            </Grid>
-            <Grid item xs={12} sm={4}>
-              <TextField
-                label="Emergency Contact Number"
-                name="emergencyContactPersonMobileNumber"
-                fullWidth
-                value={contact.emergencyContactPersonMobileNumber}
-                onChange={e => handleContactChange(index, 'emergencyContactPersonMobileNumber', e.target.value)}
-                error={!!(errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonMobileNumber)}
-                helperText={errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonMobileNumber}
-              />
-            </Grid>
-            <Grid item xs={12} md={1} container justifyContent="flex-start">
-              <IconButton
-                color="primary"
-                onClick={addContact}
-                aria-label="add contact"
-              >
-                <AddIcon fontSize="large" />
-              </IconButton>
-            </Grid>
-            <Grid item xs={12} md={0.5} container justifyContent="flex-end">
-              <IconButton
-                onClick={() => removeContact(index)}
-                color="error"
-                aria-label="delete"
-                disabled={emergencyContacts.length === 1}
-              >
-                <DeleteIcon fontSize="large" />
-              </IconButton>
-            </Grid>
+      {emergencyContacts.map((contact, index) => (
+        <Grid container spacing={2} mb={2} key={index}>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Contact Person Name"
+              name="emergencyContactPersonName"
+              fullWidth
+              value={contact.emergencyContactPersonName}
+              onChange={(e) => handleContactChange(index, 'emergencyContactPersonName', e.target.value)}
+              error={!!(errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonName)}
+              helperText={errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonName}
+            />
           </Grid>
-        ))
-      }
+          <Grid item xs={12} sm={8}>
+            <TextField
+              label="Emergency Address"
+              name="emergencyAddress"
+              fullWidth
+              value={contact.emergencyAddress}
+              onChange={(e) => handleContactChange(index, 'emergencyAddress', e.target.value)}
+              error={!!(errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyAddress)}
+              helperText={errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyAddress}
+            />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <TextField
+              label="Emergency Contact Number"
+              name="emergencyContactPersonMobileNumber"
+              fullWidth
+              value={contact.emergencyContactPersonMobileNumber}
+              onChange={(e) => handleContactChange(index, 'emergencyContactPersonMobileNumber', e.target.value)}
+              error={!!(errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonMobileNumber)}
+              helperText={errors.emergencyContacts && errors.emergencyContacts[index]?.emergencyContactPersonMobileNumber}
+            />
+          </Grid>
+          <Grid item xs={12} md={1} container justifyContent="flex-start">
+            <IconButton color="primary" onClick={addContact} aria-label="add contact">
+              <AddIcon fontSize="large" />
+            </IconButton>
+          </Grid>
+          <Grid item xs={12} md={0.5} container justifyContent="flex-end">
+            <IconButton onClick={() => removeContact(index)} color="error" aria-label="delete" disabled={emergencyContacts.length === 1}>
+              <DeleteIcon fontSize="large" />
+            </IconButton>
+          </Grid>
+        </Grid>
+      ))}
 
       {/* Qualification Information Section
       <Typography variant='h6' gutterBottom sx={{ marginTop: 4 }}>
@@ -255,7 +239,7 @@ function EmergencyAndQualificationInformation({ basicDetails, errors, handleUpda
         </Grid>
       </Grid>  */}
 
-      <Typography variant="h6" gutterBottom sx={{  marginBottom: 2, marginTop: 4 }}>
+      <Typography variant="h6" gutterBottom sx={{ marginBottom: 2, marginTop: 4 }}>
         Bank Information
       </Typography>
       <Grid container spacing={2}>

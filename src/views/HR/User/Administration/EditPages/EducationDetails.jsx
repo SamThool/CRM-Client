@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, TextField, Button, Card, CardContent, CardHeader, Typography } from '@mui/material';
-import  {get, post, put, remove} from '../../../../../api/api.js';
+import { get, post, put, remove } from '../../../../../api/api.js';
 import { toast } from 'react-toastify';
 function EducationDetails({ setValue, storedAllData, setStoredAllData }) {
   const [educationDetails, seteducationDetails] = useState({
@@ -36,8 +36,8 @@ function EducationDetails({ setValue, storedAllData, setStoredAllData }) {
     // Step: Load existing educationDetails
     // seteducationDetails(storedAllData.educationDetails || {});
     if (Array.isArray(storedAllData.educationDetails) && storedAllData.educationDetails.length > 0) {
-    seteducationDetails(storedAllData.educationDetails[0]); // Use first object
-  }
+      seteducationDetails(storedAllData.educationDetails[0]); // Use first object
+    }
   }, [storedAllData.educationDetails]);
 
   // useEffect(() => {
@@ -76,36 +76,36 @@ function EducationDetails({ setValue, storedAllData, setStoredAllData }) {
     setErrors(newErrors);
     return isValid;
   };
-const handleSubmit = async () => {
-  // 🛡️ Run validation first
-  if (!educationDetailsValidations()) return;
+  const handleSubmit = async () => {
+    // 🛡️ Run validation first
+    if (!educationDetailsValidations()) return;
 
-  if (storedAllData?.submittedFormId) {
-    try {
-      const payLoad = { ...educationDetails };
+    if (storedAllData?.submittedFormId) {
+      try {
+        const payLoad = { ...educationDetails };
 
-      // 🔥 If you only need JSON (no files)
-      const response = await put(`administrative/education/${storedAllData.submittedFormId}`, payLoad);
+        // 🔥 If you only need JSON (no files)
+        const response = await put(`administrative/education/${storedAllData.submittedFormId}`, payLoad);
 
-      if (response.success) {
-        // ✅ Update parent stored data
-        setStoredAllData((prev) => ({
-          ...prev,
-          educationDetails: response.data.educationDetails,
-        }));
-        toast.success(response.message);
-        setValue((prev) => prev + 1); // move to next step
-      } else {
-        toast.error(response.message);
+        if (response.success) {
+          // ✅ Update parent stored data
+          setStoredAllData((prev) => ({
+            ...prev,
+            educationDetails: response.data.educationDetails
+          }));
+          toast.success(response.message);
+          setValue((prev) => prev + 1); // move to next step
+        } else {
+          toast.error(response.message);
+        }
+      } catch (err) {
+        toast.error('Something went wrong. Try again.');
       }
-    } catch (err) {
-      toast.error("Something went wrong. Try again.");
+    } else {
+      toast.error('Please submit the Basic Details first');
+      setValue(0); // go to step 1
     }
-  } else {
-    toast.error("Please submit the Basic Details first");
-    setValue(0); // go to step 1
-  }
-};
+  };
 
   // const handleSubmit = async () => {
   //   // 🛡️ Run validation first
@@ -149,7 +149,6 @@ const handleSubmit = async () => {
   //   }
   // };
 
- 
   return (
     <div>
       <Box sx={{ padding: 4, display: 'flex', justifyContent: 'center' }}>

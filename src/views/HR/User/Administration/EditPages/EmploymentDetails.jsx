@@ -21,7 +21,7 @@ function EmploymentDetails({ setValue, setStoredAllData, storedAllData }) {
 
   async function fetchDepartmentData() {
     const response = await get('department');
-    console.log("department data staff:", response.data)
+    console.log('department data staff:', response.data);
     setDepartmentData(response.data || []);
   }
 
@@ -32,7 +32,7 @@ function EmploymentDetails({ setValue, setStoredAllData, storedAllData }) {
 
   async function fetchDesignation() {
     const response = await get('position');
-        console.log("postion data staff:", response.data)
+    console.log('postion data staff:', response.data);
 
     setDesignationData(response.data);
   }
@@ -116,7 +116,7 @@ function EmploymentDetails({ setValue, setStoredAllData, storedAllData }) {
           employmentDetails: response.data.employmentDetails
         }));
         toast.success(response.message);
-        setValue && setValue((prev) => prev + 1) 
+        setValue && setValue((prev) => prev + 1);
       } else {
         toast.error(response.message);
       }

@@ -255,7 +255,7 @@ import ContactAndAddressInformation from './BasicDetailSectionForms/ContactAndAd
 import EmergencyAndQualificationInformation from './BasicDetailSectionForms/EmergencyAndQualificationInformation';
 import 'react-toastify/dist/ReactToastify.css';
 import { toast } from 'react-toastify';
-import REACT_APP_API_URL, { get,post } from '../../../../../api/api.js';
+import REACT_APP_API_URL, { get, post } from '../../../../../api/api.js';
 import BankDetails from 'views/master/BankDetails/BankDetails';
 
 const BasicDetails = ({ setValue, storedAllData, setStoredAllData }) => {
@@ -457,67 +457,67 @@ const BasicDetails = ({ setValue, storedAllData, setStoredAllData }) => {
   // };
 
   //TODO: NEW DATA
-  
+
   const handleSubmit = async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  const isValid = BasicDetailsFormValidation();
-  if (!isValid) {
-    toast.error('Please fill out all required fields.');
-    return;
-  }
-
-  try {
-    const formData = new FormData();
-
-    // Append all form fields
-    for (const [key, value] of Object.entries(basicDetails)) {
-      if (
-        value === undefined ||
-        value === null ||
-        value === '' ||
-        (typeof value === 'boolean' && value === false && key !== 'isPermanentSame' && key !== 'isMarried')
-      ) {
-        continue;
-      }
-
-      if (key === 'profilePhoto' && value instanceof File) {
-        formData.append('profilePhoto', value); // image file
-      } else if (typeof value === 'object' && !(value instanceof File)) {
-        formData.append(key, JSON.stringify(value));
-      } else {
-        formData.append(key, value);
-      }
-    }
-
-    // ✅ Call API - post() already returns JSON
-    const response = await post(`administrative/basicDetails`, formData);
-
-    console.log('submit basic details', response);
-
-    if (response.success) {
-      setStoredAllData((prev) => ({
-        ...prev,
-        basicDetails: response.data.basicDetails,
-        submittedFormId: response.data._id
-      }));
-      toast.success(response.message);
-      setValue((prev) => prev + 1);
-    } else {
-      toast.error(response.message || 'Failed to save basic details.');
-    }
-  } catch (err) {
-    console.error('Submit error:', err);
-    if (err.message === 'Unauthorized') {
-      toast.error('Session expired. Please log in again.');
+    const isValid = BasicDetailsFormValidation();
+    if (!isValid) {
+      toast.error('Please fill out all required fields.');
       return;
     }
-    toast.error('Failed to save basic details. Check console for details.');
-  }
-};
 
+    try {
+      const formData = new FormData();
 
+      // Append all form fields
+      for (const [key, value] of Object.entries(basicDetails)) {
+        if (
+          value === undefined ||
+          value === null ||
+          value === '' ||
+          (typeof value === 'boolean' && value === false && key !== 'isPermanentSame' && key !== 'isMarried')
+        ) {
+          continue;
+        }
 
+        if (key === 'profilePhoto' && value instanceof File) {
+          formData.append('profilePhoto', value); // image file
+        } else if (typeof value === 'object' && !(value instanceof File)) {
+          formData.append(key, JSON.stringify(value));
+        } else {
+          formData.append(key, value);
+        }
+      }
+
+      // Getting companyId from localStorage
+      // const companyId = localStorage.getItem('companyId');
+
+      // ✅ Call API - post() already returns JSON
+      const response = await post(`administrative/basicDetails`, formData);
+
+      console.log('submit basic details', response);
+
+      if (response.success) {
+        setStoredAllData((prev) => ({
+          ...prev,
+          basicDetails: response.data.basicDetails,
+          submittedFormId: response.data._id
+        }));
+        toast.success(response.message);
+        setValue((prev) => prev + 1);
+      } else {
+        toast.error(response.message || 'Failed to save basic details.');
+      }
+    } catch (err) {
+      console.error('Submit error:', err);
+      if (err.message === 'Unauthorized') {
+        toast.error('Session expired. Please log in again.');
+        return;
+      }
+      toast.error('Failed to save basic details. Check console for details.');
+    }
+  };
 
   return (
     <Box sx={{ padding: 4, display: 'flex', justifyContent: 'center' }}>

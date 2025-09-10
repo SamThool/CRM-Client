@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Grid,
@@ -14,12 +14,12 @@ import {
   TableRow,
   TableCell,
   TableBody
-} from '@mui/material'
-import { put } from 'api/api'
-import { toast } from 'react-toastify'
+} from '@mui/material';
+import { put } from 'api/api';
+import { toast } from 'react-toastify';
 
-function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
-  const id = storedAllData._id
+function PastEmploymentDetails({ setStoredAllData, setValue, storedAllData }) {
+  const id = storedAllData._id;
   const [pastEmploymentData, setPastEmploymentData] = useState([
     {
       organisationName: '',
@@ -31,7 +31,7 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
       yearsOfExperience: '',
       note: ''
     }
-  ])
+  ]);
 
   useEffect(() => {
     setPastEmploymentData(
@@ -49,14 +49,14 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
               note: ''
             }
           ]
-    )
-  }, [storedAllData.pastEmploymentDetails])
+    );
+  }, [storedAllData.pastEmploymentDetails]);
 
-  const [errors, setErrors] = useState({})
+  const [errors, setErrors] = useState({});
 
-  console.log(pastEmploymentData)
+  console.log(pastEmploymentData);
 
-  const validateFields = data => {
+  const validateFields = (data) => {
     const validations = [
       { field: 'organisationName', message: 'Organisation name is required' },
       { field: 'designation', message: 'Designation is required' },
@@ -65,34 +65,34 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
       { field: 'relievingDate', message: 'Relieving date is required' },
       { field: 'inHandSalary', message: 'In-hand salary is required' },
       { field: 'yearsOfExperience', message: 'Years of experience is required' }
-    ]
+    ];
 
-    let allValid = true
-    let newErrors = {}
+    let allValid = true;
+    let newErrors = {};
 
     validations.forEach(({ field, message }) => {
       data.forEach((entry, index) => {
         if (!entry[field]) {
-          newErrors[`${field}-${index}`] = message
-          allValid = false
+          newErrors[`${field}-${index}`] = message;
+          allValid = false;
         }
-      })
-    })
+      });
+    });
 
-    setErrors(newErrors)
-    return allValid
-  }
+    setErrors(newErrors);
+    return allValid;
+  };
 
   const handleChange = (index, e) => {
-    const { name, value } = e.target
-    const updatedData = [...pastEmploymentData]
-    updatedData[index][name] = value
-    setPastEmploymentData(updatedData)
-    setErrors(prev => ({ ...prev, [`${name}-${index}`]: '' }))
-  }
+    const { name, value } = e.target;
+    const updatedData = [...pastEmploymentData];
+    updatedData[index][name] = value;
+    setPastEmploymentData(updatedData);
+    setErrors((prev) => ({ ...prev, [`${name}-${index}`]: '' }));
+  };
 
   const handleAddRow = () => {
-    setPastEmploymentData(prev => [
+    setPastEmploymentData((prev) => [
       ...prev,
       {
         organisationName: '',
@@ -104,49 +104,49 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
         yearsOfExperience: '',
         note: ''
       }
-    ])
-  }
+    ]);
+  };
 
-  const handleRemoveRow = index => {
-    const updatedData = pastEmploymentData.filter((_, i) => i !== index)
-    setPastEmploymentData(updatedData)
-  }
+  const handleRemoveRow = (index) => {
+    const updatedData = pastEmploymentData.filter((_, i) => i !== index);
+    setPastEmploymentData(updatedData);
+  };
 
-  const handleSubmit = async e => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
     try {
       // if (validateFields(pastEmploymentData)) {
       if (true) {
-        const response = await put(`administrative/pastEmploymentDetails/${id}`, { pastEmploymentData })
-        console.log(response)
+        const response = await put(`administrative/pastEmploymentDetails/${id}`, { pastEmploymentData });
+        console.log(response);
 
         if (response.success === true) {
-          setStoredAllData(prev => ({
+          setStoredAllData((prev) => ({
             ...prev,
             pastEmploymentDetails: response.data.pastEmploymentDetails
-          }))
-          toast.success(response.message || 'Data updated successfully.')
-          setValue && setValue((prev) => prev + 1) 
+          }));
+          toast.success(response.message || 'Data updated successfully.');
+          setValue && setValue((prev) => prev + 1);
         } else {
-          toast.error(response.message || 'Failed to update data.')
+          toast.error(response.message || 'Failed to update data.');
         }
       }
     } catch (error) {
-      console.error('Error submitting form:', error)
+      console.error('Error submitting form:', error);
       if (error.response && error.response.data) {
-        toast.error(error.response.data.message || 'An error occurred on the server.')
+        toast.error(error.response.data.message || 'An error occurred on the server.');
       } else {
-        toast.error('Something went wrong. Please try again later.')
+        toast.error('Something went wrong. Please try again later.');
       }
     }
-  }
+  };
 
   return (
     <Box sx={{ padding: 4, display: 'flex', justifyContent: 'center' }}>
       <Card sx={{ maxWidth: '100%', width: '100%', boxShadow: 3 }}>
         <CardHeader
-          title='Past Employment Details'
+          title="Past Employment Details"
           titleTypographyProps={{ variant: 'h5', align: 'center' }}
           sx={{ backgroundColor: '#f5f5f5', padding: 2 }}
         />
@@ -156,9 +156,7 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
               <Table sx={{ borderCollapse: 'collapse' }}>
                 <TableHead>
                   <TableRow sx={{ border: '1px solid black' }}>
-                    <TableCell sx={{ border: '1px solid black' }}>Organisation Name
-                      
-                    </TableCell>
+                    <TableCell sx={{ border: '1px solid black' }}>Organisation Name</TableCell>
                     <TableCell sx={{ border: '1px solid black' }}>Designation</TableCell>
                     <TableCell sx={{ border: '1px solid black' }}>Employee Code</TableCell>
                     <TableCell sx={{ border: '1px solid black' }}>Joining Date</TableCell>
@@ -174,9 +172,9 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
                     <TableRow key={index} sx={{ border: '1px solid black' }}>
                       <TableCell sx={{ border: '1px solid black' }}>
                         <TextField
-                          name='organisationName'
+                          name="organisationName"
                           value={entry.organisationName}
-                          onChange={e => handleChange(index, e)}
+                          onChange={(e) => handleChange(index, e)}
                           fullWidth
                           error={!!errors[`organisationName-${index}`]}
                           helperText={errors[`organisationName-${index}`]}
@@ -184,9 +182,9 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
                         <TextField
-                          name='designation'
+                          name="designation"
                           value={entry.designation}
-                          onChange={e => handleChange(index, e)}
+                          onChange={(e) => handleChange(index, e)}
                           fullWidth
                           error={!!errors[`designation-${index}`]}
                           helperText={errors[`designation-${index}`]}
@@ -194,9 +192,9 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
                         <TextField
-                          name='empCode'
+                          name="empCode"
                           value={entry.empCode}
-                          onChange={e => handleChange(index, e)}
+                          onChange={(e) => handleChange(index, e)}
                           fullWidth
                           error={!!errors[`empCode-${index}`]}
                           helperText={errors[`empCode-${index}`]}
@@ -204,10 +202,10 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
                         <TextField
-                          name='joiningDate'
-                          type='date'
+                          name="joiningDate"
+                          type="date"
                           value={entry?.joiningDate?.slice(0, 10)}
-                          onChange={e => handleChange(index, e)}
+                          onChange={(e) => handleChange(index, e)}
                           fullWidth
                           error={!!errors[`joiningDate-${index}`]}
                           helperText={errors[`joiningDate-${index}`]}
@@ -218,10 +216,10 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
                         <TextField
-                          name='relievingDate'
-                          type='date'
+                          name="relievingDate"
+                          type="date"
                           value={entry?.relievingDate?.slice(0, 10)}
-                          onChange={e => handleChange(index, e)}
+                          onChange={(e) => handleChange(index, e)}
                           fullWidth
                           error={!!errors[`relievingDate-${index}`]}
                           helperText={errors[`relievingDate-${index}`]}
@@ -232,31 +230,31 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
                         <TextField
-                          name='inHandSalary'
+                          name="inHandSalary"
                           value={entry.inHandSalary}
-                          onChange={e => handleChange(index, e)}
+                          onChange={(e) => handleChange(index, e)}
                           fullWidth
                           error={!!errors[`inHandSalary-${index}`]}
                           helperText={errors[`inHandSalary-${index}`]}
-                          type='number'
+                          type="number"
                         />
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
                         <TextField
-                          name='yearsOfExperience'
+                          name="yearsOfExperience"
                           value={entry.yearsOfExperience}
-                          onChange={e => handleChange(index, e)}
+                          onChange={(e) => handleChange(index, e)}
                           fullWidth
                           error={!!errors[`yearsOfExperience-${index}`]}
                           helperText={errors[`yearsOfExperience-${index}`]}
-                          type='number'
+                          type="number"
                         />
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
-                        <TextField name='note' value={entry.note} onChange={e => handleChange(index, e)} fullWidth multiline />
+                        <TextField name="note" value={entry.note} onChange={(e) => handleChange(index, e)} fullWidth multiline />
                       </TableCell>
                       <TableCell sx={{ border: '1px solid black' }}>
-                        <Button onClick={() => handleRemoveRow(index)} color='secondary'>
+                        <Button onClick={() => handleRemoveRow(index)} color="secondary">
                           Remove
                         </Button>
                       </TableCell>
@@ -267,10 +265,10 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
             </TableContainer>
 
             <Box sx={{ display: 'flex', justifyContent: 'space-between', marginTop: 2 }}>
-              <Button type='button' onClick={handleAddRow} variant='outlined'>
+              <Button type="button" onClick={handleAddRow} variant="outlined">
                 Add Experience
               </Button>
-              <Button type='submit' variant='contained' color='primary'>
+              <Button type="submit" variant="contained" color="primary">
                 Save & Next
               </Button>
             </Box>
@@ -278,7 +276,7 @@ function PastEmploymentDetails ({ setStoredAllData, setValue, storedAllData }) {
         </CardContent>
       </Card>
     </Box>
-  )
+  );
 }
 
-export default PastEmploymentDetails
+export default PastEmploymentDetails;

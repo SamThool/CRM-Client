@@ -217,10 +217,12 @@ const Lead = () => {
           day: '2-digit'
         });
 
+      console.log('data', data);
+
       const formattedStartDate = formatCustomDate(today);
       const formattedEndDate = formatCustomDate(sixMonthsLater);
       const formData = {
-        clientName: data.Prospect?.companyName || data.Client?.clientName || data.companyName,
+        clientName: data?.Prospect?.companyName || data.Client?.clientName || data.newCompanyName,
         officialPhoneNo: data.phoneNo,
         altPhoneNo: data.altPhoneNo,
         officialMailId: data.email,
@@ -371,7 +373,12 @@ const Lead = () => {
                               <InfoIcon sx={{ color: 'primary.main' }} />
                             </IconButton>
                             <Tooltip title="Convert to Client" arrow onClick={() => handleCoverToClient(row, index)}>
-                              <IconButton size="medium" variant="contained" color="success" disabled={isDisableConvertClient === index}>
+                              <IconButton
+                                size="medium"
+                                variant="contained"
+                                color="success"
+                                disabled={isDisableConvertClient === index || row.Client}
+                              >
                                 <PersonAdd />
                               </IconButton>
                             </Tooltip>

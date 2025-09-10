@@ -38,7 +38,6 @@ const CompanySettings = () => {
   const handleEditClick = (clientId) => {
     navigate(`/company-settings/${clientId}`); // Navigate to the edit page with the client ID
     // navigate(`/clientRegistration/${clientId}`);
-
   };
   // Format date for display
   const formatDate = (dateString) => {
@@ -50,91 +49,39 @@ const CompanySettings = () => {
       day: 'numeric'
     });
   };
-  // const fetchClient = async () => {
-  //   try {
-  //     console.log('Fetching client data...');
-  //     const id = localStorage.getItem('refId');
-  //     console.log('this is refId', )
-  //     const response = await get(`clientRegistration/${id}`);
-  //     console.log('response is', response);
-  //     if (response.status === 'true' && response.data) {
-  //       setClientList(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching client data:', error);
-  //   }
-  // };
-  // const fetchClient = async () => {
-  //   try {
-  //     console.log('Fetching client data...');
-  //     let refId = localStorage.getItem('refId');
 
-  //     if (refId) {
-  //       try {
-  //         const parsed = JSON.parse(refId);
-  //         if (parsed && typeof parsed === 'object' && parsed._id) {
-  //           refId = parsed._id;
-  //         }
-  //       } catch (e) {
-  //         // refId is a plain string already (good)
-  //       }
-  //     }
-
-  //     console.log('Final refId used in request:', refId);
-
-  //     if (!refId || typeof refId !== 'string') {
-  //       console.error('Invalid refId format:', refId);
-  //       return;
-  //     }
-
-  //     const response = await get(`clientRegistration/${refId}`);
-  //     console.log('response is', response);
-
-  //     if (response.status === 'true' && response.data) {
-  //       setClientList(response.data);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching client data:', error);
-  //   }
-  // };
-const fetchClient = async () => {
-  try {
-    let rawRefId = localStorage.getItem("refId");
-
-    let parsedRefId;
+  const fetchClient = async () => {
     try {
-      parsedRefId = JSON.parse(rawRefId);
-    } catch (e) {
-      parsedRefId = rawRefId;
+      let rawRefId = localStorage.getItem('refId');
+
+      let parsedRefId;
+      try {
+        parsedRefId = JSON.parse(rawRefId);
+      } catch (e) {
+        parsedRefId = rawRefId;
+      }
+
+      const refId = typeof parsedRefId === 'object' && parsedRefId !== null ? parsedRefId._id || parsedRefId.id : parsedRefId;
+
+      console.log('✅ Final refId used in request:', refId);
+
+      if (!refId || typeof refId !== 'string') {
+        console.error('❌ Invalid refId format:', parsedRefId);
+        return;
+      }
+      console.log('🔗 Fetching client data with refId:', refId);
+      const response = await get(`clientRegistration/${refId}`);
+      console.log('✅ Response is:', response);
+
+      if (response.status === 'true' && response.data) {
+        setClientList(response.data);
+      } else {
+        console.error('❌ Unexpected response format:', response);
+      }
+    } catch (error) {
+      console.error('❌ Error in fetchClient:', error);
     }
-
-    const refId = typeof parsedRefId === 'object' && parsedRefId !== null
-      ? parsedRefId._id || parsedRefId.id
-      : parsedRefId;
-
-    console.log("✅ Final refId used in request:", refId);
-
-    if (!refId || typeof refId !== 'string') {
-      console.error("❌ Invalid refId format:", parsedRefId);
-      return;
-    }
-    console.log("🔗 Fetching client data with refId:", refId);
-    const response = await get(`clientRegistration/${refId}`);
-    console.log("✅ Response is:", response);
-
-    if (response.status === "true" && response.data) {
-      setClientList(response.data);
-    } else {
-      console.error("❌ Unexpected response format:", response);
-    }
-  } catch (error) {
-    console.error("❌ Error in fetchClient:", error);
-  }
-};
-
-
-
-
+  };
 
   console.log('Top-level log before useEffect');
   useEffect(() => {
