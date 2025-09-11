@@ -83,7 +83,7 @@ const DepartmentOpdPieChart = ({ chartData }) => {
           >
             <Grid item>
               <Grid container direction="column">
-                <Typography variant="h6">Departments</Typography>
+                <Typography variant="h6"> {chartData?.head} </Typography>
                 <Typography variant="subtitle1" sx={{ color: theme.palette.primary.main }}>
                   + 16.85%
                 </Typography>
