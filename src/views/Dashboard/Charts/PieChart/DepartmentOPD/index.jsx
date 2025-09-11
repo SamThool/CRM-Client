@@ -58,7 +58,7 @@ const DepartmentOpdPieChart = ({ chartData }) => {
       <CardHeader
         title={
           <Typography component="div" className="card-header">
-            Department OPD
+            {chartData?.head}
           </Typography>
         }
       />

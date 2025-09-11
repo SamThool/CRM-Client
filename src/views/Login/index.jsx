@@ -40,6 +40,7 @@ const Login = () => {
           if (adminRes.data.role === 'admin') {
             response = adminRes;
             console.log('✅ Admin login successful:', response);
+            localStorage.setItem('companyId', response?.data?.adminId);
           } else {
             throw new Error('Not an admin');
           }
@@ -64,6 +65,8 @@ const Login = () => {
               if (staffRes.data.role === 'staff') {
                 response = staffRes;
                 console.log('✅ Staff login successful:', response);
+                localStorage.setItem('companyId', response?.data?.companyId);
+                localStorage.setItem('empId', response?.data?.empId);
               } else {
                 throw new Error('Not a staff user');
               }
@@ -84,7 +87,7 @@ const Login = () => {
 
         // Store token
         localStorage.setItem('token', token);
-        localStorage.setItem('companyId', data.adminId);
+        // localStorage.setItem('companyId', data.adminId);
         // when you set the company in localStorage
         localStorage.setItem('company', JSON.stringify(data));
 

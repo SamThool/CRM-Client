@@ -97,7 +97,15 @@ const Lead = () => {
 
   async function getLeadData() {
     try {
-      const response = await get('lead');
+      const loginRole = localStorage.getItem('loginRole');
+      const employeeId = localStorage.getItem('empId');
+
+      let url = 'lead';
+      if (loginRole === 'staff' && employeeId) {
+        url += `/${employeeId}`;
+      }
+
+      const response = await get(url);
       console.log('response data is', response.data);
       setData(response.data || []);
     } catch (error) {
