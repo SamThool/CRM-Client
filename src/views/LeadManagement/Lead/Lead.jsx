@@ -277,6 +277,9 @@ const Lead = () => {
     return statusObj?.colorCode || '#9e9e9e';
   };
 
+  console.log(followUpData);
+  console.log(addFollowIndex);
+
   return (
     <>
       <Breadcrumb title="Lead Details">
@@ -307,10 +310,10 @@ const Lead = () => {
                 <TableHead>
                   <TableRow>
                     <TableCell>Id</TableCell>
-                    <TableCell>Name</TableCell>
+                    {/* <TableCell>Name</TableCell> */}
+                    <TableCell>Organization</TableCell>
                     <TableCell>Number</TableCell>
                     <TableCell>City</TableCell>
-                    <TableCell>Organization</TableCell>
                     <TableCell>Category</TableCell>
                     <TableCell>Leadstatus</TableCell>
                     <TableCell>Product</TableCell>
@@ -328,12 +331,12 @@ const Lead = () => {
                     data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                       <TableRow key={row._id}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell>
+                        {/* <TableCell>
                           {row.firstName} {row.lastName}
-                        </TableCell>
+                        </TableCell> */}
+                        <TableCell>{row.Prospect?.companyName || row.Client?.clientName || row.newCompanyName || 'N/A'}</TableCell>
                         <TableCell>{row.phoneNo}</TableCell>
                         <TableCell>{row.city}</TableCell>
-                        <TableCell>{row.Prospect?.companyName || row.Client?.clientName || row.newCompanyName || 'N/A'}</TableCell>
                         <TableCell> {row.Client ? 'Client' : row.Prospect ? 'Prospect' : 'New Lead' || 'N/A'}</TableCell>
                         <TableCell>
                           <Box
@@ -415,7 +418,7 @@ const Lead = () => {
       <ToastContainer />
 
       {/* Follow-Up Modal */}
-      <Dialog open={openAddFollowUp} onClose={handleInfoClose} maxWidth="md" fullWidth>
+      <Dialog open={openAddFollowUp} onClose={handleInfoClose} maxWidth="lg" fullWidth>
         <DialogTitle>{isEditMode ? 'Edit Follow-Up' : 'Add Follow-Up'}</DialogTitle>
         <Divider />
         <DialogContent>
@@ -492,8 +495,9 @@ const Lead = () => {
                             </TableHead>
                             <TableBody>
                               {Array.isArray(followUpData) && followUpData.length > 0 ? (
-                                followUpData
-                                  .filter((data) => String(data.leadId) === String(addFollowIndex))
+                                (followUpData.find((d) => String(d._id) === String(addFollowIndex))?.followups || [])
+                                  // followUpData
+                                  //   .filter((data) => String(data._id) === String(addFollowIndex))
                                   .map((data, index) => (
                                     <TableRow key={data._id || index}>
                                       <TableCell>{data.followupDate || 'N/A'}</TableCell>

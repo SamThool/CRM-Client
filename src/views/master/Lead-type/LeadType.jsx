@@ -151,7 +151,7 @@ const LeadType = () => {
       </Grid>
 
       {/* Modal Form */}
-      <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <Dialog open={open} onClose={handleClose} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ m: 0, p: 2 }}>
           {editIndex !== null ? 'Edit Lead Type' : 'Add Lead Type'}
           <IconButton
@@ -171,6 +171,9 @@ const LeadType = () => {
           <Grid container spacing={2} sx={{ mt: 1 }}>
             <Grid item xs={6}>
               <TextField
+                sx={{
+                  width: '100%'
+                }}
                 label="Lead Type"
                 name="LeadType"
                 value={form.LeadType}

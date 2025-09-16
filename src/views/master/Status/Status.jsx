@@ -29,7 +29,7 @@ import value from 'assets/scss/_themes-vars.module.scss';
 
 // import { axiosInstance } from '../../../api/api.js';
 
-import { get, post, put, remove } from "../../../api/api.js"
+import { get, post, put, remove } from '../../../api/api.js';
 import { useSelector } from 'react-redux';
 
 const Status = () => {
@@ -38,14 +38,14 @@ const Status = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]); // Start with empty array to avoid showing old hardcoded data
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-  const [statusPermission,setStatusPermission]=useState({
+  const [isAdmin, setAdmin] = useState(false);
+  const [statusPermission, setStatusPermission] = useState({
     View: false,
     Add: false,
     Edit: false,
     Delete: false
   });
-  const systemRights = useSelector((state)=>state.systemRights.systemRights);
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -61,20 +61,20 @@ const Status = () => {
     try {
       const response = await get('status');
       // Map backend 'statusName' to frontend 'Status'
-      console.log("Status data: ", response.data)
-      setData(response.data.map(item => ({ Status: item.statusName, _id: item._id })));
+      console.log('Status data: ', response.data);
+      setData(response?.data?.map((item) => ({ Status: item.statusName, _id: item._id })));
     } catch (error) {
       console.error(error);
     }
   };
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
-        if (loginRole === 'admin') {
-        setAdmin(true);
-        }
-        if (systemRights?.actionPermissions?.["status"]) {
-        setStatusPermission(systemRights.actionPermissions["status"]);
-        }
+    const loginRole = localStorage.getItem('loginRole');
+    if (loginRole === 'admin') {
+      setAdmin(true);
+    }
+    if (systemRights?.actionPermissions?.['status']) {
+      setStatusPermission(systemRights.actionPermissions['status']);
+    }
     fetchStatuses();
   }, [systemRights]);
 
@@ -143,9 +143,11 @@ const Status = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5"> Task Status</Typography>
-        {(statusPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add Status
-        </Button>}
+        {(statusPermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add Status
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -228,34 +230,38 @@ const Status = () => {
                       <TableCell>{index + 1}</TableCell>
                       <TableCell>{row.Status}</TableCell>
                       <TableCell>
-                        {(statusPermission.Edit===true || isAdmin) && <Button
-                          size="small"
-                          color="primary"
-                          onClick={() => handleEdit(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px',
-                            mr: '5px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Edit />
-                          </IconButton>
-                        </Button>}
-                        {(statusPermission.Delete===true || isAdmin) && <Button
-                          color="error"
-                          onClick={() => handleDelete(index)}
-                          sx={{
-                            padding: '1px',
-                            minWidth: '24px',
-                            height: '24px'
-                          }}
-                        >
-                          <IconButton color="inherit">
-                            <Delete />
-                          </IconButton>
-                        </Button>}
+                        {(statusPermission.Edit === true || isAdmin) && (
+                          <Button
+                            size="small"
+                            color="primary"
+                            onClick={() => handleEdit(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px',
+                              mr: '5px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Edit />
+                            </IconButton>
+                          </Button>
+                        )}
+                        {(statusPermission.Delete === true || isAdmin) && (
+                          <Button
+                            color="error"
+                            onClick={() => handleDelete(index)}
+                            sx={{
+                              padding: '1px',
+                              minWidth: '24px',
+                              height: '24px'
+                            }}
+                          >
+                            <IconButton color="inherit">
+                              <Delete />
+                            </IconButton>
+                          </Button>
+                        )}
                       </TableCell>
                     </TableRow>
                   ))}

@@ -92,11 +92,11 @@ const EditLead = () => {
     } else if (leadCategory === 'newLead') {
       requiredFields.push('newCompanyName');
     }
-  
+
     // Debug: Show which fields are required
 
     console.log('Validate: requiredFields:', requiredFields);
-  
+
     requiredFields.forEach((field) => {
       if (!form[field]) {
         newErrors[field] = 'Required';
@@ -104,7 +104,7 @@ const EditLead = () => {
         console.log(`Validate: missing required field: ${field}`);
       }
     });
-  
+
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = 'Invalid email';
       console.log('Validate: Invalid email format:', form.email);
@@ -113,15 +113,15 @@ const EditLead = () => {
       newErrors.altEmail = 'Invalid alt email';
       console.log('Validate: Invalid alt email format:', form.altEmail);
     }
-  
+
     // Debug: Output all errors before setting
     console.log('Validate: newErrors:', newErrors);
-  
+
     setErrors(newErrors);
-  
+
     const isValid = Object.keys(newErrors).length === 0;
     console.log('Validate: isValid:', isValid);
-    
+
     return isValid;
   };
 
@@ -213,7 +213,7 @@ const EditLead = () => {
   // Handle form submit
   const handleSubmit = async () => {
     if (validate()) {
-      console.log('hello')
+      console.log('hello');
       try {
         let payload = { ...form, leadCategory };
         if (leadCategory === 'prospect') {
@@ -229,7 +229,7 @@ const EditLead = () => {
           payload.clientList = '';
           // companyName is still required, but newCompanyName is the unique field for new leads
         }
-      
+
         const response = await put(`lead/${id}`, payload);
         if (response) {
           toast.success(response.message || '✅ Lead updated successfully!', {
@@ -278,46 +278,18 @@ const EditLead = () => {
         setForm((prev) => ({
           ...prev,
           ...leadData,
-          Prospect: leadData.Prospect?._id
-            ? String(leadData.Prospect._id)
-            : leadData.Prospect
-            ? String(leadData.Prospect)
-            : '',
-          reference: leadData.reference?._id
-            ? String(leadData.reference._id)
-            : leadData.reference
-            ? String(leadData.reference)
-            : '',
+          Prospect: leadData.Prospect?._id ? String(leadData.Prospect._id) : leadData.Prospect ? String(leadData.Prospect) : '',
+          reference: leadData.reference?._id ? String(leadData.reference._id) : leadData.reference ? String(leadData.reference) : '',
           productService: leadData.productService?._id
             ? String(leadData.productService._id)
             : leadData.productService
-            ? String(leadData.productService)
-            : '',
-          leadstatus: leadData.leadstatus?._id
-            ? String(leadData.leadstatus._id)
-            : leadData.leadstatus
-            ? String(leadData.leadstatus)
-            : '',
-          leadType: leadData.leadType?._id
-            ? String(leadData.leadType._id)
-            : leadData.leadType
-            ? String(leadData.leadType)
-            : '',
-          assignTo: leadData.assignTo?._id
-            ? String(leadData.assignTo._id)
-            : leadData.assignTo
-            ? String(leadData.assignTo)
-            : '',
-          Client: leadData.Client?._id
-            ? String(leadData.Client._id)
-            : leadData.Client
-            ? String(leadData.Client)
-            : '',
-          clientList: leadData.Client?._id
-            ? String(leadData.Client._id)
-            : leadData.Client
-            ? String(leadData.Client)
-            : '',
+              ? String(leadData.productService)
+              : '',
+          leadstatus: leadData.leadstatus?._id ? String(leadData.leadstatus._id) : leadData.leadstatus ? String(leadData.leadstatus) : '',
+          leadType: leadData.leadType?._id ? String(leadData.leadType._id) : leadData.leadType ? String(leadData.leadType) : '',
+          assignTo: leadData.assignTo?._id ? String(leadData.assignTo._id) : leadData.assignTo ? String(leadData.assignTo) : '',
+          Client: leadData.Client?._id ? String(leadData.Client._id) : leadData.Client ? String(leadData.Client) : '',
+          clientList: leadData.Client?._id ? String(leadData.Client._id) : leadData.Client ? String(leadData.Client) : '',
           companyName: leadData.companyName || '',
           newCompanyName: leadData.newCompanyName || ''
         }));
@@ -482,7 +454,7 @@ const EditLead = () => {
               helperText={errors.newCompanyName}
             />
           </Grid>
-          <Grid item xs={12} md={3}>
+          {/* <Grid item xs={12} md={3}>
             <TextField
               label="First Name"
               name="firstName"
@@ -535,7 +507,7 @@ const EditLead = () => {
                 </MenuItem>
               ))}
             </TextField>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} md={3}>
             <TextField
               label="Country Code"
@@ -723,11 +695,7 @@ const EditLead = () => {
               helperText={errors.leadstatus}
             >
               {statuses.map((s) => (
-                <MenuItem
-                  key={s._id}
-                  value={s._id}
-                  style={{ backgroundColor: s.colorCode, color: '#000000'}}
-                >
+                <MenuItem key={s._id} value={s._id} style={{ backgroundColor: s.colorCode, color: '#000000' }}>
                   {s.LeadStatus}
                 </MenuItem>
               ))}

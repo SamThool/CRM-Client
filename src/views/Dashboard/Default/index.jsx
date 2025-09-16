@@ -159,12 +159,12 @@ const Default = () => {
     return matchesStaff && matchesProduct && matchesSearch;
   });
 
-  const getLeadStatusColor = (leadstatus) => {
-    if (!leadstatus) return '#9e9e9e';
-    // leadstatus can be populated object or string id
-    const statusObj = typeof leadstatus === 'object' ? leadstatus : statusOptions.find((s) => s._id === leadstatus);
-    return statusObj?.colorCode || '#9e9e9e';
-  };
+  // const getLeadStatusColor = (leadstatus) => {
+  //   if (!leadstatus) return '#9e9e9e';
+  //   // leadstatus can be populated object or string id
+  //   const statusObj = typeof leadstatus === 'object' ? leadstatus : statusOptions.find((s) => s._id === leadstatus);
+  //   return statusObj?.colorCode || '#9e9e9e';
+  // };
 
   const invoicePaymentStatusData = {
     type: 'donut',
@@ -210,34 +210,47 @@ const Default = () => {
     }
   };
   // Labels for the X-axis (e.g., months)
-  const invoiceData = {
-    title: 'Monthly Invoices',
-    xLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  const invoiceDataFY = {
+    title: 'Monthly Invoices (FY)',
+    xLabels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
     seriesData: [
-      [120, 150, 170, 140, 180, 200] // invoices per month
+      [140, 180, 200, 210, 190, 230, 250, 220, 240, 120, 150, 170] // replace with real values per month
     ],
     seriesLabelMap: { Invoice: 'Invoices' },
-    colors: ['#1E88E5'] // bright blue
+    colors: ['#1E88E5']
   };
 
-  const clientData = {
-    title: 'Monthly Clients',
-    xLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  const clientDataFY = {
+    title: 'Monthly Clients (FY)',
+    xLabels: invoiceDataFY.xLabels,
     seriesData: [
-      [80, 100, 90, 120, 110, 130] // clients acquired per month
+      [120, 110, 130, 140, 125, 150, 160, 135, 145, 80, 100, 90] // replace with real values
     ],
     seriesLabelMap: { Client: 'Clients' },
-    colors: ['#43A047'] // bright green
+    colors: ['#43A047']
   };
 
-  const revenueData = {
-    title: 'Monthly Revenue',
-    xLabels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+  const revenueDataFY = {
+    title: 'Monthly Revenue (FY)',
+    xLabels: invoiceDataFY.xLabels,
     seriesData: [
-      [5000, 7000, 6500, 8000, 7200, 9000] // revenue per month
+      [8000, 7200, 9000, 9500, 8800, 10000, 10500, 9700, 10200, 5000, 7000, 6500] // replace with real values
     ],
     seriesLabelMap: { Revenue: 'Revenue' },
-    colors: ['#FB8C00'] // bright orange
+    colors: ['#FB8C00']
+  };
+
+  // Merged financial year data
+  const mergedDataFY = {
+    title: 'Financial Year Overview',
+    xLabels: invoiceDataFY.xLabels,
+    seriesData: [invoiceDataFY.seriesData[0], clientDataFY.seriesData[0], revenueDataFY.seriesData[0]],
+    seriesLabelMap: {
+      Invoice: 'Invoices',
+      Client: 'Clients',
+      Revenue: 'Revenue'
+    },
+    colors: [invoiceDataFY.colors[0], clientDataFY.colors[0], revenueDataFY.colors[0]]
   };
 
   return (
@@ -376,7 +389,7 @@ const Default = () => {
                         <TableCell>
                           <Box
                             sx={{
-                              backgroundColor: getLeadStatusColor(lead.leadstatus),
+                              backgroundColor: '#f5f5f5',
                               color: '#000000',
                               padding: '4px 10px',
                               borderRadius: '10px',
@@ -389,7 +402,7 @@ const Default = () => {
                               textAlign: 'center'
                             }}
                           >
-                            {lead.leadstatus?.LeadStatus || statusOptions.find((opt) => opt._id === lead.leadstatus)?.LeadStatus || 'N/A'}
+                            {lead?.leadstatus?.LeadStatus || 'N/A'}
                           </Box>
                         </TableCell>
 
@@ -442,10 +455,16 @@ const Default = () => {
       </Grid>
       <Grid item xs={12}>
         <Card spacing={gridSpacing}>
-          <ReusableBarChart {...clientData} />
+          <ReusableBarChart
+            title={mergedDataFY.title}
+            seriesData={mergedDataFY.seriesData}
+            xLabels={mergedDataFY.xLabels}
+            seriesLabelMap={mergedDataFY.seriesLabelMap}
+            colors={mergedDataFY.colors}
+          />
         </Card>
       </Grid>
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Card spacing={gridSpacing}>
           <ReusableBarChart {...invoiceData} />
         </Card>
@@ -454,7 +473,7 @@ const Default = () => {
         <Card spacing={gridSpacing}>
           <ReusableBarChart {...revenueData} />
         </Card>
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 };

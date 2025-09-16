@@ -22,6 +22,7 @@ import { Business, ContactPhone, Delete, Edit, Language, LocationOn } from '@mui
 import { get, remove } from '../../api/api.js';
 import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
+import EmailIntegration from './EmailIntegration.jsx';
 
 const CompanySettings = () => {
   const navigate = useNavigate(); // Initialize the navigation hook
@@ -228,6 +229,12 @@ const CompanySettings = () => {
               </Box>
             </CardContent>
           </Card>
+          <EmailIntegration
+            onSave={(config) => {
+              console.log('Saved email integration config:', config);
+              // Make API call to save
+            }}
+          />
         </Grid>
       </Grid>
     </>

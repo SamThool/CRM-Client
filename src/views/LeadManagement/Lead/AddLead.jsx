@@ -81,10 +81,6 @@ const Lead = () => {
     const newErrors = {};
     let requiredFields = [
       'companyName',
-      'firstName',
-      'middleName',
-      'lastName',
-      'gender',
       'countryCode',
       'phoneNo',
       'email',
@@ -517,7 +513,7 @@ const Lead = () => {
           <Grid item xs={12} md={6}>
             {renderTextField('Company Name', 'companyName', true, 'text')}
           </Grid>
-          <Grid item xs={12} md={3}>
+          {/* <Grid item xs={12} md={3}>
             {renderTextField('First Name', 'firstName', true)}
           </Grid>
           <Grid item xs={12} md={3}>
@@ -528,7 +524,7 @@ const Lead = () => {
           </Grid>
           <Grid item xs={12} md={3}>
             {renderDropdownSimple('Gender', 'gender', ['Male', 'Female', 'Other'])}
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} md={3}>
             {renderTextField('Country Code', 'countryCode', true)}
           </Grid>

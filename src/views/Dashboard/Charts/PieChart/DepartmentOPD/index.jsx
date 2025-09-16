@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // material-ui
 import { useTheme } from '@mui/material/styles';
@@ -14,6 +14,7 @@ import FilterControls from 'component/Filter';
 
 const DepartmentOpdPieChart = ({ chartData }) => {
   const theme = useTheme();
+  const chartRef = useRef(null);
   const matchDownMd = useMediaQuery(theme.breakpoints.down('md'));
   const matchDownXs = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -23,6 +24,13 @@ const DepartmentOpdPieChart = ({ chartData }) => {
   const toggleFilter = () => {
     setShowFilter((prev) => !prev);
   };
+
+  useEffect(() => {
+    // Give the container time to render
+    setTimeout(() => {
+      chartRef?.current?.chart?.windowResizeHandler();
+    }, 100);
+  }, []);
 
   return (
     <Card sx={{ position: 'relative', overflow: 'visible' }}>
@@ -62,14 +70,14 @@ const DepartmentOpdPieChart = ({ chartData }) => {
           </Typography>
         }
       />
-      <Divider />
+      {/* <Divider /> */}
       <CardContent>
         <Grid container spacing={2} direction={matchDownMd && !matchDownXs ? 'row' : 'column'}>
-          <Grid item xs={12} sm={7} md={12}>
-            <Chart {...chartData} />
+          <Grid item xs={12} sm={7} md={12} sx={{ minHeight: 300 }}>
+            <Chart ref={chartRef} {...chartData} />
           </Grid>
           <Grid item sx={{ display: { md: 'block', sm: 'none' } }}>
-            <Divider />
+            {/* <Divider /> */}
           </Grid>
           <Grid
             item
