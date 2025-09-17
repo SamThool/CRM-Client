@@ -44,10 +44,10 @@ const icons = {
 export default {
   items: [
     {
-      id: 'navigation',                      // ✅ FIXED: meaningful group ID
+      id: 'navigation', // ✅ FIXED: meaningful group ID
       type: 'group',
-      title: 'Navigation',                   // ✅ FIXED: visible title
-      icon: icons['NavigationOutlinedIcon'], 
+      title: 'Navigation', // ✅ FIXED: visible title
+      icon: icons['NavigationOutlinedIcon'],
       children: [
         {
           id: 'dashboard',
@@ -56,24 +56,36 @@ export default {
           icon: icons['HomeOutlinedIcon'],
           url: '/'
         },
-  
+
         {
           id: 'master-group',
           title: 'Masters',
           type: 'collapse',
           icon: GridViewIcon,
           children: [
-            {  
-            id: 'type-of-client',
-            title: 'Type Of Client',
-            icon: PeopleIcon,
-            type: 'item',
-            url: '/type-of-client',
-
-           }
+            {
+              id: 'type-of-client',
+              title: 'Type Of Client',
+              icon: PeopleIcon,
+              type: 'item',
+              url: '/type-of-client'
+            },
+            {
+              id: 'position',
+              title: 'Position',
+              type: 'item',
+              icon: ManageAccountsIcon,
+              url: '/master/position'
+            },
+            {
+              id: 'departments',
+              title: 'Department',
+              type: 'item',
+              icon: AccountTreeIcon,
+              url: '/master/departments'
+            }
           ]
         },
-
 
         // {
         //   id: 'contacts',
@@ -88,13 +100,12 @@ export default {
           title: 'Client',
           type: 'item',
           icon: PersonIcon,
-          url: '/super-admin-client',
-        },
+          url: '/super-admin-client'
+        }
       ]
     }
   ]
 };
-
 
 // import NavigationOutlinedIcon from '@mui/icons-material/NavigationOutlined';
 // import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
@@ -361,8 +372,6 @@ export default {
 //     }
 //   ]
 // };
-
-
 
 //!old data
 // export default {

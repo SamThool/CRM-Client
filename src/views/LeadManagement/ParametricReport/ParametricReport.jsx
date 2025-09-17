@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { get } from 'api/api';
 import { toast } from 'react-toastify';
-
 import {
   Grid,
   Typography,
@@ -22,36 +21,26 @@ import {
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Select,
+  MenuItem,
+  Checkbox,
+  ListItemText,
+  OutlinedInput,
+  FormControl,
+  InputLabel
 } from '@mui/material';
+import { Link } from 'react-router-dom';
 
-const columns = [
-  'Id',
-  'Action',
-  'Organization',
-  'Product',
-  'Status',
-  'Lead Type',
-  'Last Communication',
-  'Follow up date',
-  'Phone Number',
-  'City',
-  'Reference',
-  'Assign To',
-  'Created Date',
-  'Day Count'
-];
-
-const formatDate = (d) => {
-  if (!d) return 'N/A';
-  const date = new Date(d);
-  return date.toLocaleDateString('en-GB'); // dd/mm/yyyy
-};
-
-const daysSince = (d) => {
-  if (!d) return 'N/A';
-  const diff = Date.now() - new Date(d).getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
+const ITEM_HEIGHT = 40;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250
+    }
+  }
 };
 
 const ParametricReport = () => {
@@ -61,6 +50,15 @@ const ParametricReport = () => {
   const [search, setSearch] = useState('');
   const [selectedRow, setSelectedRow] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
+
+  // filter states
+  const [filters, setFilters] = useState({
+    reference: [],
+    assignTo: [],
+    product: [],
+    status: [],
+    leadType: []
+  });
 
   async function getLeadData() {
     try {
@@ -73,8 +71,6 @@ const ParametricReport = () => {
       }
 
       const response = await get(url);
-      console.log(response.data);
-      // backend sometimes returns { success, data } or just array — be defensive
       const payload = response?.data?.data ?? response?.data ?? response ?? [];
       setData(Array.isArray(payload) ? payload : []);
     } catch (error) {
@@ -97,18 +93,55 @@ const ParametricReport = () => {
     setSelectedRow(row);
     setOpenDialog(true);
   };
-
   const closeDetails = () => {
     setSelectedRow(null);
     setOpenDialog(false);
   };
 
-  // basic search by full name or product
+  // compute unique options
+  const options = useMemo(() => {
+    return {
+      reference: [...new Set(data.map((d) => d.reference?.LeadReference).filter(Boolean))],
+      assignTo: [
+        ...new Set(
+          data
+            .map((d) =>
+              d.assignTo ? `${d.assignTo.basicDetails?.firstName || ''} ${d.assignTo.basicDetails?.lastName || ''}`.trim() : null
+            )
+            .filter(Boolean)
+        )
+      ],
+      product: [...new Set(data.map((d) => d.productService?.productName).filter(Boolean))],
+      status: [...new Set(data.map((d) => d.leadstatus?.LeadStatus).filter(Boolean))],
+      leadType: [...new Set(data.map((d) => d.leadType?.LeadType).filter(Boolean))]
+    };
+  }, [data]);
+
+  // filtering logic
   const filtered = data.filter((lead) => {
-    if (!search) return true;
-    const name = `${lead.firstName || ''} ${lead.lastName || ''}`.toLowerCase();
-    const product = (lead.productService?.productName || '').toLowerCase();
-    return name.includes(search.toLowerCase()) || product.includes(search.toLowerCase());
+    if (search) {
+      const name = `${lead.firstName || ''} ${lead.lastName || ''}`.toLowerCase();
+      const product = (lead.productService?.productName || '').toLowerCase();
+      if (!name.includes(search.toLowerCase()) && !product.includes(search.toLowerCase())) {
+        return false;
+      }
+    }
+
+    // apply filters
+    const checks = {
+      reference: lead.reference?.LeadReference,
+      assignTo: lead.assignTo
+        ? `${lead.assignTo.basicDetails?.firstName || ''} ${lead.assignTo.basicDetails?.lastName || ''}`.trim()
+        : null,
+      product: lead.productService?.productName,
+      status: lead.leadstatus?.LeadStatus,
+      leadType: lead.leadType?.LeadType
+    };
+
+    return Object.entries(filters).every(([key, selected]) => {
+      if (selected.length === 0) return true; // no filter applied
+      return selected.includes(checks[key]);
+    });
   });
 
   const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -118,76 +151,110 @@ const ParametricReport = () => {
       <Grid item xs={12}>
         <Card>
           <CardContent>
-            <Grid container alignItems="center" justifyContent="space-between" spacing={2}>
-              <Grid item>
+            <Grid container alignItems="center" spacing={2}>
+              {/* Title */}
+              <Grid item xs={12} sm={3}>
                 <Typography variant="h6">Parametric Lead Report</Typography>
               </Grid>
-              <Grid item>
-                <TextField size="small" placeholder="Search name or product" value={search} onChange={(e) => setSearch(e.target.value)} />
+
+              {/* Search */}
+              <Grid item xs={12} sm={3}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  placeholder="Search name or product"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                />
+              </Grid>
+
+              {/* Filters row */}
+              <Grid item xs={12} sm={6}>
+                <Grid container spacing={2}>
+                  {['reference', 'assignTo', 'product', 'status', 'leadType'].map((key) => (
+                    <Grid item xs={6} sm={4} key={key}>
+                      <FormControl fullWidth size="small">
+                        <InputLabel>{key}</InputLabel>
+                        <Select
+                          multiple
+                          value={filters[key]}
+                          onChange={(e) => setFilters({ ...filters, [key]: e.target.value })}
+                          input={<OutlinedInput label={key} />}
+                          renderValue={(selected) => selected.join(', ')}
+                          MenuProps={MenuProps}
+                        >
+                          {options[key].map((val) => (
+                            <MenuItem key={val} value={val}>
+                              <Checkbox checked={filters[key].indexOf(val) > -1} />
+                              <ListItemText primary={val} />
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    </Grid>
+                  ))}
+                </Grid>
               </Grid>
             </Grid>
+
             <Divider sx={{ my: 2 }} />
 
+            {/* Table */}
             <TableContainer component={Paper} sx={{ maxHeight: '65vh' }}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
-                    {columns.map((col) => (
-                      <TableCell key={col}>{col}</TableCell>
-                    ))}
+                    <TableCell>Id</TableCell>
+                    <TableCell>Action</TableCell>
+                    <TableCell>Organization</TableCell>
+                    <TableCell>Product</TableCell>
+                    <TableCell>Status</TableCell>
+                    <TableCell>Lead Type</TableCell>
+                    <TableCell>Last Communication</TableCell>
+                    <TableCell>Follow up date</TableCell>
+                    <TableCell>Phone Number</TableCell>
+                    <TableCell>City</TableCell>
+                    <TableCell>Reference</TableCell>
+                    <TableCell>Assign To</TableCell>
+                    <TableCell>Created Date</TableCell>
+                    <TableCell>Day Count</TableCell>
                   </TableRow>
                 </TableHead>
-
                 <TableBody>
                   {paginated.length > 0 ? (
-                    paginated.map((lead, idx) => {
-                      const assignName = lead.assignTo
-                        ? `${lead.assignTo.basicDetails?.firstName || ''} ${lead.assignTo.basicDetails?.lastName || ''}`.trim()
-                        : 'N/A';
-                      const lastComm = lead.lastCommunication || (lead.followups?.[0]?.comment ?? 'N/A');
-                      const followupDate = lead.followups?.[0]?.followupDate ?? lead.followUpDate ?? null;
-
-                      return (
-                        <TableRow key={lead._id || idx} hover>
-                          <TableCell>{page * rowsPerPage + idx + 1}</TableCell>
-                          <TableCell>
-                            <Button size="small" onClick={() => openDetails(lead)}>
-                              View
-                            </Button>
-                          </TableCell>
-                          <TableCell>{lead?.Prospect?.companyName || lead?.Client?.clientName || lead?.newCompanyName || 'N/A'}</TableCell>
-                          <TableCell>{lead.productService?.productName || 'N/A'}</TableCell>
-                          <TableCell
-                            sx={{
-                              backgroundColor: lead.leadstatus?.colorCode || 'transparent',
-                              color: '#fff',
-                              borderRadius: '8px'
-                            }}
-                          >
-                            {lead.leadstatus?.LeadStatus || 'N/A'}
-                          </TableCell>
-
-                          <TableCell>{lead.leadType?.LeadType || 'N/A'}</TableCell>
-                          <TableCell
-                            sx={{
-                              maxWidth: 300,
-                              whiteSpace: 'normal',
-                              wordBreak: 'break-word'
-                            }}
-                          >
-                            {lastComm}
-                          </TableCell>
-
-                          <TableCell>{followupDate ? formatDate(followupDate) : 'N/A'}</TableCell>
-                          <TableCell>{lead.phoneNo || 'N/A'}</TableCell>
-                          <TableCell>{lead.city || 'N/A'}</TableCell>
-                          <TableCell>{lead.reference?.LeadReference || 'N/A'}</TableCell>
-                          <TableCell>{assignName || 'N/A'}</TableCell>
-                          <TableCell>{lead.createdAt ? formatDate(lead.createdAt) : 'N/A'}</TableCell>
-                          <TableCell>{lead.createdAt ? daysSince(lead.createdAt) : 'N/A'}</TableCell>
-                        </TableRow>
-                      );
-                    })
+                    paginated.map((lead, idx) => (
+                      <TableRow key={lead._id || idx} hover>
+                        <TableCell>{page * rowsPerPage + idx + 1}</TableCell>
+                        <TableCell>
+                          <Button size="small" onClick={() => openDetails(lead)}>
+                            View
+                          </Button>
+                          <Button size="small" component={Link} to={`/lead-management/EditLead/${lead._id}`}>
+                            Update
+                          </Button>
+                        </TableCell>
+                        <TableCell>{lead?.Prospect?.companyName || lead?.Client?.clientName || lead?.newCompanyName || 'N/A'}</TableCell>
+                        <TableCell>{lead.productService?.productName || 'N/A'}</TableCell>
+                        <TableCell sx={{ bgcolor: lead.leadstatus?.colorCode || 'transparent', color: '#fff', borderRadius: '8px' }}>
+                          {lead.leadstatus?.LeadStatus || 'N/A'}
+                        </TableCell>
+                        <TableCell>{lead.leadType?.LeadType || 'N/A'}</TableCell>
+                        <TableCell>{lead.lastCommunication || (lead.followups?.[0]?.comment ?? 'N/A')}</TableCell>
+                        <TableCell>{lead.followups?.[0]?.followupDate ?? lead.followUpDate ?? 'N/A'}</TableCell>
+                        <TableCell>{lead.phoneNo || 'N/A'}</TableCell>
+                        <TableCell>{lead.city || 'N/A'}</TableCell>
+                        <TableCell>{lead.reference?.LeadReference || 'N/A'}</TableCell>
+                        <TableCell>
+                          {lead.assignTo
+                            ? `${lead.assignTo.basicDetails?.firstName || ''} ${lead.assignTo.basicDetails?.lastName || ''}`
+                            : 'N/A'}
+                        </TableCell>
+                        <TableCell>{lead.createdAt ? new Date(lead.createdAt).toLocaleDateString('en-GB') : 'N/A'}</TableCell>
+                        <TableCell>
+                          {lead.createdAt ? Math.floor((Date.now() - new Date(lead.createdAt).getTime()) / (1000 * 60 * 60 * 24)) : 'N/A'}
+                        </TableCell>
+                      </TableRow>
+                    ))
                   ) : (
                     <TableRow>
                       <TableCell colSpan={14} align="center">

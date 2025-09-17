@@ -36,14 +36,14 @@ const Position = () => {
   const [open, setOpen] = useState(false);
   const [data, setData] = useState([]);
   const [editIndex, setEditIndex] = useState(null);
-  const [isAdmin,setAdmin]=useState(false);
-  const [positionPermission,setPositionPermission]=useState({
-      View: false,
-      Add: false,
-      Edit: false,
-      Delete: false
+  const [isAdmin, setAdmin] = useState(false);
+  const [positionPermission, setPositionPermission] = useState({
+    View: false,
+    Add: false,
+    Edit: false,
+    Delete: false
   });
-  const systemRights = useSelector((state)=>state.systemRights.systemRights);
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
 
   const validate = () => {
     const newErrors = {};
@@ -56,7 +56,7 @@ const Position = () => {
   const fetchPositions = async () => {
     try {
       const response = await get('position');
-      console.log('Position data: ', response.data)
+      console.log('Position data: ', response.data);
       setData(response.data);
     } catch (error) {
       console.error(error);
@@ -64,13 +64,23 @@ const Position = () => {
   };
 
   useEffect(() => {
-    const loginRole=localStorage.getItem('loginRole');
-        if (loginRole === 'admin') {
-        setAdmin(true);
-        }
-        if (systemRights?.actionPermissions?.["position"]) {
-        setPositionPermission(systemRights.actionPermissions["position"]);
-        }
+    const loginRole = localStorage.getItem('loginRole');
+
+    if (loginRole === 'admin') {
+      setAdmin(true);
+    }
+
+    if (loginRole === 'super-admin') {
+      setPositionPermission({
+        View: true,
+        Add: true,
+        Edit: true,
+        Delete: true
+      });
+    } else if (systemRights?.actionPermissions?.['position']) {
+      setPositionPermission(systemRights.actionPermissions['position']);
+    }
+
     fetchPositions();
   }, [systemRights]);
 
@@ -137,9 +147,11 @@ const Position = () => {
 
       <Grid container justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
         <Typography variant="h5">Position</Typography>
-        {(positionPermission.Add===true || isAdmin) && <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
-          Add position
-        </Button>}
+        {(positionPermission.Add === true || isAdmin) && (
+          <Button variant="contained" startIcon={<Add />} onClick={handleOpen}>
+            Add position
+          </Button>
+        )}
       </Grid>
 
       {/* Modal Form */}
@@ -202,20 +214,24 @@ const Position = () => {
                     <TableCell>{index + 1}</TableCell>
                     <TableCell>{row.position}</TableCell>
                     <TableCell>
-                      {(positionPermission.Edit===true || isAdmin) && <Button
-                        size="small"
-                        onClick={() => handleEdit(index)}
-                        sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
-                      >
-                        <IconButton color="inherit">
-                          <Edit />
-                        </IconButton>
-                      </Button>}
-                      {(positionPermission.Delete===true || isAdmin) && <Button color="error" onClick={() => handleDelete(index)} sx={{ padding: '1px', minWidth: '24px', height: '24px' }}>
-                        <IconButton color="inherit">
-                          <Delete />
-                        </IconButton>
-                      </Button>}
+                      {(positionPermission.Edit === true || isAdmin) && (
+                        <Button
+                          size="small"
+                          onClick={() => handleEdit(index)}
+                          sx={{ padding: '1px', minWidth: '24px', height: '24px', mr: '5px' }}
+                        >
+                          <IconButton color="inherit">
+                            <Edit />
+                          </IconButton>
+                        </Button>
+                      )}
+                      {(positionPermission.Delete === true || isAdmin) && (
+                        <Button color="error" onClick={() => handleDelete(index)} sx={{ padding: '1px', minWidth: '24px', height: '24px' }}>
+                          <IconButton color="inherit">
+                            <Delete />
+                          </IconButton>
+                        </Button>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

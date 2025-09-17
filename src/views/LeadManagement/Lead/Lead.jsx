@@ -496,8 +496,8 @@ const Lead = () => {
                             <TableBody>
                               {Array.isArray(followUpData) && followUpData.length > 0 ? (
                                 (followUpData.find((d) => String(d._id) === String(addFollowIndex))?.followups || [])
-                                  // followUpData
-                                  //   .filter((data) => String(data._id) === String(addFollowIndex))
+                                  .slice() // make a shallow copy
+                                  .reverse()
                                   .map((data, index) => (
                                     <TableRow key={data._id || index}>
                                       <TableCell>{data.followupDate || 'N/A'}</TableCell>

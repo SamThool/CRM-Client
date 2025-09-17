@@ -31,7 +31,7 @@ import SubProductCategory from '../views/master/SubProductCategory/SubProductCat
 import LeaveType from '../views/master/LeaveType/LeaveType';
 import CategoryOfOrganisation from 'views/master/CategoryOfOrganisation/CategoryOfOrganisation';
 import Profession from 'views/master/Profession/Profession';
-import Prefix from "views/master/Prefix/Prefix"
+import Prefix from 'views/master/Prefix/Prefix';
 import Position from 'views/master/Position/Position';
 import Department from 'views/master/Department/Department';
 import TypeOfClient from 'views/master/TypeOfClient/TypeOfClient';
@@ -67,6 +67,7 @@ import TicketDetailView from 'views/TicketManagement/TicketDetailView';
 import LeadStage from '../views/master/Lead-stage/LeadStage';
 import TicketStatus from 'views/master/ticketStatus/TicketStatus';
 import TaskStatus from 'views/master/taskStatus/TaskStatus';
+import CompanyStaffReport from 'views/HR/Staff/company-staff-report';
 // const UtilsTypography = Loadable(lazy(() => import('views/Utils/Typography')));
 // const Prefix = Loadable(lazy(() => import('views/master/general-setup/prefix/Prefix')));
 // const Radiology = Loadable(lazy(() => import('views/master/diagnostic-setup/radiology/Radiology')));
@@ -124,7 +125,18 @@ const MainRoutes = {
     {
       path: '/',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'super-admin', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'admin',
+            'staff',
+            'super-admin',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <NavigateToDashboard />
         </PrivateRoute>
       )
@@ -133,7 +145,9 @@ const MainRoutes = {
     {
       path: '/company-settings/',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <CompanySettings />
         </PrivateRoute>
       )
@@ -141,7 +155,9 @@ const MainRoutes = {
     {
       path: '/company-settings/:id',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <UpdateCompanySettings />
         </PrivateRoute>
       )
@@ -150,7 +166,9 @@ const MainRoutes = {
     {
       path: '/master/bank-details',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <BankDetails />
         </PrivateRoute>
       )
@@ -158,7 +176,9 @@ const MainRoutes = {
     {
       path: '/master/product-or-service-category',
       element: (
-        <PrivateRoute allowedRoles={['admin', "staff",'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <ProductOrServiceCategory />
         </PrivateRoute>
       )
@@ -166,7 +186,9 @@ const MainRoutes = {
     {
       path: '/master/sub-product-category',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <SubProductCategory />
         </PrivateRoute>
       )
@@ -174,7 +196,9 @@ const MainRoutes = {
     {
       path: '/master/leave-type',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <LeaveType />
         </PrivateRoute>
       )
@@ -182,7 +206,9 @@ const MainRoutes = {
     {
       path: '/master/lead-reference',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <LeadReference />
         </PrivateRoute>
       )
@@ -190,15 +216,19 @@ const MainRoutes = {
     {
       path: '/master/lead-status',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <LeadStatus />
         </PrivateRoute>
       )
     },
-     {
+    {
       path: '/master/lead-stage',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <LeadStage />
         </PrivateRoute>
       )
@@ -206,7 +236,9 @@ const MainRoutes = {
     {
       path: '/master/lead-type',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <LeadType />
         </PrivateRoute>
       )
@@ -214,7 +246,9 @@ const MainRoutes = {
     {
       path: '/master/category-of-organtion',
       element: (
-        <PrivateRoute allowedRoles={['admin', 'Administrative',"staff", 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'Administrative', 'staff', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <CategoryOfOrganisation />
         </PrivateRoute>
       )
@@ -222,7 +256,9 @@ const MainRoutes = {
     {
       path: '/master/profession',
       element: (
-        <PrivateRoute allowedRoles={['admin', 'Administrative',"staff", 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'Administrative', 'staff', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Profession />
         </PrivateRoute>
       )
@@ -230,7 +266,18 @@ const MainRoutes = {
     {
       path: '/master/prefix',
       element: (
-        <PrivateRoute allowedRoles={['super-admin','admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'super-admin',
+            'admin',
+            'staff',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <Prefix />
         </PrivateRoute>
       )
@@ -238,7 +285,18 @@ const MainRoutes = {
     {
       path: '/master/gst-percentage',
       element: (
-        <PrivateRoute allowedRoles={['super-admin','admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'super-admin',
+            'admin',
+            'staff',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <GstPercentage />
         </PrivateRoute>
       )
@@ -246,7 +304,18 @@ const MainRoutes = {
     {
       path: '/master/position',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'super-admin',
+            'admin',
+            'staff',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <Position />
         </PrivateRoute>
       )
@@ -254,7 +323,18 @@ const MainRoutes = {
     {
       path: '/master/departments',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'super-admin',
+            'admin',
+            'staff',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <Department />
         </PrivateRoute>
       )
@@ -262,7 +342,10 @@ const MainRoutes = {
     {
       path: 'master/network',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>,
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          ,
           <Network />
         </PrivateRoute>
       )
@@ -270,7 +353,9 @@ const MainRoutes = {
     {
       path: '/master/salary-income-head',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <SalaryIncomeHeads />
         </PrivateRoute>
       )
@@ -278,7 +363,9 @@ const MainRoutes = {
     {
       path: '/master/salary-income-deduction',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <SalaryIncomeDeduction />
         </PrivateRoute>
       )
@@ -286,7 +373,9 @@ const MainRoutes = {
     {
       path: '/master/status',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Status />
         </PrivateRoute>
       )
@@ -294,7 +383,9 @@ const MainRoutes = {
     {
       path: '/master/ticket-status',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <TicketStatus />
         </PrivateRoute>
       )
@@ -302,7 +393,9 @@ const MainRoutes = {
     {
       path: '/master/task-status',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <TaskStatus />
         </PrivateRoute>
       )
@@ -310,20 +403,20 @@ const MainRoutes = {
     {
       path: '/priority',
       element: (
-        <PrivateRoute allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Priority />
         </PrivateRoute>
       )
     },
 
-
-
-
-
     {
       path: '/users/administrative',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Administrative />
         </PrivateRoute>
       )
@@ -332,7 +425,9 @@ const MainRoutes = {
     {
       path: '/users/administrativeAddPage',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <AdministrativeAddPage />
         </PrivateRoute>
       )
@@ -341,7 +436,9 @@ const MainRoutes = {
     {
       path: '/users/administrativeUpdatePage/:id',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <AdministrativeUpdatePage />
         </PrivateRoute>
       )
@@ -381,7 +478,9 @@ const MainRoutes = {
     {
       path: '/hr/leave-management',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <LeaveManagerMain />
         </PrivateRoute>
       )
@@ -389,14 +488,19 @@ const MainRoutes = {
     {
       path: '/hr/attendance',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Attendance />
         </PrivateRoute>
       )
-    },{
+    },
+    {
       path: '/hr/attendance-list',
       element: (
-        <PrivateRoute allowedRoles={['admin', "staff",'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <AttendanceList />
         </PrivateRoute>
       )
@@ -404,7 +508,9 @@ const MainRoutes = {
     {
       path: '/lead-management/lead',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Lead />
         </PrivateRoute>
       )
@@ -412,7 +518,9 @@ const MainRoutes = {
     {
       path: '/lead-management/AddLead',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <AddLead />
         </PrivateRoute>
       )
@@ -420,7 +528,9 @@ const MainRoutes = {
     {
       path: '/lead-management/EditLead/:id',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <EditLead />
         </PrivateRoute>
       )
@@ -428,7 +538,9 @@ const MainRoutes = {
     {
       path: '/lead-management/parametric-report',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <ParametricReport />
         </PrivateRoute>
       )
@@ -436,7 +548,9 @@ const MainRoutes = {
     {
       path: '/lead-management/analytical-report',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <AnalyticalReport />
         </PrivateRoute>
       )
@@ -444,15 +558,19 @@ const MainRoutes = {
     {
       path: '/prospects',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-          <Prospects/>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          <Prospects />
         </PrivateRoute>
       )
     },
     {
       path: '/prospects/AddCompany',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <AddCompany />
         </PrivateRoute>
       )
@@ -460,7 +578,9 @@ const MainRoutes = {
     {
       path: '/prospects/editCompany/:id',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <EditCompany />
         </PrivateRoute>
       )
@@ -468,7 +588,9 @@ const MainRoutes = {
     {
       path: '/contacts',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Contacts />
         </PrivateRoute>
       )
@@ -476,7 +598,18 @@ const MainRoutes = {
     {
       path: '/client/',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff",'super-admin', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'admin',
+            'staff',
+            'super-admin',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <Client />
         </PrivateRoute>
       )
@@ -484,7 +617,9 @@ const MainRoutes = {
     {
       path: '/super-admin-client/',
       element: (
-        <PrivateRoute allowedRoles={['super-admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['super-admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Client />
         </PrivateRoute>
       )
@@ -492,147 +627,206 @@ const MainRoutes = {
     {
       path: '/client/AddClient',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff",'super-admin', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'admin',
+            'staff',
+            'super-admin',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <AddClient />
         </PrivateRoute>
       )
     },
     {
-      path:'/client/editClient/:id',
+      path: '/client/editClient/:id',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff",'super-admin', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'admin',
+            'staff',
+            'super-admin',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <UpdateClient />
         </PrivateRoute>
       )
     },
-    
+
     {
       path: '/type-of-client',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff",'super-admin', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={[
+            'admin',
+            'staff',
+            'super-admin',
+            'Administrative',
+            'NursingAndParamedical',
+            'MedicalOfficer',
+            'Support',
+            'Consultant'
+          ]}
+        >
           <TypeOfClient />
         </PrivateRoute>
       )
     },
 
     {
-      path:'/users/company-staff',
+      path: '/users/company-staff',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-         <AdminStaff/>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          <AdminStaff />
         </PrivateRoute>
       )
-    },
-    { 
-      path:'/users/company-exstaff',
-      element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-          <AdminExStaff/>
-        </PrivateRoute>
-      )
-
     },
     {
-      path:'/invoice-management',
-      element:(
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-          <InvoiceManagement/>
+      path: '/users/company-staff-report',
+      element: (
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          <CompanyStaffReport />
         </PrivateRoute>
       )
-      
+    },
+    {
+      path: '/users/company-exstaff',
+      element: (
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          <AdminExStaff />
+        </PrivateRoute>
+      )
+    },
+    {
+      path: '/invoice-management',
+      element: (
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          <InvoiceManagement />
+        </PrivateRoute>
+      )
     },
 
     {
-      path:'/invoice-management/add-invoice',
+      path: '/invoice-management/add-invoice',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <AddInvoice />
         </PrivateRoute>
       )
     },
 
     {
-      path:'/invoice-management/addInvoice',
-      element:(
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-          <Add />  
+      path: '/invoice-management/addInvoice',
+      element: (
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          <Add />
         </PrivateRoute>
       )
     },
     {
-      path:'/invoice-management/update-gst/:id',
+      path: '/invoice-management/update-gst/:id',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <GstEditPage />
         </PrivateRoute>
       )
     },
     {
-      path:'/invoice-management/update-non-gst/:id',
+      path: '/invoice-management/update-non-gst/:id',
       element: (
-        <PrivateRoute allowedRoles={['admin', "staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <NonGstEditPage />
         </PrivateRoute>
       )
     },
     {
-      path:'invoice-details/:id',
-      element:(
-        <InvoiceDetails/>
-      )
+      path: 'invoice-details/:id',
+      element: <InvoiceDetails />
     },
 
     {
-      path:'/ticket-management',
+      path: '/ticket-management',
       element: (
-        <PrivateRoute allowedRoles={['admin',"staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <TicketManagement />
         </PrivateRoute>
       )
     },
     {
-      path:'/task-manager',
+      path: '/task-manager',
       element: (
-        <PrivateRoute allowedRoles={['admin', "staff",'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-          <TaskManager/>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
+          <TaskManager />
         </PrivateRoute>
       )
     },
     {
-      path:'/task-details/:id',
+      path: '/task-details/:id',
       element: (
         <PrivateRoute allowedRoles={['admin', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-          <TaskDetailView/>
+          <TaskDetailView />
         </PrivateRoute>
       )
     },
     {
-      path:'/ticket-details/:id',
+      path: '/ticket-details/:id',
       element: (
         <PrivateRoute allowedRoles={['admin', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
-          <TicketDetailView/>
+          <TicketDetailView />
         </PrivateRoute>
       )
     },
-   
-   
+
     {
-      path:'/test-bank',
+      path: '/test-bank',
       element: (
-        <PrivateRoute allowedRoles={['admin', "staff", 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <TestBank />
         </PrivateRoute>
       )
     },
-     {
-      path:'/pipeline',
+    {
+      path: '/pipeline',
       element: (
-        <PrivateRoute allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}>
+        <PrivateRoute
+          allowedRoles={['admin', 'staff', 'Administrative', 'NursingAndParamedical', 'MedicalOfficer', 'Support', 'Consultant']}
+        >
           <Pipeline />
         </PrivateRoute>
       )
     }
-    
   ]
 };
 

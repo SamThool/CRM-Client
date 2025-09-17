@@ -73,11 +73,24 @@ const AddClient = () => {
       setForm({ ...form, [name]: value });
 
       if (value.match(/^\d{6}$/)) {
-        // Set a timeout to call the fetch function after the user finishes typing
         pincodeTimeout = setTimeout(() => {
           fetchPincodeDetails(value);
         }, 500);
       }
+      return;
+    }
+
+    if (name === 'startDate') {
+      let newForm = { ...form, startDate: value };
+
+      if (value) {
+        const start = new Date(value);
+        const end = new Date(start);
+        end.setFullYear(start.getFullYear() + 1); // add 1 year
+        newForm.endDate = end.toISOString().split('T')[0]; // yyyy-mm-dd format
+      }
+
+      setForm(newForm);
       return;
     }
 
@@ -198,6 +211,7 @@ const AddClient = () => {
           toast.error(res.message || 'Failed to submit');
         }
       }
+      navigate('/client');
     } catch (e) {
       console.error(e);
       toast.error('Submission error');

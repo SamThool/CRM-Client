@@ -45,7 +45,7 @@ const inputData = [
 
 const Default = () => {
   const theme = useTheme();
-
+  const [selectedChart, setSelectedChart] = useState('Revenue');
   const [doctorOpdData, setDoctorOpdData] = useState(inputData);
   const [leads, setLeads] = useState([]);
   const [client, setclient] = useState([]);
@@ -107,7 +107,9 @@ const Default = () => {
 
   const fetchClient = async () => {
     try {
-      const response = await get('typeOfClient');
+      const role = localStorage.getItem('loginRole');
+      let url = role === 'super-admin' ? 'clientRegistration' : 'admin-clientRegistration';
+      const response = await get(url);
       setclient(response.data || []);
       console.log(response.data.length);
     } catch (error) {
@@ -209,13 +211,11 @@ const Default = () => {
       }
     }
   };
-  // Labels for the X-axis (e.g., months)
+  // --- existing datasets ---
   const invoiceDataFY = {
     title: 'Monthly Invoices (FY)',
     xLabels: ['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar'],
-    seriesData: [
-      [140, 180, 200, 210, 190, 230, 250, 220, 240, 120, 150, 170] // replace with real values per month
-    ],
+    seriesData: [[140, 180, 200, 210, 190, 230, 250, 220, 240, 120, 150, 170]],
     seriesLabelMap: { Invoice: 'Invoices' },
     colors: ['#1E88E5']
   };
@@ -223,9 +223,7 @@ const Default = () => {
   const clientDataFY = {
     title: 'Monthly Clients (FY)',
     xLabels: invoiceDataFY.xLabels,
-    seriesData: [
-      [120, 110, 130, 140, 125, 150, 160, 135, 145, 80, 100, 90] // replace with real values
-    ],
+    seriesData: [[120, 110, 130, 140, 125, 150, 160, 135, 145, 80, 100, 90]],
     seriesLabelMap: { Client: 'Clients' },
     colors: ['#43A047']
   };
@@ -233,11 +231,16 @@ const Default = () => {
   const revenueDataFY = {
     title: 'Monthly Revenue (FY)',
     xLabels: invoiceDataFY.xLabels,
-    seriesData: [
-      [8000, 7200, 9000, 9500, 8800, 10000, 10500, 9700, 10200, 5000, 7000, 6500] // replace with real values
-    ],
+    seriesData: [[8000, 7200, 9000, 9500, 8800, 10000, 10500, 9700, 10200, 5000, 7000, 6500]],
     seriesLabelMap: { Revenue: 'Revenue' },
     colors: ['#FB8C00']
+  };
+
+  // map for easy access
+  const chartOptions = {
+    Invoice: invoiceDataFY,
+    Client: clientDataFY,
+    Revenue: revenueDataFY
   };
 
   // Merged financial year data
@@ -311,7 +314,7 @@ const Default = () => {
 
             {/* Filters */}
             <Grid item xs={12} md={6}>
-              <Grid container spacing={2} justifyContent="flex-end">
+              {/* <Grid container spacing={2} justifyContent="flex-end">
                 <Grid item xs={12} sm={6} md={6}>
                   <FormControl fullWidth>
                     <InputLabel>Select Staff</InputLabel>
@@ -341,7 +344,7 @@ const Default = () => {
                     </Select>
                   </FormControl>
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
 
@@ -454,26 +457,27 @@ const Default = () => {
         </Grid>
       </Grid>
       <Grid item xs={12}>
-        <Card spacing={gridSpacing}>
+        <Card spacing={gridSpacing} sx={{ p: 2 }}>
+          {/* Dropdown to select chart */}
+          <FormControl sx={{ mb: 2, minWidth: 200 }}>
+            <InputLabel>Select Data</InputLabel>
+            <Select value={selectedChart} label="Select Data" onChange={(e) => setSelectedChart(e.target.value)}>
+              <MenuItem value="Invoice">Invoice</MenuItem>
+              <MenuItem value="Client">Client</MenuItem>
+              <MenuItem value="Revenue">Revenue</MenuItem>
+            </Select>
+          </FormControl>
+
+          {/* Render corresponding chart */}
           <ReusableBarChart
-            title={mergedDataFY.title}
-            seriesData={mergedDataFY.seriesData}
-            xLabels={mergedDataFY.xLabels}
-            seriesLabelMap={mergedDataFY.seriesLabelMap}
-            colors={mergedDataFY.colors}
+            title={chartOptions[selectedChart].title}
+            seriesData={chartOptions[selectedChart].seriesData}
+            xLabels={chartOptions[selectedChart].xLabels}
+            seriesLabelMap={chartOptions[selectedChart].seriesLabelMap}
+            colors={chartOptions[selectedChart].colors}
           />
         </Card>
       </Grid>
-      {/* <Grid item xs={12}>
-        <Card spacing={gridSpacing}>
-          <ReusableBarChart {...invoiceData} />
-        </Card>
-      </Grid>
-      <Grid item xs={12}>
-        <Card spacing={gridSpacing}>
-          <ReusableBarChart {...revenueData} />
-        </Card>
-      </Grid> */}
     </Grid>
   );
 };

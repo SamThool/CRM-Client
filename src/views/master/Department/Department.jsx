@@ -64,12 +64,22 @@ const Department = () => {
   };
   useEffect(() => {
     const loginRole = localStorage.getItem('loginRole');
+
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.['departments']) {
+
+    if (loginRole === 'super-admin') {
+      setDepartmentPermission({
+        View: true,
+        Add: true,
+        Edit: true,
+        Delete: true
+      });
+    } else if (systemRights?.actionPermissions?.['departments']) {
       setDepartmentPermission(systemRights.actionPermissions['departments']);
     }
+
     fetchDepartments();
   }, [systemRights]);
 
