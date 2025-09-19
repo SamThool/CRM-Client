@@ -85,7 +85,7 @@ const MenuList = () => {
     // getSystemRights();
     getDailyConfirmedAppointmentConsultantWise();
   }, []);
-  console.log('System Rights:', systemRights);
+  // console.log('System Rights:', systemRights);
   // Pass action permissions to menu item filtering if needed downstream
   const filterMenuItems = (menuItems, authorizedIds, actionPermissions) => {
     return menuItems

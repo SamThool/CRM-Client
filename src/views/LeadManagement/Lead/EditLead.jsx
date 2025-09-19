@@ -11,22 +11,23 @@ import {
   Card,
   CardContent,
   Divider,
+  Checkbox,
   Box,
-  Table,
-  TableHead,
-  TableCell,
-  TableBody,
-  IconButton,
-  TableRow
+  IconButton
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { get, put } from 'api/api';
-import { Delete, Edit } from '@mui/icons-material';
 
 const EditLead = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  const [wantContact, setWantContact] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [form, setForm] = useState({
     firstName: '',
     middleName: '',
@@ -63,32 +64,25 @@ const EditLead = () => {
   const [staffOptions, setStaffOptions] = useState([]);
   const [clientList, setClientData] = useState([]);
   const [leadRefs, setLeadRefs] = useState([]);
-  const [editFollowUpId, setEditFollowUpId] = useState(null);
+  const [departments, setDepartments] = useState([]);
+
   const [products, setProducts] = useState([]);
+  const [positions, setPositions] = useState([]);
+
   const [prospects, setProspects] = useState([]);
-  const [followUpData, setFollowUpData] = useState([]);
-  const [addFollowIndex, setAddFollowIndex] = useState();
-  const [statusOptions, setStatusOptions] = useState([]);
-  const [isEditMode, setIsEditMode] = useState(false);
+
   const dropdownOptions = {
     gender: ['Male', 'Female', 'Other'],
     country: ['India', 'USA', 'UK']
   };
-  const [fform, setfForm] = useState({
-    followupDate: '',
-    followupTime: '',
-    leadstatus: '',
-    comment: '',
-    leadId: ''
-  });
 
   // Validation with dynamic required fields
   const validate = () => {
     const newErrors = {};
     const requiredFields = [
-      'firstName',
-      'lastName',
-      'gender',
+      // 'firstName',
+      // 'lastName',
+      // 'gender',
       'countryCode',
       'phoneNo',
       'email',
@@ -114,69 +108,36 @@ const EditLead = () => {
 
     // Debug: Show which fields are required
 
-    console.log('Validate: requiredFields:', requiredFields);
+    // console.log('Validate: requiredFields:', requiredFields);
 
     requiredFields.forEach((field) => {
       if (!form[field]) {
         newErrors[field] = 'Required';
         // Debug: Which field is missing
-        console.log(`Validate: missing required field: ${field}`);
+        // console.log(`Validate: missing required field: ${field}`);
       }
     });
 
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = 'Invalid email';
-      console.log('Validate: Invalid email format:', form.email);
+      // console.log('Validate: Invalid email format:', form.email);
     }
     if (form.altEmail && form.altEmail.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.altEmail)) {
       newErrors.altEmail = 'Invalid alt email';
-      console.log('Validate: Invalid alt email format:', form.altEmail);
+      // console.log('Validate: Invalid alt email format:', form.altEmail);
     }
 
     // Debug: Output all errors before setting
-    console.log('Validate: newErrors:', newErrors);
+    // console.log('Validate: newErrors:', newErrors);
 
     setErrors(newErrors);
 
     const isValid = Object.keys(newErrors).length === 0;
-    console.log('Validate: isValid:', isValid);
+    // console.log('Validate: isValid:', isValid);
 
     return isValid;
   };
-  const fetchLeadStatusOptions = async () => {
-    try {
-      const response = await get('leadstatus');
-      setStatusOptions(response.data || []);
-    } catch (err) {
-      toast.error('Failed to load leadstatus options');
-      console.error(err);
-    }
-  };
-  const handleChanges = (e) => {
-    const { name, value } = e.target;
-    setfForm((prev) => ({ ...prev, [name]: value }));
-  };
-  const handleDeleteFollowUp = async (followUpId) => {
-    try {
-      await remove(`lead/followup/${followUpId}`);
-      toast.success('Follow-up deleted');
-      setFollowUpData((prev) => prev.filter((item) => item._id !== followUpId));
-    } catch (error) {
-      console.error(error);
-      toast.error('Failed to delete follow-up');
-    }
-  };
 
-  const handleEditFollowUp = (id, data) => {
-    setEditFollowUpId(id);
-    setIsEditMode(true);
-    setfForm({
-      followupDate: data.followupDate || '',
-      followupTime: data.followupTime || '',
-      leadstatus: data.leadstatus?._id || data.leadstatus || '',
-      comment: data.comment || ''
-    });
-  };
   // Handle lead category change
   const handleCategoryChange = (event) => {
     const newCategory = event.target.value;
@@ -265,7 +226,7 @@ const EditLead = () => {
   // Handle form submit
   const handleSubmit = async () => {
     if (validate()) {
-      console.log('hello');
+      // console.log('hello');
       try {
         let payload = { ...form, leadCategory };
         if (leadCategory === 'prospect') {
@@ -281,8 +242,10 @@ const EditLead = () => {
           payload.clientList = '';
           // companyName is still required, but newCompanyName is the unique field for new leads
         }
+        // console.log('payload', payload);
 
         const response = await put(`lead/${id}`, payload);
+        // console.log(response);
         if (response) {
           toast.success(response.message || '✅ Lead updated successfully!', {
             autoClose: 3000,
@@ -296,6 +259,19 @@ const EditLead = () => {
     } else {
       toast.error('Please fill all required fields correctly');
     }
+  };
+
+  const handleContactChange = (index, field, value) => {
+    const updated = [...form.contact];
+    updated[index][field] = value;
+    setForm({ ...form, contact: updated });
+  };
+
+  const addContact = () => {
+    setForm((prevForm) => ({
+      ...prevForm,
+      contact: [...(prevForm.contact || []), { name: '', email: '', position: '', department: '', phone: '', selected: false }]
+    }));
   };
 
   // Fetch dropdown and lead details
@@ -322,13 +298,12 @@ const EditLead = () => {
 
   const fetchLeadDetails = async () => {
     try {
-      const response = await get(`lead/${id}`);
+      const employeeId = localStorage.getItem('empId');
+      const response = await get(`lead/${employeeId}/${id}/`);
       if (response.success) {
-        const leadData = response?.data[0];
-        console.log(response);
-        setFollowUpData(leadData?.followups);
+        const leadData = response.data;
+        console.log(leadData);
         setLeadCategory(leadData.leadCategory || '');
-        setAddFollowIndex(leadData?._id);
 
         setForm((prev) => ({
           ...prev,
@@ -349,6 +324,7 @@ const EditLead = () => {
           newCompanyName: leadData.newCompanyName || ''
         }));
       }
+      // console.log(form);
     } catch (err) {
       console.error('Failed to fetch lead details:', err);
     }
@@ -361,6 +337,27 @@ const EditLead = () => {
       setClientData(filteredData);
     }
   };
+
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await get('department');
+        if (response && response.data) {
+          setDepartments(response.data);
+        }
+      } catch (error) {}
+    };
+    const fetchPositions = async () => {
+      try {
+        const response = await get('position');
+        if (response && response.data) {
+          setPositions(response.data);
+        }
+      } catch (err) {}
+    };
+    fetchPositions();
+    fetchDepartments();
+  }, []);
 
   // Sync prospect/client selection with company data
   useEffect(() => {
@@ -406,7 +403,6 @@ const EditLead = () => {
   useEffect(() => {
     fetchDropdownData();
     fetchLeadDetails();
-    fetchLeadStatusOptions();
     fetchClientDetails();
     // eslint-disable-next-line
   }, []);
@@ -419,7 +415,7 @@ const EditLead = () => {
             <Typography variant="h6">Lead Form</Typography>
           </Grid>
           <Grid item>
-            <Button variant="contained" color="primary" component={Link} to="/lead-management/lead">
+            <Button variant="contained" color="primary" onClick={() => navigate(-1)}>
               <ArrowBackIcon /> Back
             </Button>
           </Grid>
@@ -502,7 +498,7 @@ const EditLead = () => {
             <TextField
               label="Company Name"
               name="companyName"
-              value={form.newCompanyName || ''}
+              value={form.companyName || ''}
               onChange={handleChange}
               fullWidth
               required
@@ -807,139 +803,114 @@ const EditLead = () => {
               ))}
             </TextField>
           </Grid>
+
+          <Grid item xs={12} ml={0.5}>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={wantContact}
+                  onChange={(e) => {
+                    const checked = e.target.checked;
+                    setWantContact(checked);
+                    if (checked && (!form.contact || form.contact.length === 0)) {
+                      addContact();
+                    }
+                  }}
+                  disabled={isLoading}
+                />
+              }
+              label="Add Contacts"
+            />
+          </Grid>
+          {wantContact &&
+            form.contact?.map((contact, index) => (
+              <React.Fragment key={index}>
+                <Grid container spacing={2} alignItems="center" m={1}>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      label="Name"
+                      value={contact.name || ''}
+                      onChange={(e) => handleContactChange(index, 'name', e.target.value)}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      label="Email"
+                      value={contact.email || ''}
+                      onChange={(e) => handleContactChange(index, 'email', e.target.value)}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      select
+                      label="Designation"
+                      value={contact.designation || ''}
+                      onChange={(e) => handleContactChange(index, 'position', e.target.value)}
+                      fullWidth
+                    >
+                      {positions?.map((pos) => (
+                        <MenuItem key={pos._id} value={pos.position}>
+                          {pos.position}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      select
+                      label="Department"
+                      value={contact.department || ''}
+                      onChange={(e) => handleContactChange(index, 'department', e.target.value)}
+                      fullWidth
+                    >
+                      {departments.map((dept) => (
+                        <MenuItem key={dept._id} value={dept.department}>
+                          {dept.department}
+                        </MenuItem>
+                      ))}
+                    </TextField>
+                  </Grid>
+                </Grid>
+                <Grid container spacing={2} alignItems="center" m={1}>
+                  <Grid item xs={12} md={3}>
+                    <TextField
+                      label="Phone"
+                      value={contact.phone || ''}
+                      onChange={(e) => handleContactChange(index, 'phone', e.target.value)}
+                      fullWidth
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={1}>
+                    <Checkbox
+                      checked={contact.selected || false}
+                      onChange={(e) => handleContactChange(index, 'selected', e.target.checked)}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2}>
+                    <Box display="flex" gap={1}>
+                      <IconButton color="primary" onClick={addContact} disabled={isLoading}>
+                        <AddIcon />
+                      </IconButton>
+                      <IconButton color="error" onClick={() => removeContact(index)} disabled={isLoading}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                </Grid>
+              </React.Fragment>
+            ))}
+
           <Grid item xs={12}>
             <Button variant="contained" color="primary" onClick={handleSubmit}>
               Update
             </Button>
           </Grid>
         </Grid>
+
         <ToastContainer />
       </CardContent>
-
-      <Box>
-        <Card>
-          <CardContent>
-            <Grid container spacing={2}>
-              <Grid item xs={12} md={4}>
-                <TextField
-                  fullWidth
-                  name="followupDate"
-                  value={fform.followupDate || ''}
-                  label="Follow Up Date"
-                  type="date"
-                  onChange={handleChanges}
-                  InputLabelProps={{ shrink: true }}
-                  margin="dense"
-                />
-                <TextField
-                  fullWidth
-                  name="followupTime"
-                  value={fform.followupTime || ''}
-                  label="Follow Up Time"
-                  type="time"
-                  onChange={handleChanges}
-                  InputLabelProps={{ shrink: true }}
-                  margin="dense"
-                />
-                <TextField
-                  fullWidth
-                  select
-                  name="leadstatus"
-                  value={fform.leadstatus || ''}
-                  label="Leadstatus"
-                  onChange={handleChanges}
-                  margin="dense"
-                >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option._id} value={option._id}>
-                      {option.LeadStatus}
-                    </MenuItem>
-                  ))}
-                </TextField>
-                <TextField
-                  fullWidth
-                  name="comment"
-                  value={fform.comment || ''}
-                  label="Comment"
-                  onChange={handleChanges}
-                  multiline
-                  rows={5}
-                  margin="dense"
-                />
-                <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ mt: 2 }}>
-                  {isEditMode ? 'Update' : 'Submit'}
-                </Button>
-              </Grid>
-              <Grid item xs={12} md={8}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" gutterBottom>
-                      Follow-Up History
-                    </Typography>
-                    <Table>
-                      <TableHead>
-                        <TableRow>
-                          <TableCell>Date</TableCell>
-                          <TableCell>Time</TableCell>
-                          <TableCell>Leadstatus</TableCell>
-                          <TableCell>Comments</TableCell>
-                          <TableCell>Actions</TableCell>
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {Array.isArray(followUpData) && followUpData.length > 0 ? (
-                          // (followUpData.find((d) => String(d._id) === String(addFollowIndex))?.followups || [])
-                          followUpData
-                            .slice()
-                            //   .filter((data) => String(data._id) === String(addFollowIndex))             // make a shallow copy
-                            .reverse()
-                            .map((data, index) => (
-                              <TableRow key={data._id || index}>
-                                <TableCell>{data.followupDate || 'N/A'}</TableCell>
-                                <TableCell>{data.followupTime || 'N/A'}</TableCell>
-                                <TableCell>
-                                  {statusOptions.find((opt) => opt._id === data.leadstatus)?.LeadStatus ||
-                                    data.leadstatus?.LeadStatus ||
-                                    'N/A'}
-                                </TableCell>
-                                <TableCell>{data.comment || 'N/A'}</TableCell>
-                                <TableCell>
-                                  <Box display="flex" alignItems="center">
-                                    <IconButton
-                                      onClick={() =>
-                                        handleEditFollowUp(data._id, {
-                                          followupDate: data.followupDate,
-                                          followupTime: data.followupTime,
-                                          leadstatus: data.leadstatus?._id || data.leadstatus,
-                                          comment: data.comment
-                                        })
-                                      }
-                                    >
-                                      <Edit color="primary" />
-                                    </IconButton>
-                                    <IconButton onClick={() => handleDeleteFollowUp(data._id)}>
-                                      <Delete color="error" />
-                                    </IconButton>
-                                  </Box>
-                                </TableCell>
-                              </TableRow>
-                            ))
-                        ) : (
-                          <TableRow>
-                            <TableCell colSpan={5} align="center">
-                              No follow-ups found
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      </Box>
     </Card>
   );
 };

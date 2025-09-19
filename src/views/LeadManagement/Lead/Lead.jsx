@@ -103,10 +103,13 @@ const Lead = () => {
       let url = 'lead';
       if (loginRole === 'staff' && employeeId) {
         url += `/${employeeId}`;
+        console.log('is staff');
       }
 
+      console.log(url);
+
       const response = await get(url);
-      console.log('response data is', response.data);
+      console.log('response data is', response);
       setData(response.data || []);
     } catch (error) {
       toast.error('Failed to fetch lead data');
@@ -225,7 +228,7 @@ const Lead = () => {
           day: '2-digit'
         });
 
-      console.log('data', data);
+      // console.log('data', data);
 
       const formattedStartDate = formatCustomDate(today);
       const formattedEndDate = formatCustomDate(sixMonthsLater);
@@ -258,7 +261,7 @@ const Lead = () => {
         }))
       };
       setDisableConvertClient(index);
-      console.log('form data is conver to client', formData);
+      // console.log('form data is conver to client', formData);
       const res = await post('admin-clientRegistration', formData);
       if (res.status === true) {
         setDisableConvertClient(null);
@@ -277,8 +280,8 @@ const Lead = () => {
     return statusObj?.colorCode || '#9e9e9e';
   };
 
-  console.log(followUpData);
-  console.log(addFollowIndex);
+  // console.log(followUpData);
+  // console.log(addFollowIndex);
 
   return (
     <>
