@@ -99,7 +99,6 @@ const UpdateCompanySettings = () => {
     const fetchClient = async () => {
       try {
         const res = await get(`/clientRegistration/${id}`);
-        console.log('Fetched client data:', res);
 
         if (res.status === 'true' && res.data) {
           const d = res.data;
@@ -285,16 +284,14 @@ const UpdateCompanySettings = () => {
 
   // handlers with debounce
   const handleChange = (e) => {
-    const { name, value, files } = e.target;
-    if (files) {
+    const { name, files, value } = e.target;
+
+    if (files && files[0]) {
       setForm((prev) => ({ ...prev, [name]: files[0] }));
-      setLogoPreview(URL.createObjectURL(files[0]));
+      setLogoPreview(files[0]); // always set new file
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
-      if (name === 'pincode' && /^\d{6}$/.test(value)) {
-        clearTimeout(pincodeTimeout.current);
-        pincodeTimeout.current = setTimeout(() => fetchPincodeDetails(value, 'form'), 500);
-      }
+      // your existing logic for pincode, etc.
     }
   };
 
@@ -459,56 +456,97 @@ const UpdateCompanySettings = () => {
     return Object.keys(err).length === 0;
   };
 
+  const validateAll = () => {
+    const errors = [];
 
-const validateAll = () => {
-  const errors = [];
+    if (!form.clientName?.trim()) errors.push('clientName');
+    if (!form.officialMailId?.trim()) errors.push('officialMailId');
+    if (!form.officialPhoneNo?.trim()) errors.push('officialPhoneNo');
+    if (!form.gstNo?.trim()) errors.push('gstNo');
+    if (!form.officeAddress?.trim()) errors.push('officeAddress');
 
-  if (!form.clientName?.trim()) errors.push('clientName');
-  if (!form.officialMailId?.trim()) errors.push('officialMailId');
-  if (!form.officialPhoneNo?.trim()) errors.push('officialPhoneNo');
-  if (!form.gstNo?.trim()) errors.push('gstNo');
-  if (!form.officeAddress?.trim()) errors.push('officeAddress');
+    if (errors.length > 0) {
+      console.log('Validation failed. Missing fields:', errors);
+      return false;
+    }
 
-  if (errors.length > 0) {
-    console.log('Validation failed. Missing fields:', errors);
-    return false;
-  }
-
-  return true;
-};
-
-
+    return true;
+  };
 
   const handleDeleteLogo = () => {
-    setForm((prevForm) => ({
-      ...prevForm,
-      companyLogo: null
-    }));
-    setLogoPreview('');
+    setForm((prev) => ({ ...prev, companyLogo: null }));
+    setLogoPreview(null);
   };
 
   // submission
+  // const handleSubmit = async () => {
+  //   // if (!validateAll()) {
+  //   //   console.log('Validation failed');
+  //   //   return;
+  //   // }
+
+  //   // ✅ Validate main form
+  //   const isMainValid = validateMain(); // uses setErrors internally
+
+  //   // ✅ Validate section arrays using your error states
+  //   const isExpValid = showExpCenter ? validateSection(expCenter, null, setExpErrors, 'Export Center') : true;
+  //   const isWhValid = showWarehouse ? validateSection(warehouse, null, setWarehouseErrors, 'Warehouse') : true;
+  //   const isFacValid = showFactories ? validateSection(factories, null, setFactoriesErrors, 'Factory') : true;
+  //   const isBranchValid = showBranches ? validateSection(branches, null, setBranchesErrors, 'Branch') : true;
+
+  //   // ✅ Stop submission if any section fails validation
+  //   if (!(isMainValid && isExpValid && isWhValid && isFacValid && isBranchValid)) {
+  //     console.log('Validation failed');
+  //     return;
+  //   }
+
+  //   const locations = {
+  //     exportCenter: showExpCenter ? expCenter : null,
+  //     warehouse: showWarehouse ? warehouse : null,
+  //     factories: showFactories ? factories : null,
+  //     branches: showBranches ? branches : null
+  //   };
+  //   const data = { ...form, locations };
+
+  //   try {
+  //     console.log('Submitting data:', data);
+  //     const res = await put(`clientRegistration/${id}`, data);
+  //     if (res.success === true) {
+  //       toast.success('Updated successfully');
+  //       navigate('/company-settings');
+  //     } else toast.error('Update failed');
+  //   } catch (e) {
+  //     console.error(e);
+  //     toast.error('Error updating');
+  //   }
+  // };
+
+  const getLogoUrl = (logoPath) => {
+    if (!logoPath) return null;
+
+    // normalize slashes
+    const normalized = logoPath.replace(/\\/g, '/');
+
+    // replace public/images with uploads
+    const urlPath = normalized.replace('public/images', 'uploads');
+
+    // prepend backend root URL, not /api/
+    console.log(`http://localhost:5050/api/${urlPath}`);
+
+    return `http://localhost:5050/api/${urlPath}`;
+  };
+
   const handleSubmit = async () => {
+    const isMainValid = validateMain();
+    const isExpValid = showExpCenter ? validateSection(expCenter, null, setExpErrors, 'Export Center') : true;
+    const isWhValid = showWarehouse ? validateSection(warehouse, null, setWarehouseErrors, 'Warehouse') : true;
+    const isFacValid = showFactories ? validateSection(factories, null, setFactoriesErrors, 'Factory') : true;
+    const isBranchValid = showBranches ? validateSection(branches, null, setBranchesErrors, 'Branch') : true;
 
-    // if (!validateAll()) {
-    //   console.log('Validation failed');
-    //   return;
-    // }
-
-      // ✅ Validate main form
-  const isMainValid = validateMain(); // uses setErrors internally
-
-  // ✅ Validate section arrays using your error states
-  const isExpValid = showExpCenter ? validateSection(expCenter, null, setExpErrors, 'Export Center') : true;
-  const isWhValid = showWarehouse ? validateSection(warehouse, null, setWarehouseErrors, 'Warehouse') : true;
-  const isFacValid = showFactories ? validateSection(factories, null, setFactoriesErrors, 'Factory') : true;
-  const isBranchValid = showBranches ? validateSection(branches, null, setBranchesErrors, 'Branch') : true;
-
-  // ✅ Stop submission if any section fails validation
-  if (!(isMainValid && isExpValid && isWhValid && isFacValid && isBranchValid)) {
-    console.log('Validation failed');
-    return;
-  }
+    if (!(isMainValid && isExpValid && isWhValid && isFacValid && isBranchValid)) {
+      console.log('Validation failed');
+      return;
+    }
 
     const locations = {
       exportCenter: showExpCenter ? expCenter : null,
@@ -516,14 +554,36 @@ const validateAll = () => {
       factories: showFactories ? factories : null,
       branches: showBranches ? branches : null
     };
-    const data = { ...form, locations };
 
     try {
-      console.log('Submitting data:', data);
-      const res = await put(`clientRegistration/${id}`, data);
+      const formData = new FormData();
+
+      // Append primitive values
+      Object.entries(form).forEach(([key, value]) => {
+        if (key !== 'companyLogo') {
+          formData.append(key, value);
+        }
+      });
+
+      // Append file
+      if (form.companyLogo instanceof File) {
+        formData.append('logo', form.companyLogo); // 👈 must match `upload.single("logo")`
+      }
+
+      if (form.companyLogo && !(form.companyLogo instanceof File)) {
+        console.error('Not a valid File object:', form.companyLogo);
+      }
+
+      // Append locations (stringify objects/arrays)
+      formData.append('locations', JSON.stringify(locations));
+
+      const res = await put(`clientRegistration/${id}`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
       if (res.success === true) {
         toast.success('Updated successfully');
-        navigate('/company-settings')
+        navigate('/company-settings');
       } else toast.error('Update failed');
     } catch (e) {
       console.error(e);
@@ -535,6 +595,11 @@ const validateAll = () => {
     setForm((prev) => ({ ...prev, companyLogo: null }));
     setLogoPreview('');
   };
+
+  useEffect(() => {
+    console.log('Updated form:', form);
+  }, [form]);
+
   return (
     <>
       <Breadcrumb title="Company Settings">
@@ -571,7 +636,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* Email */}
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -585,7 +649,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* Mobile Number */}
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -603,7 +666,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* Alternate Mobile Number */}
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -620,7 +682,6 @@ const validateAll = () => {
                     fullWidth
                   />
                 </Grid>
-
                 {/* Website Link */}
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -634,7 +695,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* GST Number */}
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -652,7 +712,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* Address */}
                 <Grid item xs={12} sm={8}>
                   <TextField
@@ -666,7 +725,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* Pincode */}
                 <Grid item xs={12} sm={4}>
                   <TextField
@@ -684,7 +742,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* Country */}
                 <Grid item xs={12} sm={3}>
                   <TextField
@@ -698,7 +755,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* State */}
                 <Grid item xs={12} sm={3}>
                   <TextField
@@ -712,7 +768,6 @@ const validateAll = () => {
                     required
                   />
                 </Grid>
-
                 {/* City */}
                 <Grid item xs={12} sm={3}>
                   <TextField
@@ -727,8 +782,7 @@ const validateAll = () => {
                   />
                 </Grid>
 
-                {/* Company Logo */}
-                <Grid item xs={12} sm={3}>
+                {/* <Grid item xs={12} sm={3}>
                   <TextField
                     type="file"
                     label="Company Logo"
@@ -742,6 +796,44 @@ const validateAll = () => {
                   {logoPreview && (
                     <Box position="relative" display="inline-block" mt={2}>
                       <img src={logoPreview} alt="Company Logo" style={{ width: '100px', borderRadius: '4px' }} />
+                      <IconButton
+                        size="small"
+                        onClick={handleDeleteLogo}
+                        sx={{
+                          position: 'absolute',
+                          top: -8,
+                          left: -8,
+                          backgroundColor: 'white',
+                          border: '1px solid #ccc',
+                          boxShadow: 1,
+                          '&:hover': {
+                            backgroundColor: '#f8d7da',
+                            color: 'red'
+                          }
+                        }}
+                      >
+                        <FaTrash size={12} />
+                      </IconButton>
+                    </Box>
+                  )}
+                </Grid> */}
+
+                <Grid item xs={12} sm={3}>
+                  {!logoPreview && !form.companyLogo && (
+                    <Button variant="contained" component="label" fullWidth>
+                      Upload Logo
+                      <input type="file" name="companyLogo" hidden accept="image/*" onChange={handleChange} />
+                    </Button>
+                  )}
+
+                  {(logoPreview || form.companyLogo) && (
+                    <Box position="relative" display="inline-block" mt={2}>
+                      <img
+                        src={logoPreview instanceof File ? URL.createObjectURL(logoPreview) : getLogoUrl(form.companyLogo)}
+                        alt="Company Logo"
+                        style={{ width: 100, height: 100, objectFit: 'contain', borderRadius: 4 }}
+                      />
+
                       <IconButton
                         size="small"
                         onClick={handleDeleteLogo}
@@ -782,99 +874,6 @@ const validateAll = () => {
                     label="Branches"
                   />
                 </Grid>
-
-                {/* exp center
-                {showExpCenter && (
-                   <> 
-                  <Box mt={2}>
-                    <Typography ml={3} variant="h6" gutterBottom>
-                    Experience Center
-                    </Typography>
-                    <Grid container spacing={2} ml={1}>
-                      <Grid item  sm={4}>
-                        <TextField
-                          label="Center Address"
-                          name="expCenterAddress"
-                          value={expCenter.address}
-                          onChange={handleExpCenterChange}
-                          error={!!expCenterErrors.address}
-                          helperText={expCenterErrors.address}
-                          fullWidth
-                          required
-                          />
-                      </Grid>
-                      <Grid item sm={4}>
-                        <TextField
-                          label="Pincode"
-                          name="expCenterPincode"
-                          value={expCenter.pincode}
-                          onChange={handleExpCenterChange}
-                          error={!!expCenterErrors.pincode}
-                          helperText={expCenterErrors.pincode}
-                          inputProps={{
-                            maxLength: 6,
-                            minLength: 6
-                          }}
-                          fullWidth
-                          required
-                          />
-                      </Grid>
-                      <Grid item sm={4}>
-                        <TextField
-                          label="Country"
-                          name="expCenterCountry"
-                          value={expCenter.country}
-                          onChange={handleExpCenterChange}
-                          error={!!expCenterErrors.country}
-                          helperText={expCenterErrors.country}
-                          fullWidth
-                          required
-                          />
-                      </Grid>
-                      <Grid item sm={4}>
-                        <TextField
-                          label="State"
-                          name="expCenterState"
-                          value={expCenter.state}
-                          onChange={handleExpCenterChange}
-                          error={!!expCenterErrors.state}
-                          helperText={expCenterErrors.state}
-                          fullWidth
-                          required
-                        />
-                      </Grid>
-                      <Grid item sm={4}>
-                        <TextField
-                          label="City"
-                          name="expCenterCity"
-                          value={expCenter.city}
-                          onChange={handleExpCenterChange}
-                          error={!!expCenterErrors.city}
-                          helperText={expCenterErrors.city}
-                          fullWidth
-                          required
-                          />
-                      </Grid>
-                      <Grid item sm={4}>
-                        <TextField
-                          label="GST No."
-                          name="expCenterGstNo"
-                          value={expCenter.gstNo}
-                          onChange={handleExpCenterChange}
-                          error={!!expCenterErrors.gstNo}
-                          helperText={expCenterErrors.gstNo}
-                          inputProps={{
-                            maxLength: 15,
-                            minLength: 15
-                          }}
-                          fullWidth
-                          required
-                        />
-                      </Grid>
-                    </Grid>
-                  </Box>
-                  </>
-                )} */}
                 {showExpCenter &&
                   expCenter?.map((item, index) => {
                     return (
@@ -987,7 +986,6 @@ const validateAll = () => {
                       </Box>
                     );
                   })}
-
                 {/* factory */}
                 {showFactories && (
                   <>
@@ -1101,7 +1099,6 @@ const validateAll = () => {
                     ))}
                   </>
                 )}
-
                 {showWarehouse && (
                   <>
                     {warehouse.map((item, index) => (
@@ -1214,7 +1211,6 @@ const validateAll = () => {
                     ))}
                   </>
                 )}
-
                 {showBranches && (
                   <>
                     {branches.map((item, index) => (
@@ -1327,7 +1323,6 @@ const validateAll = () => {
                     ))}
                   </>
                 )}
-
                 <Grid item xs={12}>
                   <Button variant="contained" color="primary" onClick={handleSubmit}>
                     Submit

@@ -105,42 +105,6 @@ const Login = () => {
         let loginData = {};
         let systemRight = [];
 
-        // if (role === 'admin') {
-        //   loginName = data.Name || '';
-        //   loginEmail = data.Email || '';
-        //   id = data.adminId || data.login?._id || '';
-
-        //   // refId = typeof data.login?.refId === 'object' ? data.login.refId._id : data.login?.refId || '';
-        //   localStorage.setItem('refId', refId);
-
-        //   console.log('🔍 data.login.refId:', data.login?.refId);
-
-        //   loginData = data.login || {};
-        //   localStorage.setItem('departmentName', data.departmentName || '');
-        //   localStorage.setItem('departmentId', data.departmentId || '');
-        //   localStorage.setItem('empCode', data.empCode || '');
-        // } else if (role === 'super-admin') {
-        //   loginName = 'Super Admin';
-        //   loginEmail = data.Email || '';
-        //   id = data.userId || '';
-        //   loginData = { name: 'Super Admin' };
-        // } else if (role === 'staff') {
-        //   loginName = data.name || '';
-        //   loginEmail = data.email || '';
-        //   // id = data.staffId || data.adminId || data.userId || data.login?._id || '';
-        //   id = data.login?._id || data.adminId || data.userId || data.staffId || '';
-
-        //   refId = data.login?.refId || '';
-        //   // refId = typeof data.login?.refId === 'object' ? data.login.refId._id : data.login?.refId || '';
-        //   loginData = data.login || {};
-        //   localStorage.setItem('departmentName', data.departmentName || '');
-        //   localStorage.setItem('departmentId', data.departmentId || '');
-        //   localStorage.setItem('empCode', data.empCode || '');
-        //   localStorage.setItem('refId', refId); // ✅ Ensure this is done
-        //   localStorage.setItem('loginData', JSON.stringify(loginData)); // ✅ Must contain "refId"
-        //   console.log('✅ Final refId stored:', refId);
-        // }
-
         if (role === 'admin') {
           loginName = data.login?.Name || '';
           loginEmail = data.login?.Email || '';
@@ -214,7 +178,7 @@ const Login = () => {
           console.log('Login Token in LocalStorage:', localStorage.getItem('token'));
           console.log('Login Cookie:', document.cookie);
 
-          navigate('/change-password');
+          navigate('/');
         } else {
           console.log('Cookies:', document.cookie);
           console.log('LocalStorage token:', localStorage.getItem('token'));

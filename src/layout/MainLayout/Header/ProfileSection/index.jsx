@@ -24,6 +24,7 @@ import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import MeetingRoomTwoToneIcon from '@mui/icons-material/MeetingRoomTwoTone';
 import { logout } from '../../../../reduxSlices/authSlice';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 
 const ProfileSection = () => {
   const theme = useTheme();
@@ -34,6 +35,7 @@ const ProfileSection = () => {
   const [savedPattern, setSavedPattern] = useState(null);
   const [userData, setUserData] = useState(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const handleToggle = () => {
     setOpen((prevOpen) => !prevOpen);
@@ -213,9 +215,24 @@ const ProfileSection = () => {
             <Typography>No user data found</Typography>
           )}
 
-          <Button variant="contained" color="primary" sx={{ mt: 4, borderRadius: '8px', px: 4 }} onClick={() => setOpenProfileModal(false)}>
-            Close
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-evenly' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 4, borderRadius: '8px', px: 4 }}
+              onClick={() => setOpenProfileModal(false)}
+            >
+              Close
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{ mt: 4, borderRadius: '8px', px: 4 }}
+              onClick={() => navigate('/change-password')}
+            >
+              Change Password
+            </Button>
+          </Box>
         </Box>
       </Modal>
     </>

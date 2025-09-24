@@ -20,7 +20,6 @@ import Breadcrumb from 'component/Breadcrumb';
 import { gridSpacing } from 'config.js';
 import { Business, ContactPhone, Delete, Edit, Language, LocationOn } from '@mui/icons-material';
 import { get, remove } from '../../api/api.js';
-import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 import EmailIntegration from './EmailIntegration.jsx';
 

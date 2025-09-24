@@ -23,7 +23,7 @@ const PermanentClientTable = ({ clientList, refreshClients, clientPermission, is
       toast.error('Delete failed');
     }
   };
-  console.log(clientList);
+  // console.log(clientList);
   return (
     <Card>
       <CardContent>
