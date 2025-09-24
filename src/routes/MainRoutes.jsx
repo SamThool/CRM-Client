@@ -49,7 +49,6 @@ import AdminExStaff from 'views/User/Admin/AdminExStaff';
 import AttendanceList from 'views/HR/Attendance/AttendanceList';
 import TaskManager from 'views/TaskManager/TaskManager';
 import TestBank from 'component/Master/TestBank';
-import ChangePassword from 'views/Login/ChangePassword';
 import InvoiceManagement from 'views/Invoice/InvoiceManagement';
 import AddInvoice from 'views/Invoice/AddInvoice';
 import Add from 'views/Invoice/Add';

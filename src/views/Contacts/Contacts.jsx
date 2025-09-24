@@ -94,12 +94,12 @@ const Contacts = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!form.companyName) newErrors.companyName = 'Required';
+    // if (!form.companyName) newErrors.companyName = 'Required';
     if (!form.contactName) newErrors.contactName = 'Required';
     if (!/^[0-9]{10}$/.test(form.phoneNo)) newErrors.phoneNo = '10 digits only';
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = 'Invalid email';
-    if (!form.designation) newErrors.designation = 'Required';
-    if (!form.department) newErrors.department = 'Select a department';
+    // if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) newErrors.email = 'Invalid email';
+    // if (!form.designation) newErrors.designation = 'Required';
+    // if (!form.department) newErrors.department = 'Select a department';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };

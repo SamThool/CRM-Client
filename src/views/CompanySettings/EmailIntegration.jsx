@@ -30,58 +30,77 @@ const EmailIntegration = ({ onSave }) => {
       </Typography>
       <Card>
         <CardContent>
-          <Grid container spacing={2}>
+          <Grid container spacing={4}>
+            {/* Left column: Official Email */}
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Official Email ID"
-                name="officialEmail"
-                value={emailConfig.officialEmail}
-                onChange={handleChange}
-              />
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Official Email ID"
+                    name="officialEmail"
+                    value={emailConfig.officialEmail}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Official Email Password"
+                    type="password"
+                    name="officialEmailPassword"
+                    value={emailConfig.officialEmailPassword}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Official Email Host"
+                    name="officialEmailHost"
+                    value={emailConfig.officialEmailHost}
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
             </Grid>
+
+            {/* Right column: Account Email */}
             <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Official Email Password"
-                type="password"
-                name="officialEmailPassword"
-                value={emailConfig.officialEmailPassword}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Official Email Host"
-                name="officialEmailHost"
-                value={emailConfig.officialEmailHost}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField fullWidth label="Account Email ID" name="accountEmail" value={emailConfig.accountEmail} onChange={handleChange} />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Account Email Password"
-                type="password"
-                name="accountEmailPassword"
-                value={emailConfig.accountEmailPassword}
-                onChange={handleChange}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                label="Account Email Host"
-                name="accountEmailHost"
-                value={emailConfig.accountEmailHost}
-                onChange={handleChange}
-              />
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Account Email ID"
+                    name="accountEmail"
+                    value={emailConfig.accountEmail}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Account Email Password"
+                    type="password"
+                    name="accountEmailPassword"
+                    value={emailConfig.accountEmailPassword}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Account Email Host"
+                    name="accountEmailHost"
+                    value={emailConfig.accountEmailHost}
+                    onChange={handleChange}
+                  />
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
+
+          {/* Save button */}
           <Box sx={{ mt: 3, display: 'flex', justifyContent: 'flex-end' }}>
             <Button variant="contained" color="primary" onClick={handleSave}>
               Save

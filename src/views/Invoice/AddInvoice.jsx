@@ -24,7 +24,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import value from 'assets/scss/_themes-vars.module.scss';    
+import value from 'assets/scss/_themes-vars.module.scss';
 
 const AddInvoice = () => {
   const [form, setForm] = useState(initialFormState);
@@ -35,7 +35,7 @@ const AddInvoice = () => {
       invoiceNumber: '',
       date: null,
       invoiceCategory: '',
-      taxType: 'IGST',  
+      taxType: 'IGST',
       clientDetails: {
         clientName: '',
         clientGst: '',
@@ -69,7 +69,7 @@ const AddInvoice = () => {
       panCardNo: ''
     };
   }
-  
+
   const products = ['Product X', 'Product Y'];
 
   const handleChange = (e) => {
@@ -230,8 +230,7 @@ const AddInvoice = () => {
                   />
                 </Grid>
               ))}
-              
-              
+
               <Grid item xs={12} sx={{ mt: 2 }}>
                 <Typography variant="h6" color="primary">
                   Bank Details
@@ -244,8 +243,8 @@ const AddInvoice = () => {
                   fullWidth
                   value={form.nameOnBankAccount}
                   onChange={handleChange}
-                //   error={!!errors.nameOnBankAccount}
-                //   helperText={errors.nameOnBankAccount}
+                  //   error={!!errors.nameOnBankAccount}
+                  //   helperText={errors.nameOnBankAccount}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -255,8 +254,8 @@ const AddInvoice = () => {
                   value={form.bankAccountNumber}
                   onChange={handleChange}
                   fullWidth
-                //   error={!!errors.bankAccountNumber}
-                //   helperText={errors.bankAccountNumber}
+                  //   error={!!errors.bankAccountNumber}
+                  //   helperText={errors.bankAccountNumber}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -266,8 +265,8 @@ const AddInvoice = () => {
                   value={form.bankName}
                   onChange={handleChange}
                   fullWidth
-                //   error={!!errors.bankName}
-                //   helperText={errors.bankName}
+                  //   error={!!errors.bankName}
+                  //   helperText={errors.bankName}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -277,8 +276,8 @@ const AddInvoice = () => {
                   value={form.branchName}
                   onChange={handleChange}
                   fullWidth
-                //   error={!!errors.branchName}
-                //   helperText={errors.branchName}
+                  //   error={!!errors.branchName}
+                  //   helperText={errors.branchName}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -288,8 +287,8 @@ const AddInvoice = () => {
                   value={form.ifscCode}
                   onChange={handleChange}
                   fullWidth
-                //   error={!!errors.ifscCode}
-                //   helperText={errors.ifscCode}
+                  //   error={!!errors.ifscCode}
+                  //   helperText={errors.ifscCode}
                 />
               </Grid>
               <Grid item xs={12} sm={4}>
@@ -299,15 +298,13 @@ const AddInvoice = () => {
                   value={form.panCardNo}
                   onChange={handleChange}
                   fullWidth
-                //   error={!!errors.panCardNo}
-                //   helperText={errors.panCardNo}
+                  //   error={!!errors.panCardNo}
+                  //   helperText={errors.panCardNo}
                 />
               </Grid>
 
               <Grid item xs={12}>
-                <Button variant="contained" >
-                  Submit
-                </Button>
+                <Button variant="contained">Submit</Button>
               </Grid>
             </Grid>
           </Box>
@@ -316,34 +313,32 @@ const AddInvoice = () => {
     );
   };
 
-    return (
-        <>
-        <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={12}>
-            <Card>
-                <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                    <Box display="flex" alignItems="center">
-                    <IconButton component={Link} to="/invoice-management" color="primary">
-                        <ArrowBackIcon />
-                    </IconButton>
-                    <Typography variant="h6">Add Invoice</Typography>
-                    </Box>
-                    <RadioGroup row value={invoiceCategory} onChange={(e) => setInvoiceCategory(e.target.value)}>
-                    <FormControlLabel value="gst" control={<Radio />} label="GST" />
-                    <FormControlLabel value="nonGst" control={<Radio />} label="NON-GST" />
-                    </RadioGroup>
+  return (
+    <>
+      <Grid container spacing={2} sx={{ mt: 2 }}>
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                <Box display="flex" alignItems="center">
+                  <IconButton component={Link} to="/invoice-management" color="primary">
+                    <ArrowBackIcon />
+                  </IconButton>
+                  <Typography variant="h6">Add Invoice</Typography>
                 </Box>
-                {invoiceCategory === 'gst' &&
-                <Typography variant="h5">GST</Typography> &&
-                 invoiceFields()}
-                {invoiceCategory === 'nonGst' && invoiceFields()}
-                </CardContent>
-            </Card>
-            </Grid>
+                <RadioGroup row value={invoiceCategory} onChange={(e) => setInvoiceCategory(e.target.value)}>
+                  <FormControlLabel value="gst" control={<Radio />} label="GST" />
+                  <FormControlLabel value="nonGst" control={<Radio />} label="NON-GST" />
+                </RadioGroup>
+              </Box>
+              {invoiceCategory === 'gst' && <Typography variant="h5">GST</Typography> && invoiceFields()}
+              {invoiceCategory === 'nonGst' && invoiceFields()}
+            </CardContent>
+          </Card>
         </Grid>
-        <ToastContainer />
-        </>
-    );
+      </Grid>
+      <ToastContainer />
+    </>
+  );
 };
 export default AddInvoice;

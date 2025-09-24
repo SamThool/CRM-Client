@@ -221,40 +221,40 @@ const Client = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!form.clientName) newErrors.clientName = 'Client Name is required';
-    if (!form.officialPhoneNo) newErrors.officialPhoneNo = 'Official Phone Number is required';
+    if (!form.clientName) newErrors.clientName = 'Client Name is ';
+    if (!form.officialPhoneNo) newErrors.officialPhoneNo = 'Official Phone Number is ';
     else if (!form.officialPhoneNo.match(/^[0-9]{10}$/)) newErrors.officialPhoneNo = 'Must be 10 digits';
 
     if (form.altPhoneNo && !form.altPhoneNo.match(/^[0-9]{10}$/)) newErrors.altPhoneNo = 'Must be 10 digits';
 
-    if (!form.officialMailId) newErrors.officialMailId = 'Official Email is required';
+    if (!form.officialMailId) newErrors.officialMailId = 'Official Email is ';
     else if (!form.officialMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.officialMailId = 'Invalid email format';
 
     if (form.altMailId && !form.altMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.altMailId = 'Invalid email format';
 
-    if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = 'Required';
-    if (!form.emergencyContactNo) newErrors.emergencyContactNo = 'Required';
+    if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = '';
+    if (!form.emergencyContactNo) newErrors.emergencyContactNo = '';
     else if (!form.emergencyContactNo.match(/^[0-9]{10}$/)) newErrors.emergencyContactNo = 'Must be 10 digits';
 
-    if (!form.website) newErrors.website = 'Required';
-    if (!form.officeAddress) newErrors.officeAddress = 'Required';
+    if (!form.website) newErrors.website = '';
+    if (!form.officeAddress) newErrors.officeAddress = '';
 
     // Only super-admin requires clientType
-    if (role === 'super-admin' && !form.clientType) newErrors.clientType = 'Required';
+    if (role === 'super-admin' && !form.clientType) newErrors.clientType = '';
 
-    if (!form.pincode) newErrors.pincode = 'Required';
+    if (!form.pincode) newErrors.pincode = '';
     else if (!form.pincode.match(/^[0-9]{6}$/)) newErrors.pincode = 'Must be 6 digits';
 
-    if (!form.city) newErrors.city = 'Required';
-    if (!form.state) newErrors.state = 'Required';
-    if (!form.country) newErrors.country = 'Required';
+    if (!form.city) newErrors.city = '';
+    if (!form.state) newErrors.state = '';
+    if (!form.country) newErrors.country = '';
 
-    if (!form.contactPerson.name) newErrors['contactPerson.name'] = 'Contact Person Name is required';
-    if (!form.contactPerson.department) newErrors['contactPerson.department'] = 'Department is required';
-    if (!form.contactPerson.position) newErrors['contactPerson.position'] = 'Position is required';
-    if (!form.contactPerson.email) newErrors['contactPerson.email'] = 'Email is required';
+    if (!form.contactPerson.name) newErrors['contactPerson.name'] = 'Contact Person Name is ';
+    if (!form.contactPerson.department) newErrors['contactPerson.department'] = 'Department is ';
+    if (!form.contactPerson.position) newErrors['contactPerson.position'] = 'Position is ';
+    if (!form.contactPerson.email) newErrors['contactPerson.email'] = 'Email is ';
     else if (!form.contactPerson.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors['contactPerson.email'] = 'Invalid email format';
-    if (!form.contactPerson.phone) newErrors['contactPerson.phone'] = 'Phone is required';
+    if (!form.contactPerson.phone) newErrors['contactPerson.phone'] = 'Phone is ';
     else if (!form.contactPerson.phone.match(/^[0-9]{10}$/)) newErrors['contactPerson.phone'] = 'Must be 10 digits';
 
     setErrors(newErrors);
@@ -263,30 +263,30 @@ const Client = () => {
 
   // const validateForm = () => {
   //   const newErrors = {};
-  //   if (!form.clientName) newErrors.clientName = 'Client Name is required';
-  //   if (!form.officialPhoneNo) newErrors.officialPhoneNo = 'Official Phone Number is required';
+  //   if (!form.clientName) newErrors.clientName = 'Client Name is ';
+  //   if (!form.officialPhoneNo) newErrors.officialPhoneNo = 'Official Phone Number is ';
   //   if (!form.officialPhoneNo.match(/^[0-9]{10}$/)) newErrors.officialPhoneNo = 'Must be 10 digits';
   //   if (form.altPhoneNo && !form.altPhoneNo.match(/^[0-9]{10}$/)) newErrors.altPhoneNo = 'Must be 10 digits';
-  //   if (!form.officialMailId) newErrors.officialMailId = 'Official Email is required';
+  //   if (!form.officialMailId) newErrors.officialMailId = 'Official Email is ';
   //   if (!form.officialMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.officialMailId = 'Invalid email format';
   //   if (form.altMailId && !form.altMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.altMailId = 'Invalid email format';
-  //   if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = 'Required';
-  //   if (!form.emergencyContactNo) newErrors.emergencyContactNo = 'Required';
+  //   if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = '';
+  //   if (!form.emergencyContactNo) newErrors.emergencyContactNo = '';
   //   if (!form.emergencyContactNo.match(/^[0-9]{10}$/)) newErrors.emergencyContactNo = 'Must be 10 digits';
-  //   if (!form.website) newErrors.website = 'Required';
-  //   if (!form.officeAddress) newErrors.officeAddress = 'Required';
-  //   if (!form.clientType) newErrors.clientType = 'Required';
-  //   if (!form.pincode) newErrors.pincode = 'Required';
+  //   if (!form.website) newErrors.website = '';
+  //   if (!form.officeAddress) newErrors.officeAddress = '';
+  //   if (!form.clientType) newErrors.clientType = '';
+  //   if (!form.pincode) newErrors.pincode = '';
   //   if (!form.pincode.match(/^[0-9]{6}$/)) newErrors.pincode = 'Must be 6 digits';
-  //   if (!form.city) newErrors.city = 'Required';
-  //   if (!form.state) newErrors.state = 'Required';
-  //   if (!form.country) newErrors.country = 'Required';
-  //   if (!form.contactPerson.name) newErrors['contactPerson.name'] = 'Contact Person Name is required';
-  //   if (!form.contactPerson.department) newErrors['contactPerson.department'] = 'Department is required';
-  //   if (!form.contactPerson.position) newErrors['contactPerson.position'] = 'Position is required';
-  //   if (!form.contactPerson.email) newErrors['contactPerson.email'] = 'Email is required';
+  //   if (!form.city) newErrors.city = '';
+  //   if (!form.state) newErrors.state = '';
+  //   if (!form.country) newErrors.country = '';
+  //   if (!form.contactPerson.name) newErrors['contactPerson.name'] = 'Contact Person Name is ';
+  //   if (!form.contactPerson.department) newErrors['contactPerson.department'] = 'Department is ';
+  //   if (!form.contactPerson.position) newErrors['contactPerson.position'] = 'Position is ';
+  //   if (!form.contactPerson.email) newErrors['contactPerson.email'] = 'Email is ';
   //   else if (!form.contactPerson.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors['contactPerson.email'] = 'Invalid email format';
-  //   if (!form.contactPerson.phone) newErrors['contactPerson.phone'] = 'Phone is required';
+  //   if (!form.contactPerson.phone) newErrors['contactPerson.phone'] = 'Phone is ';
   //   else if (!form.contactPerson.phone.match(/^[0-9]{10}$/)) newErrors['contactPerson.phone'] = 'Must be 10 digits';
   //   console.log('Error validation', newErrors);
   //   setErrors(newErrors);
@@ -391,7 +391,7 @@ const Client = () => {
         name: contactPerson.name || '',
         department: contactPerson.department || '', // admin already stores ID
         position: contactPerson.position || '', // admin already stores ID
-        email: contactPerson.email || company.email || '',
+        email: contactPerson.email || null,
         phone: contactPerson.phone || ''
       }
     });
@@ -662,7 +662,7 @@ const Client = () => {
                               error={!!errors[field.name]}
                               helperText={errors[field.name]}
                               fullWidth
-                              required
+                              required={['clientName', 'officialPhoneNo', 'officialMailId'].includes(field.name)}
                             />
                           </Grid>
                         );
@@ -679,7 +679,7 @@ const Client = () => {
                               error={!!errors[field.name]}
                               helperText={errors[field.name]}
                               fullWidth
-                              required
+                              
                             >
                               <MenuItem value="">
                                 <em>Select Type Of Client</em>
@@ -699,7 +699,6 @@ const Client = () => {
                               error={!!errors.clientType}
                               helperText={errors.clientType}
                               fullWidth
-                              required
                             >
                               <MenuItem value="">
                                 <em>Select Type Of Client</em>
@@ -722,8 +721,7 @@ const Client = () => {
                             onChange={handleChange}
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
-                            fullWidth
-                            required={!['altPhoneNo', 'altMailId', 'panNo'].includes(field.name)}
+                            fullWidth={!['altPhoneNo', 'altMailId', 'panNo'].includes(field.name)}
                             multiline={field.multiline}
                             rows={field.multiline ? 2 : 1}
                           />
@@ -780,7 +778,7 @@ const Client = () => {
                           error={!!errors[field.name]}
                           helperText={errors[field.name]}
                           fullWidth
-                          required
+                          
                         />
                       </Grid>
                     ))} */}
@@ -796,7 +794,7 @@ const Client = () => {
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
                             fullWidth
-                            required
+                            
                           >
                             <MenuItem value="">
                               <em>Select Department</em>
@@ -817,7 +815,7 @@ const Client = () => {
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
                             fullWidth
-                            required
+                            
                           >
                             <MenuItem value="">
                               <em>Select Position</em>
@@ -837,7 +835,7 @@ const Client = () => {
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
                             fullWidth
-                            required
+                            
                           />
                         )} */}
                         {field.name === 'contactPerson.department' ? (
@@ -850,7 +848,6 @@ const Client = () => {
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
                             fullWidth
-                            required
                           >
                             <MenuItem value="">
                               <em>Select Department</em>
@@ -871,7 +868,6 @@ const Client = () => {
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
                             fullWidth
-                            required
                           >
                             <MenuItem value="">
                               <em>Select Position</em>
@@ -891,7 +887,6 @@ const Client = () => {
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
                             fullWidth
-                            required
                           />
                         )}
                       </Grid>

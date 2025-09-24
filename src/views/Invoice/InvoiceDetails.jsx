@@ -29,7 +29,6 @@ import { SiSimilarweb } from 'react-icons/si';
 import mirai from '../../assets/images/mirai.png';
 
 const InvoiceDetails = ({ closeModal, invoiceData }) => {
-  console.log('invoice is', invoiceData);
   const { billingData } = useSelector((state) => state.opdBilling);
   const { PrintDataForAdvanceOPDReceipt } = useSelector((state) => state.opdBillingStates);
   const { hospitalData } = useSelector((state) => state.hospitalData);
@@ -79,10 +78,10 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
         const rawRefId = localStorage.getItem('refId');
         const refId = rawRefId?.replace(/^"|"$/g, '').trim(); // fix here
 
-        console.log('Sanitized refId:', refId);
+        // console.log('Sanitized refId:', refId);
 
         const response = await get('clientRegistration');
-        console.log('API Response:', response.data);
+        // console.log('API Response:', response.data);
 
         if ((response.status === true || response.status === 'true') && Array.isArray(response.data)) {
           const companyData = response.data.find((c) => c._id === refId);
@@ -344,6 +343,7 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
   const pdfButtonHoverStyle = {
     backgroundColor: '#3b82f6'
   };
+
   return (
     <>
       <Box>
@@ -363,7 +363,7 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                 <p style={iconTextStyle}>
                   <strong style={{ color: '#000' }}>Address:- </strong>
                   <p style={{ ...linkStyle, color: '#555', fontWeight: 'normal', display: 'flex' }}>
-                    {company.city || 'N/A'} {company.state || 'N/A'} {company.pincode || 'N/A'}
+                    {company.officeAddress || 'N/A'} {company.city || 'N/A'} {company.state || 'N/A'} {company.pincode || 'N/A'}
                   </p>
                 </p>
                 <p style={iconTextStyle}>
@@ -397,10 +397,18 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
               <Typography variant="h5" sx={{ color: '#d32f2f', fontWeight: 'bold', fontSize: '1.25rem' }}>
                 INVOICE
               </Typography>
-              <Box sx={{ backgroundColor: '#126078', paddingX: 1, paddingY: 0.5, borderRadius: 1 }}>
-                <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white', fontSize: '0.875rem' }}>
-                  <strong>Invoice No :</strong> {invoiceData?.invoiceNumber || 'N/A'}
-                </Typography>
+              <Box sx={{ display: 'flex' }}>
+                <Box sx={{ backgroundColor: '#126078', paddingX: 1, paddingY: 0.5, borderRadius: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white', fontSize: '0.875rem' }}>
+                    <strong>Invoice Date :</strong> {invoiceData?.date ? invoiceData.date.slice(0, 10) : 'N/A'}
+                  </Typography>
+                </Box>
+                &nbsp; &nbsp; &nbsp;
+                <Box sx={{ backgroundColor: '#126078', paddingX: 1, paddingY: 0.5, borderRadius: 1 }}>
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white', fontSize: '0.875rem' }}>
+                    <strong>Invoice No :</strong> {invoiceData?.invoiceNumber || 'N/A'}
+                  </Typography>
+                </Box>
               </Box>
             </Box>
 
@@ -454,7 +462,9 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                   invoiceData.products.map((p, i) => (
                     <tr key={p.id || i} style={{ borderBottom: '3px solid #1e40af' }}>
                       <td style={{ padding: '0.25rem' }}>{i + 1}</td>
-                      <td style={{ padding: '0.25rem' }}>{p.product || '-'}</td>
+                      <td style={{ padding: '0.25rem' }}>
+                        {p.product || '-'} ( {p.description || '-'} ){' '}
+                      </td>
 
                       <td style={{ padding: '0.25rem' }}>{p.quantity || '-'}</td>
                       <td style={{ padding: '0.25rem', textAlign: 'right' }}>₹{(p.rate || 0).toFixed(2)}</td>
@@ -524,7 +534,7 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
               <div style={amountWordsStyle}>
                 <p>Amount in Words &nbsp;:</p>
                 <p>
-                  {convertToWords(invoiceData.totalAmount || 0)} {invoiceData.currency || 'INR'}{' '}
+                  {convertToWords(invoiceData.roundUp || invoiceData.totalAmount || 0)} {invoiceData.currency || 'INR'}{' '}
                   {invoiceData.currency === 'INR' ? 'Rupees' : ''}
                   &nbsp;&nbsp;&nbsp;{invoiceData.currency === 'INR' ? 'Only' : ''}
                 </p>

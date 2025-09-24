@@ -154,6 +154,7 @@ const Lead = () => {
   };
 
   const handleopenAddFollowUp = (leadId) => {
+    console.log(leadId);
     setAddFollowIndex(leadId);
     fetchFollowUps(leadId);
     setOpenAddFollowUp(true);

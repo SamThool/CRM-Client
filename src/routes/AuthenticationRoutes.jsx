@@ -5,7 +5,7 @@ import { lazy } from 'react';
 import Loadable from 'component/Loadable';
 import MinimalLayout from 'layout/MinimalLayout';
 import ChangePassword from 'views/Login/ChangePassword';
-
+import ForgetPassword from 'views/Login/ForgetPassword';
 
 const AuthLogin = Loadable(lazy(() => import('../views/Login')));
 // const AuthRegister = Loadable(lazy(() => import('../views/Register')));
@@ -22,7 +22,11 @@ const AuthenticationRoutes = {
     },
     {
       path: '/change-password',
-      element:<ChangePassword/>
+      element: <ChangePassword />
+    },
+    {
+      path: '/forgot-password',
+      element: <ForgetPassword />
     }
   ]
 };

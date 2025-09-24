@@ -15,14 +15,22 @@ import {
   FormControl,
   InputLabel,
   Grid,
-  Card
+  Card,
+  Button,
+  Dialog,
+  DialogTitle,
+  Divider,
+  DialogContent,
+  CardContent,
+  DialogActions,
+  IconButton
 } from '@mui/material';
 
 import { useTheme } from '@mui/material/styles';
 
 import ReportCard from './ReportCard';
 import { gridSpacing } from 'config.js';
-import { get } from '../../../api/api.js';
+import { get, post, put } from '../../../api/api.js';
 
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -31,6 +39,9 @@ import PersonIcon from '@mui/icons-material/Person';
 import DepartmentOpdPieChart from '../Charts/PieChart/DepartmentOPD';
 import { head } from 'lodash';
 import ReusableBarChart from '../Charts/BarCharts/ReusbaleBarChart';
+import { useSelector } from 'react-redux';
+import { Delete, Edit } from '@mui/icons-material';
+import { toast } from 'react-toastify';
 
 const inputData = [
   { department: 'Cardiology', label: 'Dr. Smith', value: 5 },
@@ -48,13 +59,28 @@ const Default = () => {
   const [selectedChart, setSelectedChart] = useState('Revenue');
   const [doctorOpdData, setDoctorOpdData] = useState(inputData);
   const [leads, setLeads] = useState([]);
+  const [addFollowIndex, setAddFollowIndex] = useState(null);
+  const [openAddFollowUp, setOpenAddFollowUp] = useState(false);
+  const [statusOptions, setStatusOptions] = useState([]);
+  const [editFollowUpId, setEditFollowUpId] = useState(null);
+  const [followUpData, setFollowUpData] = useState([]);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [client, setclient] = useState([]);
   const [selectedStaff, setSelectedStaff] = useState('');
 
   const [selectedProduct, setSelectedProduct] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-
+  const [isAdmin, setAdmin] = useState(false);
+  const systemRights = useSelector((state) => state.systemRights.systemRights);
   const [productCategories, setProductCategories] = useState([]);
+
+  const [form, setForm] = useState({
+    followupDate: '',
+    followupTime: '',
+    leadstatus: '',
+    comment: '',
+    leadId: ''
+  });
 
   const handleDepartmentChange = (value) => {
     const filteredData = inputData?.filter((d) => d.department === value);
@@ -99,6 +125,103 @@ const Default = () => {
     } catch (error) {
       console.error('Error fetching  invoice:', error);
     }
+  };
+
+  useEffect(() => {
+    const loginRole = localStorage.getItem('loginRole');
+    if (loginRole === 'admin') {
+      setAdmin(true);
+    }
+    if (systemRights?.actionPermissions?.['lead']) {
+      setLeadPermission(systemRights.actionPermissions['lead']);
+    }
+    fetchLeadStatusOptions();
+  }, [systemRights]);
+
+  const fetchLeadStatusOptions = async () => {
+    try {
+      const response = await get('leadstatus');
+      setStatusOptions(response.data || []);
+    } catch (err) {
+      toast.error('Failed to load leadstatus options');
+      console.error(err);
+    }
+  };
+
+  const handleInfoClose = () => {
+    setOpenAddFollowUp(false);
+    setForm({
+      followupDate: '',
+      followupTime: '',
+      leadstatus: '',
+      comment: ''
+    });
+    setAddFollowIndex(null);
+    setEditFollowUpId(null);
+    setIsEditMode(false);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleEditFollowUp = (id, data) => {
+    setEditFollowUpId(id);
+    setIsEditMode(true);
+    setForm({
+      followupDate: data.followupDate || '',
+      followupTime: data.followupTime || '',
+      leadstatus: data.leadstatus?._id || data.leadstatus || '',
+      comment: data.comment || ''
+    });
+  };
+
+  const handleDeleteFollowUp = async (followUpId) => {
+    try {
+      await remove(`lead/followup/${followUpId}`);
+      toast.success('Follow-up deleted');
+      setFollowUpData((prev) => prev.filter((item) => item._id !== followUpId));
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to delete follow-up');
+    }
+  };
+
+  const handleSubmit = async () => {
+    try {
+      if (isEditMode && editFollowUpId) {
+        await put(`lead/followup/${editFollowUpId}`, form);
+        toast.success('Follow-up updated successfully');
+      } else {
+        // console.log(form, addFollowIndex);
+        const payload = { ...form, leadId: addFollowIndex };
+        await post('lead/followup', payload);
+        toast.success('Follow-up added successfully');
+      }
+
+      await fetchFollowUps(addFollowIndex);
+      await getLeadData();
+
+      setForm({
+        followupDate: '',
+        followupTime: '',
+        leadstatus: '',
+        comment: ''
+      });
+      setEditFollowUpId(null);
+      setIsEditMode(false);
+    } catch (error) {
+      console.error('Submit error:', error);
+      toast.error('Failed to save follow-up');
+    }
+  };
+
+  const getLeadStatusColor = (leadstatus) => {
+    if (!leadstatus) return '#9e9e9e';
+    // leadstatus can be populated object or string id
+    const statusObj = typeof leadstatus === 'object' ? leadstatus : statusOptions.find((s) => s._id === leadstatus);
+    return statusObj?.colorCode || '#9e9e9e';
   };
 
   useEffect(() => {
@@ -182,6 +305,24 @@ const Default = () => {
       }
     }
   };
+
+  const fetchFollowUps = async (leadId) => {
+    try {
+      const response = await get(`lead/followup`);
+      setFollowUpData(response.data || []);
+    } catch (err) {
+      console.error('Error loading followups:', err);
+      toast.error('Unable to fetch follow-up data');
+    }
+  };
+
+  const handleopenAddFollowUp = (leadId) => {
+    console.log(leadId);
+    setAddFollowIndex(leadId);
+    fetchFollowUps(leadId);
+    setOpenAddFollowUp(true);
+  };
+
   const leadStatusData = {
     type: 'donut',
     head: 'Lead Status',
@@ -371,11 +512,20 @@ const Default = () => {
                     boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)'
                   }}
                 >
-                  {['SN', 'Name', 'Status', 'Date', 'Time', 'Last Communication', 'Product/Service', 'Assign To', 'Follow Up'].map(
-                    (head) => (
-                      <TableCell key={head}>{head}</TableCell>
-                    )
-                  )}
+                  {[
+                    'SN',
+                    'Company Name',
+                    'Status',
+                    'Date',
+                    'Time',
+                    'Last Communication',
+                    'Product/Service',
+                    'Assign To',
+                    'Follow Up',
+                    'Action'
+                  ].map((head) => (
+                    <TableCell key={head}>{head}</TableCell>
+                  ))}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -386,9 +536,7 @@ const Default = () => {
                     return (
                       <TableRow key={lead._id || index}>
                         <TableCell>{index + 1}</TableCell>
-                        <TableCell>
-                          {lead.firstName} {lead.lastName}
-                        </TableCell>
+                        <TableCell>{lead.companyName}</TableCell>
                         <TableCell>
                           <Box
                             sx={{
@@ -420,6 +568,12 @@ const Default = () => {
                             : 'N/A'}
                         </TableCell>
                         <TableCell sx={{ minWidth: 150 }}> {followup?.updatedAt ? followup.updatedAt.slice(0, 10) : 'N/A'}</TableCell>
+                        <TableCell>
+                          {' '}
+                          <Button variant="contained" color="primary" size="small" onClick={() => handleopenAddFollowUp(lead._id)}>
+                            Done
+                          </Button>{' '}
+                        </TableCell>
                       </TableRow>
                     );
                   })
@@ -467,6 +621,142 @@ const Default = () => {
               <MenuItem value="Revenue">Revenue</MenuItem>
             </Select>
           </FormControl>
+
+          <Dialog open={openAddFollowUp} onClose={handleInfoClose} maxWidth="lg" fullWidth>
+            <DialogTitle>{isEditMode ? 'Edit Follow-Up' : 'Add Follow-Up'}</DialogTitle>
+            <Divider />
+            <DialogContent>
+              {addFollowIndex !== null && (
+                <Box>
+                  <Card>
+                    <CardContent>
+                      <Grid container spacing={2}>
+                        <Grid item xs={12} md={4}>
+                          <TextField
+                            fullWidth
+                            name="followupDate"
+                            value={form.followupDate || ''}
+                            label="Follow Up Date"
+                            type="date"
+                            onChange={handleChange}
+                            InputLabelProps={{ shrink: true }}
+                            margin="dense"
+                          />
+                          <TextField
+                            fullWidth
+                            name="followupTime"
+                            value={form.followupTime || ''}
+                            label="Follow Up Time"
+                            type="time"
+                            onChange={handleChange}
+                            InputLabelProps={{ shrink: true }}
+                            margin="dense"
+                          />
+                          <TextField
+                            fullWidth
+                            select
+                            name="leadstatus"
+                            value={form.leadstatus || ''}
+                            label="Leadstatus"
+                            onChange={handleChange}
+                            margin="dense"
+                          >
+                            {statusOptions.map((option) => (
+                              <MenuItem key={option._id} value={option._id}>
+                                {option.LeadStatus}
+                              </MenuItem>
+                            ))}
+                          </TextField>
+                          <TextField
+                            fullWidth
+                            name="comment"
+                            value={form.comment || ''}
+                            label="Comment"
+                            onChange={handleChange}
+                            multiline
+                            rows={5}
+                            margin="dense"
+                          />
+                          <Button variant="contained" color="primary" onClick={handleSubmit} sx={{ mt: 2 }}>
+                            {isEditMode ? 'Update' : 'Submit'}
+                          </Button>
+                        </Grid>
+                        <Grid item xs={12} md={8}>
+                          <Card>
+                            <CardContent>
+                              <Typography variant="h6" gutterBottom>
+                                Follow-Up History
+                              </Typography>
+                              <Table>
+                                <TableHead>
+                                  <TableRow>
+                                    <TableCell>Date</TableCell>
+                                    <TableCell>Time</TableCell>
+                                    <TableCell>Leadstatus</TableCell>
+                                    <TableCell>Comments</TableCell>
+                                    <TableCell>Actions</TableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {Array.isArray(followUpData) && followUpData.length > 0 ? (
+                                    (followUpData.find((d) => String(d._id) === String(addFollowIndex))?.followups || [])
+                                      .slice() // make a shallow copy
+                                      .reverse()
+                                      .map((data, index) => (
+                                        <TableRow key={data._id || index}>
+                                          <TableCell>{data.followupDate || 'N/A'}</TableCell>
+                                          <TableCell>{data.followupTime || 'N/A'}</TableCell>
+                                          <TableCell>
+                                            {statusOptions.find((opt) => opt._id === data.leadstatus)?.LeadStatus ||
+                                              data.leadstatus?.LeadStatus ||
+                                              'N/A'}
+                                          </TableCell>
+                                          <TableCell>{data.comment || 'N/A'}</TableCell>
+                                          <TableCell>
+                                            <Box display="flex" alignItems="center">
+                                              <IconButton
+                                                onClick={() =>
+                                                  handleEditFollowUp(data._id, {
+                                                    followupDate: data.followupDate,
+                                                    followupTime: data.followupTime,
+                                                    leadstatus: data.leadstatus?._id || data.leadstatus,
+                                                    comment: data.comment
+                                                  })
+                                                }
+                                              >
+                                                <Edit color="primary" />
+                                              </IconButton>
+                                              <IconButton onClick={() => handleDeleteFollowUp(data._id)}>
+                                                <Delete color="error" />
+                                              </IconButton>
+                                            </Box>
+                                          </TableCell>
+                                        </TableRow>
+                                      ))
+                                  ) : (
+                                    <TableRow>
+                                      <TableCell colSpan={5} align="center">
+                                        No follow-ups found
+                                      </TableCell>
+                                    </TableRow>
+                                  )}
+                                </TableBody>
+                              </Table>
+                            </CardContent>
+                          </Card>
+                        </Grid>
+                      </Grid>
+                    </CardContent>
+                  </Card>
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleInfoClose} color="primary">
+                Close
+              </Button>
+            </DialogActions>
+          </Dialog>
 
           {/* Render corresponding chart */}
           <ReusableBarChart

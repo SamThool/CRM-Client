@@ -277,7 +277,7 @@ const NonGstEditPage = () => {
       }
     };
     const fetchProductCategory = async () => {
-      const response = await get('productOrServiceCategory');
+      const response = await get('SubProductCategory');
       if (response.status === 'true') {
         setAllProducts(response.data);
       }

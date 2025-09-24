@@ -94,7 +94,7 @@ const InvoiceManagement = () => {
   }, [systemRights]);
 
   const handleEdit = (gstType, id) => {
-    if (gstType === 'gst') {
+    if (gstType === 'igst') {
       navigate(`/invoice-management/update-gst/${id}`);
     } else {
       navigate(`/invoice-management/update-non-gst/${id}`);

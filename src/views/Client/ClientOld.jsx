@@ -1026,7 +1026,6 @@ const ClientOld = () => {
                               error={!!errors[field.name]}
                               helperText={errors[field.name]}
                               fullWidth
-                              required
                             />
                           </Grid>
                         );
@@ -1043,7 +1042,6 @@ const ClientOld = () => {
                               error={!!errors[field.name]}
                               helperText={errors[field.name]}
                               fullWidth
-                              required
                             >
                               <MenuItem value="">
                                 <em>Select Type Of Client</em>
@@ -1067,7 +1065,6 @@ const ClientOld = () => {
                             error={!!errors[field.name]}
                             helperText={errors[field.name]}
                             fullWidth
-                            required={!['altPhoneNo', 'altMailId', 'panNo'].includes(field.name)}
                             multiline={field.multiline}
                             rows={field.multiline ? 2 : 1}
                           />
@@ -1124,7 +1121,6 @@ const ClientOld = () => {
                           error={!!errors[field.name]}
                           helperText={errors[field.name]}
                           fullWidth
-                          required
                         />
                       </Grid>
                     ))}

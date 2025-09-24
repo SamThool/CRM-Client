@@ -343,7 +343,7 @@ const NonGst = () => {
       }
     };
     const fetchProductCategory = async () => {
-      const response = await get('productOrServiceCategory');
+      const response = await get('SubProductCategory');
       console.log('product category is', response);
       if (response.status === 'true') {
         setAllProducts(response.data);

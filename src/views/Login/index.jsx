@@ -276,6 +276,11 @@ const Login = () => {
                     Login
                   </Button>
                 </Grid>
+                <Grid item xs={12} sx={{ textAlign: 'center' }}>
+                  <Button variant="text" color="secondary" size="small" onClick={() => navigate('/forgot-password')}>
+                    Forgot Password?
+                  </Button>
+                </Grid>
               </Grid>
             </form>
           </CardContent>

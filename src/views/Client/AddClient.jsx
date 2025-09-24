@@ -149,35 +149,13 @@ const AddClient = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!form.clientName) newErrors.clientName = 'Client Name is required';
-    if (!form.officialPhoneNo?.match(/^\d{10}$/)) newErrors.officialPhoneNo = 'Enter valid 10-digit number';
-    if (form.altPhoneNo && !form.altPhoneNo.match(/^\d{10}$/)) newErrors.altPhoneNo = 'Must be 10 digits';
-    if (!form.officialMailId?.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.officialMailId = 'Invalid email';
-    if (form.altMailId && !form.altMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.altMailId = 'Invalid email';
-    if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = 'Required';
-    if (!form.emergencyContactNo?.match(/^\d{10}$/)) newErrors.emergencyContactNo = 'Must be 10 digits';
-    if (!form.website) newErrors.website = 'Required';
-    if (isRole === 'super-admin' && !form.clientType) newErrors.clientType = 'Required';
-    if (!form.officeAddress) newErrors.officeAddress = 'Required';
-    if (!form.pincode?.match(/^\d{6}$/)) newErrors.pincode = 'Must be 6 digits';
-    if (!form.city) newErrors.city = 'Required';
-    if (!form.state) newErrors.state = 'Required';
-    if (!form.country) newErrors.country = 'Required';
-    if (isRole !== 'admin') {
-      if (!form.startDate) newErrors.startDate = 'Required';
-      if (!form.endDate) newErrors.endDate = 'Required';
-      if (form.startDate && form.endDate && new Date(form.startDate) > new Date(form.endDate)) {
-        newErrors.startDate = 'Start cannot be after End';
-      }
-    }
 
-    form.contactPerson.forEach((person, index) => {
-      if (!person.name) newErrors[`contactPerson.${index}.name`] = 'Name required';
-      if (!person.department) newErrors[`contactPerson.${index}.department`] = 'Department required';
-      if (!person.position) newErrors[`contactPerson.${index}.position`] = 'Position required';
-      if (!person.email?.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors[`contactPerson.${index}.email`] = 'Invalid email';
-      if (!person.phone?.match(/^\d{10}$/)) newErrors[`contactPerson.${index}.phone`] = '10-digit phone required';
-    });
+    // Only required fields
+    if (!form.clientName) newErrors.clientName = 'Client Name is required';
+
+    if (!form.officialPhoneNo?.match(/^\d{10}$/)) newErrors.officialPhoneNo = 'Enter valid 10-digit number';
+
+    if (!form.officialMailId?.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.officialMailId = 'Invalid email';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -316,10 +294,10 @@ const AddClient = () => {
             <CardContent>
               <Grid container spacing={2}>
                 {[
-                  { label: 'Client Name', name: 'clientName' },
-                  { label: 'Official Phone No.', name: 'officialPhoneNo' },
+                  { label: 'Client Name', name: 'clientName', required: true },
+                  { label: 'Official Phone No.', name: 'officialPhoneNo', required: true },
                   { label: 'Alternate Phone No.', name: 'altPhoneNo' },
-                  { label: 'Official Mail ID', name: 'officialMailId' },
+                  { label: 'Official Mail ID', name: 'officialMailId', required: true },
                   { label: 'Alternate Mail ID', name: 'altMailId' },
                   { label: 'Emergency Contact Person', name: 'emergencyContactPerson' },
                   { label: 'Emergency Contact No.', name: 'emergencyContactNo' },
@@ -340,7 +318,7 @@ const AddClient = () => {
                       error={!!errors[field.name]}
                       helperText={errors[field.name]}
                       fullWidth
-                      required={!['altPhoneNo', 'altMailId', 'panNo'].includes(field.name)}
+                      required={field.required || false} // 👈 only show star for required fields
                     />
                   </Grid>
                 ))}
