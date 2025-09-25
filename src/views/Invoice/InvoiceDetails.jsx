@@ -415,7 +415,8 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
             <hr style={{ borderColor: '#ddd', marginBottom: '0.5rem' }} />
 
             {/* <h1 style={titleStyle}>INVOICE</h1> */}
-            <div style={grid3ColsStyle}>
+            {/* <div style={grid3ColsStyle}> */}
+            <div>
               <div>
                 <p>
                   <strong>Name:</strong> {invoiceData.clientName || '-'}
@@ -427,10 +428,11 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                   <strong>Email:</strong> {invoiceData.clientEmail || '-'}
                 </p>
                 <p>
-                  <strong>Address:</strong> {invoiceData.clientAddress || '-'}
+                  <strong>Address:</strong> {invoiceData.clientAddress || '-'} , {invoiceData.clientCity || '-'} ,
+                  {invoiceData.clientPincode || '-'} , {invoiceData.clientState || '-'} , {invoiceData.clientCountry || '-'}
                 </p>
               </div>
-              <div>
+              {/* <div>
                 <p>
                   <strong>City:</strong> {invoiceData.clientCity || '-'}
                 </p>
@@ -443,7 +445,7 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                 <p>
                   <strong>Pincode:</strong> {invoiceData.clientPincode || '-'}
                 </p>
-              </div>
+              </div> */}
             </div>
 
             <table style={tableStyle}>

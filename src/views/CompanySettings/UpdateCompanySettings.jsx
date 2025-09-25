@@ -531,7 +531,7 @@ const UpdateCompanySettings = () => {
     const urlPath = normalized.replace('public/images', 'uploads');
 
     // prepend backend root URL, not /api/
-    console.log(`http://localhost:5050/api/${urlPath}`);
+    // console.log(`http://localhost:5050/api/${urlPath}`);
 
     return `http://localhost:5050/api/${urlPath}`;
   };
@@ -595,10 +595,6 @@ const UpdateCompanySettings = () => {
     setForm((prev) => ({ ...prev, companyLogo: null }));
     setLogoPreview('');
   };
-
-  useEffect(() => {
-    console.log('Updated form:', form);
-  }, [form]);
 
   return (
     <>

@@ -124,7 +124,7 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
         </Grid>
 
         {/* Summary Box */}
-        {submittedData && (
+        {/* {submittedData && (
           <>
             <Divider sx={{ my: 2 }} />
             <Box border="1px solid #000" borderRadius="4px" p={2} textAlign="center">
@@ -145,13 +145,13 @@ const PaymentDialog = ({ open, onClose, invoice, onSubmit }) => {
                   Bank Name: <strong>{submittedData.paymentBankName}</strong>
                 </Typography>
               )}
-              <Typography>{/* Date: <strong>{submittedData.paymentDate}</strong> */}</Typography>
+              <Typography> Date: <strong>{submittedData.paymentDate}</strong> </Typography>
               <Typography>
                 Amount: <strong>₹{submittedData.paidAmount}</strong>
               </Typography>
             </Box>
           </>
-        )}
+        )} */}
       </DialogContent>
 
       <DialogActions sx={{ px: 3, pb: 2 }}>

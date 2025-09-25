@@ -515,8 +515,8 @@ const GstEditPage = () => {
                               required
                             >
                               {allProducts.map((p, i) => (
-                                <MenuItem key={i} value={p.productName}>
-                                  {p.productName}
+                                <MenuItem key={i} value={p.subProductName}>
+                                  {p.subProductName}
                                 </MenuItem>
                               ))}
                             </TextField>

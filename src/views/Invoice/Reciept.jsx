@@ -162,10 +162,18 @@ const AdvanceReciept = ({ closeModal, invoiceData }) => {
                 <Typography variant="h5" sx={{ color: '#d32f2f', fontWeight: 'bold', fontSize: '1.25rem' }}>
                   RECEIPT
                 </Typography>
-                <Box sx={{ backgroundColor: '#126078', paddingX: 1, paddingY: 0.5, borderRadius: 1 }}>
-                  <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white', fontSize: '0.875rem' }}>
-                    <strong>Receipt No :</strong> {invoiceData?.RecieptNo || 'N/A'}-{index + 1}
-                  </Typography>
+                <Box sx={{ display: 'flex' }}>
+                  <Box sx={{ backgroundColor: '#126078', paddingX: 1, paddingY: 0.5, borderRadius: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white', fontSize: '0.875rem' }}>
+                      <strong>Receipt No :</strong> {invoiceData?.RecieptNo || 'N/A'}-{index + 1}
+                    </Typography>
+                  </Box>{' '}
+                  &nbsp; &nbsp; &nbsp;
+                  <Box sx={{ backgroundColor: '#126078', paddingX: 1, paddingY: 0.5, borderRadius: 1 }}>
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'white', fontSize: '0.875rem' }}>
+                      <strong>Receipt Date :</strong> {invoiceData?.date.slice(0, 10) || 'N/A'}
+                    </Typography>
+                  </Box>
                 </Box>
               </Box>
 

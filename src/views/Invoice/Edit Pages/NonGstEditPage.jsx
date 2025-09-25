@@ -402,8 +402,8 @@ const NonGstEditPage = () => {
                             required
                           >
                             {allProducts.map((p) => (
-                              <MenuItem key={p.productName} value={p.productName}>
-                                {p.productName}
+                              <MenuItem key={p.productName} value={p.subProductName}>
+                                {p.subProductName}
                               </MenuItem>
                             ))}
                           </TextField>

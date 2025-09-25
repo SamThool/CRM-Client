@@ -279,7 +279,7 @@ const NonGst = () => {
                       </Typography>
                     </Grid>
 
-                    <Grid item xs={12} md={2}>
+                    {/* <Grid item xs={12} md={2}>
                       <TextField
                         select
                         label="Product"
@@ -291,13 +291,13 @@ const NonGst = () => {
                         error={!!errors.product}
                         helperText={errors.product}
                       >
-                        {products.map((p, i) => (
+                         {products.map((p, i) => (
                           <MenuItem key={i} value={p}>
                             {p}
                           </MenuItem>
-                        ))}
+                        ))} 
                       </TextField>
-                    </Grid>
+                    </Grid> */}
 
                     <Grid item xs={12} md={2}>
                       <TextField

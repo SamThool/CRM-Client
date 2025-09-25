@@ -94,7 +94,8 @@ const InvoiceManagement = () => {
   }, [systemRights]);
 
   const handleEdit = (gstType, id) => {
-    if (gstType === 'igst') {
+    console.log(gstType);
+    if (gstType === 'gst' || gstType === 'igst') {
       navigate(`/invoice-management/update-gst/${id}`);
     } else {
       navigate(`/invoice-management/update-non-gst/${id}`);
@@ -154,7 +155,7 @@ const InvoiceManagement = () => {
   const renderInvoiceTable = () => {
     const data = invoiceCategory === 'gst' ? gstData : nonGstData;
 
-    console.log(data);
+    // console.log(data);
     return (
       <Box sx={{ width: '100%' }}>
         <Table>
