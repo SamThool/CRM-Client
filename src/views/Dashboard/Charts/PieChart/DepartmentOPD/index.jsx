@@ -43,7 +43,7 @@ const DepartmentOpdPieChart = ({ chartData }) => {
         }}
       >
         <IconButton onClick={toggleFilter} color="primary" sx={{ fontSize: '2rem' }}>
-          <FilterAltIcon sx={{ fontSize: '2rem' }} />
+          {/* <FilterAltIcon sx={{ fontSize: '2rem' }} /> */}
         </IconButton>
       </Box>
       {showFilter && (
@@ -93,7 +93,7 @@ const DepartmentOpdPieChart = ({ chartData }) => {
               <Grid container direction="column">
                 <Typography variant="h6"> {chartData?.head} </Typography>
                 <Typography variant="subtitle1" sx={{ color: theme.palette.primary.main }}>
-                  + 16.85%
+                  {/* + 16.85% */}
                 </Typography>
               </Grid>
             </Grid>

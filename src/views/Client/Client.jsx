@@ -106,11 +106,17 @@ const Client = () => {
       let url = role === 'super-admin' ? 'clientRegistration' : 'admin-clientRegistration';
       const res = await get(url);
       console.log('super admin client', role);
+      console.log('super admin client', res);
       if (res.data) {
         const data = res.data.status === 'true' ? res.data.data || res.data : res.data;
         const filteredData = role === 'admin' ? data.filter((client) => client.createdBy === localStorage.getItem('Id')) : data;
         setClientList(filteredData);
       }
+      // if (res.data) {
+      //   const data = res.data.status === 'true' ? res.data.data || res.data : res.data;
+      //   const filteredData = role === 'admin' ? data.filter((client) => client.createdBy === localStorage.getItem('Id')) : data;
+      //   setClientList(filteredData);
+      // }
     } catch (err) {
       console.error('Error fetching clients:', err);
       toast.error('Failed to fetch clients');
@@ -225,37 +231,37 @@ const Client = () => {
     if (!form.officialPhoneNo) newErrors.officialPhoneNo = 'Official Phone Number is ';
     else if (!form.officialPhoneNo.match(/^[0-9]{10}$/)) newErrors.officialPhoneNo = 'Must be 10 digits';
 
-    if (form.altPhoneNo && !form.altPhoneNo.match(/^[0-9]{10}$/)) newErrors.altPhoneNo = 'Must be 10 digits';
+    // if (form.altPhoneNo && !form.altPhoneNo.match(/^[0-9]{10}$/)) newErrors.altPhoneNo = 'Must be 10 digits';
 
-    if (!form.officialMailId) newErrors.officialMailId = 'Official Email is ';
-    else if (!form.officialMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.officialMailId = 'Invalid email format';
+    // if (!form.officialMailId) newErrors.officialMailId = 'Official Email is ';
+    // else if (!form.officialMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.officialMailId = 'Invalid email format';
 
-    if (form.altMailId && !form.altMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.altMailId = 'Invalid email format';
+    // if (form.altMailId && !form.altMailId.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors.altMailId = 'Invalid email format';
 
-    if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = '';
-    if (!form.emergencyContactNo) newErrors.emergencyContactNo = '';
-    else if (!form.emergencyContactNo.match(/^[0-9]{10}$/)) newErrors.emergencyContactNo = 'Must be 10 digits';
+    // if (!form.emergencyContactPerson) newErrors.emergencyContactPerson = '';
+    // if (!form.emergencyContactNo) newErrors.emergencyContactNo = '';
+    // else if (!form.emergencyContactNo.match(/^[0-9]{10}$/)) newErrors.emergencyContactNo = 'Must be 10 digits';
 
-    if (!form.website) newErrors.website = '';
-    if (!form.officeAddress) newErrors.officeAddress = '';
+    // if (!form.website) newErrors.website = '';
+    // if (!form.officeAddress) newErrors.officeAddress = '';
 
-    // Only super-admin requires clientType
-    if (role === 'super-admin' && !form.clientType) newErrors.clientType = '';
+    // // Only super-admin requires clientType
+    // if (role === 'super-admin' && !form.clientType) newErrors.clientType = '';
 
-    if (!form.pincode) newErrors.pincode = '';
-    else if (!form.pincode.match(/^[0-9]{6}$/)) newErrors.pincode = 'Must be 6 digits';
+    // if (!form.pincode) newErrors.pincode = '';
+    // else if (!form.pincode.match(/^[0-9]{6}$/)) newErrors.pincode = 'Must be 6 digits';
 
-    if (!form.city) newErrors.city = '';
-    if (!form.state) newErrors.state = '';
-    if (!form.country) newErrors.country = '';
+    // if (!form.city) newErrors.city = '';
+    // if (!form.state) newErrors.state = '';
+    // if (!form.country) newErrors.country = '';
 
-    if (!form.contactPerson.name) newErrors['contactPerson.name'] = 'Contact Person Name is ';
-    if (!form.contactPerson.department) newErrors['contactPerson.department'] = 'Department is ';
-    if (!form.contactPerson.position) newErrors['contactPerson.position'] = 'Position is ';
-    if (!form.contactPerson.email) newErrors['contactPerson.email'] = 'Email is ';
-    else if (!form.contactPerson.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors['contactPerson.email'] = 'Invalid email format';
-    if (!form.contactPerson.phone) newErrors['contactPerson.phone'] = 'Phone is ';
-    else if (!form.contactPerson.phone.match(/^[0-9]{10}$/)) newErrors['contactPerson.phone'] = 'Must be 10 digits';
+    // if (!form.contactPerson.name) newErrors['contactPerson.name'] = 'Contact Person Name is ';
+    // if (!form.contactPerson.department) newErrors['contactPerson.department'] = 'Department is ';
+    // if (!form.contactPerson.position) newErrors['contactPerson.position'] = 'Position is ';
+    // if (!form.contactPerson.email) newErrors['contactPerson.email'] = 'Email is ';
+    // else if (!form.contactPerson.email.match(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/)) newErrors['contactPerson.email'] = 'Invalid email format';
+    // if (!form.contactPerson.phone) newErrors['contactPerson.phone'] = 'Phone is ';
+    // else if (!form.contactPerson.phone.match(/^[0-9]{10}$/)) newErrors['contactPerson.phone'] = 'Must be 10 digits';
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -893,11 +899,11 @@ const Client = () => {
                     ))}
                   </React.Fragment>
                 ))}
-                <Grid item xs={12}>
+                {/* <Grid item xs={12}>
                   <Button onClick={handleClientSubmit} variant="contained" color="primary">
                     {editClientId ? 'Update' : 'Submit'}
                   </Button>
-                </Grid>
+                </Grid> */}
               </Grid>
             </CardContent>
           </Card>
@@ -928,7 +934,7 @@ const Client = () => {
               backgroundColor: value.primaryLight
             }}
           >
-            <IconButton color="inherit">{editClientId ? <EditIcon /> : <SaveIcon />}</IconButton>
+            <IconButton color="inherit">{<SaveIcon />}</IconButton>
           </Button>
         </DialogActions>
       </Dialog>

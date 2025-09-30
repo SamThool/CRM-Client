@@ -11,7 +11,7 @@ export default defineConfig(({ mode }) => {
   return {
     server: {
       // this ensures that the browser opens upon server start
-      open: true,
+      open: false,
       port: PORT
     },
     define: {

@@ -16,11 +16,11 @@ import { drawerWidth } from 'config.js';
 // assets
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import CurrentDate from './CureentDateSection';
-import { get } from 'api/api';
+import REACT_APP_API_URL, { get } from 'api/api';
 import { useDispatch, useSelector } from 'react-redux';
-import { setHospitalData } from 'reduxSlices/hospitalData';
-import { cleanDigitSectionValue } from '@mui/x-date-pickers/internals/hooks/useField/useField.utils';
-import value from 'assets/scss/_themes-vars.module.scss';
+// import { setHospitalData } from 'reduxSlices/hospitalData';
+// import { cleanDigitSectionValue } from '@mui/x-date-pickers/internals/hooks/useField/useField.utils';
+// import value from 'assets/scss/_themes-vars.module.scss';
 
 // ==============================|| HEADER ||============================== //
 
@@ -44,7 +44,7 @@ const Header = ({ drawerToggle }) => {
     // prepend backend root URL, not /api/
     // console.log(`http://localhost:5050/api/${urlPath}`);
 
-    return `http://localhost:5050/api/${urlPath}`;
+    return `${REACT_APP_API_URL}${urlPath}`;
   };
 
   useEffect(() => {

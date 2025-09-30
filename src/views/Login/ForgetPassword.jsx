@@ -48,7 +48,7 @@ const ForgotPassword = () => {
     }),
     onSubmit: async (values) => {
       try {
-        const response = await axios.post(`${REACT_APP_API_URL}auth/reset-password`, {
+        const response = await axios.post(`${REACT_APP_API_URL}admin/reset-password`, {
           email,
           otp: values.otp,
           newPassword: values.newPassword

@@ -298,7 +298,7 @@ export default {
             },
             {
               id: 'pipeline',
-              title: 'pipeline',
+              title: 'Pipeline',
               type: 'item',
               url: '/pipeline',
               target: false

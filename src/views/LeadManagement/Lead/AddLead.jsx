@@ -16,7 +16,7 @@ import {
   Box
 } from '@mui/material';
 import { toast, ToastContainer } from 'react-toastify';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -42,7 +42,7 @@ const Lead = () => {
   const [positions, setPositions] = useState([]);
   const [staffOptions, setStaffOptions] = useState([]);
   const [clientData, setClientData] = useState([]);
-
+  const navigate = useNavigate();
   // Reset the form
   const resetForm = () => {
     setForm({
@@ -79,23 +79,10 @@ const Lead = () => {
 
   const validate = () => {
     const newErrors = {};
-    let requiredFields = [
-      'companyName',
-      'countryCode',
-      'phoneNo',
-      'email',
-      'address',
-      'pincode',
-      'city',
-      'state',
-      'country',
-      'reference',
-      'productService',
-      'leadstatus',
-      'leadType',
-      'assignTo',
-      'projectValue'
-    ];
+    let requiredFields = ['phoneNo'];
+    if (leadCategory !== 'newLead') {
+      requiredFields.push('companyName');
+    }
 
     if (leadCategory === 'prospect') {
       requiredFields.push('Prospect');
@@ -170,12 +157,19 @@ const Lead = () => {
         ]);
         setProspects(prospectData.data || []);
         setLeadRefs(leadRefData.data || []);
-        setProducts(productData.data || []);
         setStatuses(leadStatusData.data || []);
         setLeadTypes(leadTypeData.data || []);
       } catch (err) {}
     };
-
+    const fetchProductCategory = async () => {
+      try {
+        const response = await get('SubProductCategory');
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching product categories:', error);
+      }
+    };
+    fetchProductCategory();
     fetchDropdownData();
     getStaffName();
   }, []);
@@ -338,6 +332,7 @@ const Lead = () => {
         payload.Prospect = '';
         payload.Client = '';
         payload.newCompanyName = form.newCompanyName; // store as string
+        payload.companyName = form.newCompanyName; // store as string
       }
 
       // Remove helper fields not needed on backend
@@ -365,6 +360,7 @@ const Lead = () => {
     } finally {
       setIsLoading(false);
     }
+    navigate('/lead-management/lead');
   };
 
   const renderTextField = (label, name, required = false, type = 'text', readOnly = false) => (
@@ -510,9 +506,11 @@ const Lead = () => {
         </Grid>
 
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={6}>
-            {renderTextField('Company Name', 'companyName', true, 'text')}
-          </Grid>
+          {leadCategory !== 'newLead' && (
+            <Grid item xs={12} md={6}>
+              {renderTextField('Company Name', 'companyName', true, 'text')}
+            </Grid>
+          )}
           {/* <Grid item xs={12} md={3}>
             {renderTextField('First Name', 'firstName', true)}
           </Grid>
@@ -526,7 +524,7 @@ const Lead = () => {
             {renderDropdownSimple('Gender', 'gender', ['Male', 'Female', 'Other'])}
           </Grid> */}
           <Grid item xs={12} md={3}>
-            {renderTextField('Country Code', 'countryCode', true)}
+            {renderTextField('Country Code', 'countryCode')}
           </Grid>
           <Grid item xs={12} md={3}>
             {renderTextField('Phone No', 'phoneNo', true)}
@@ -535,7 +533,7 @@ const Lead = () => {
             {renderTextField('Alt Phone No', 'altPhoneNo')}
           </Grid>
           <Grid item xs={12} md={3}>
-            {renderTextField('Email', 'email', true)}
+            {renderTextField('Email', 'email')}
           </Grid>
           <Grid item xs={12} md={3}>
             {renderTextField('Alt Email', 'altEmail')}
@@ -544,7 +542,7 @@ const Lead = () => {
             {renderTextField('Notes', 'notes')}
           </Grid>
           <Grid item xs={12} md={8}>
-            {renderTextField('Address', 'address', true)}
+            {renderTextField('Address', 'address')}
           </Grid>
           <Grid item xs={12} md={2}>
             <TextField
@@ -558,19 +556,18 @@ const Lead = () => {
                 }
               }}
               fullWidth
-              required
               error={!!errors.pincode}
               helperText={errors.pincode}
             />
           </Grid>
           <Grid item xs={12} md={2}>
-            {renderTextField('City', 'city', true)}
+            {renderTextField('City', 'city')}
           </Grid>
           <Grid item xs={12} md={3}>
-            {renderTextField('State', 'state', true)}
+            {renderTextField('State', 'state')}
           </Grid>
           <Grid item xs={12} md={3}>
-            {renderTextField('Country', 'country', true)}
+            {renderTextField('Country', 'country')}
           </Grid>
           <Grid item xs={12} md={3}>
             <TextField
@@ -580,7 +577,6 @@ const Lead = () => {
               name="reference"
               value={form.reference || ''}
               onChange={handleChange}
-              required
               error={!!errors.reference}
               helperText={errors.reference}
             >
@@ -599,13 +595,12 @@ const Lead = () => {
               name="productService"
               value={form.productService || ''}
               onChange={handleChange}
-              required
               error={!!errors.productService}
               helperText={errors.productService}
             >
               {products.map((prod) => (
                 <MenuItem key={prod._id} value={prod._id}>
-                  {prod.productName}
+                  {prod.subProductName}
                   {/* console.log(products) */}
                 </MenuItem>
               ))}
@@ -619,7 +614,6 @@ const Lead = () => {
               name="leadstatus"
               value={form.leadstatus || ''}
               onChange={handleChange}
-              required
               error={!!errors.leadstatus}
               helperText={errors.leadstatus}
             >
@@ -638,7 +632,6 @@ const Lead = () => {
               name="leadType"
               value={form.leadType || ''}
               onChange={handleChange}
-              required
               error={!!errors.leadType}
               helperText={errors.leadType}
             >
@@ -650,7 +643,7 @@ const Lead = () => {
             </TextField>
           </Grid>
           <Grid item xs={12} md={3}>
-            {renderTextField('Project Value', 'projectValue', true)}
+            {renderTextField('Project Value', 'projectValue')}
           </Grid>
           <Grid item xs={12} md={3}>
             <TextField
@@ -660,7 +653,6 @@ const Lead = () => {
               name="assignTo"
               value={form.assignTo || ''}
               onChange={handleChange}
-              required
               error={!!errors.assignTo}
               helperText={errors.assignTo}
             >

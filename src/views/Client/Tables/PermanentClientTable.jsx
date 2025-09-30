@@ -57,7 +57,7 @@ const PermanentClientTable = ({ clientList, refreshClients, clientPermission, is
                           )
                         : 'N/A'}
                     </TableCell>
-                    <TableCell sx={{ display: 'flex', flexWrap: 'nowrap' }}>
+                    <TableCell>
                       {(clientPermission.Edit === true || isAdmin || localStorage.getItem('loginRole') === 'super-admin') && (
                         <Button
                           size="small"

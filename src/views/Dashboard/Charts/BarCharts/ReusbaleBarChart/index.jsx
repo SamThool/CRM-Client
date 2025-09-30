@@ -19,9 +19,7 @@ const ReusableBarChart = ({ title = '', seriesData = [], xLabels = [], seriesLab
             {title}
           </Typography>
         )}
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <FilterControls onFilter={handleFilter} />
-        </Box>
+        <Box sx={{ display: 'flex', gap: 2 }}>{/* <FilterControls onFilter={handleFilter} /> */}</Box>
       </Grid>
       <Divider sx={{ width: '100%', borderColor: '#bdbdbd', marginBottom: 5 }} />
 

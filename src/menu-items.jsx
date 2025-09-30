@@ -63,13 +63,13 @@ export default {
           type: 'collapse',
           icon: GridViewIcon,
           children: [
-            {
-              id: 'type-of-client',
-              title: 'Type Of Client',
-              icon: PeopleIcon,
-              type: 'item',
-              url: '/type-of-client'
-            },
+            // {
+            //   id: 'type-of-client',
+            //   title: 'Type Of Client',
+            //   icon: PeopleIcon,
+            //   type: 'item',
+            //   url: '/type-of-client'
+            // },
             {
               id: 'position',
               title: 'Position',

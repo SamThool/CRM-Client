@@ -57,6 +57,49 @@ const FloatingCard = ({ emoji, title, value }) => {
   );
 };
 
+const FloatingVisitorsCard = ({ title, count, percentage }) => {
+  return (
+    <Box
+      sx={{
+        width: 180,
+        p: 1.5,
+        bgcolor: '#fff',
+        borderRadius: 2,
+        boxShadow: '0 20px 40px rgba(0,0,0,0.25)',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: "'Inter', sans-serif",
+        backdropFilter: 'blur(12px)',
+        background: 'rgba(255, 255, 255, 0.7)',
+        animation: 'floatDiagonal 6s ease-in-out infinite',
+        '@keyframes floatDiagonal': {
+          '0%': { transform: 'translate(0px, 0px)' },
+          '50%': { transform: 'translate(-4px, 4px)' },
+          '100%': { transform: 'translate(0px, 0px)' }
+        }
+      }}
+    >
+      <Typography variant="caption" sx={{ fontWeight: 500, mb: 0.5 }}>
+        {title}
+      </Typography>
+      <Typography variant="h6" sx={{ fontWeight: 600, lineHeight: 1 }}>
+        {count.toLocaleString()}
+      </Typography>
+      <Typography variant="caption" sx={{ color: '#28a745', fontWeight: 500 }}>
+        ↑ {percentage}% from yesterday
+      </Typography>
+
+      {/* mini graph */}
+      <Box
+        component="img"
+        src="https://quickchart.io/chart?c={type:'line',data:{labels:['Mon','Tue','Wed','Thu','Fri'],datasets:[{data:[10,15,12,18,20],fill:false,borderColor:'%23007c9e',tension:0.4}]},options:{plugins:{legend:{display:false}},scales:{x:{display:false},y:{display:false}}}}"
+        alt="mini-graph"
+        sx={{ mt: 0.5, width: '100%', borderRadius: 1 }}
+      />
+    </Box>
+  );
+};
+
 const LandingHome = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -81,7 +124,7 @@ const LandingHome = () => {
         sx={{
           position: 'absolute',
           width: '120%',
-          height: 500,
+          height: '80%',
           borderRadius: '50%',
           background: 'rgba(0,124,158,0.25)',
           filter: 'blur(80px)',
@@ -95,6 +138,11 @@ const LandingHome = () => {
       {/* Single left floating card */}
       <Box sx={{ position: 'absolute', left: 40, top: '40%', transform: 'translateY(-50%)' }}>
         <FloatingCard emoji="😊" title="Happy Customer" value={95} />
+      </Box>
+
+      {/* Bottom-right floating visitors card */}
+      <Box sx={{ position: 'absolute', right: 30, bottom: 30 }}>
+        <FloatingVisitorsCard title="Today's Visitors" count={17058} percentage={9.3} />
       </Box>
 
       <Box

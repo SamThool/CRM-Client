@@ -366,7 +366,6 @@ const AddClient = () => {
                     error={!!errors.officeAddress}
                     helperText={errors.officeAddress}
                     fullWidth
-                    required
                   />
                 </Grid>
 
@@ -423,7 +422,6 @@ const AddClient = () => {
                         error={!!errors[`contactPerson.${index}.${field}`]}
                         helperText={errors[`contactPerson.${index}.${field}`]}
                         fullWidth
-                        required
                       />
                     </Grid>
                   ))}
@@ -436,7 +434,6 @@ const AddClient = () => {
                       error={!!errors[`contactPerson.${index}.department`]}
                       helperText={errors[`contactPerson.${index}.department`]}
                       fullWidth
-                      required
                     >
                       {departmentData?.map((option) => (
                         <MenuItem key={option} value={option.department}>
@@ -455,7 +452,6 @@ const AddClient = () => {
                       error={!!errors[`contactPerson.${index}.position`]}
                       helperText={errors[`contactPerson.${index}.position`]}
                       fullWidth
-                      required
                     >
                       {positionData?.map((value) => (
                         <MenuItem key={value} value={value.position}>

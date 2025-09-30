@@ -83,20 +83,20 @@ const EditLead = () => {
       // 'firstName',
       // 'lastName',
       // 'gender',
-      'countryCode',
-      'phoneNo',
-      'email',
-      'address',
-      'pincode',
-      'city',
-      'state',
-      'country',
-      'reference',
-      'productService',
-      'leadstatus',
-      'leadType',
-      'assignTo',
-      'projectValue'
+      // 'countryCode',
+      'phoneNo'
+      // 'email',
+      // 'address',
+      // 'pincode',
+      // 'city',
+      // 'state',
+      // 'country',
+      // 'reference',
+      // 'productService',
+      // 'leadstatus',
+      // 'leadType',
+      // 'assignTo',
+      // 'projectValue'
     ];
     if (leadCategory === 'prospect') {
       requiredFields.push('Prospect');
@@ -259,6 +259,7 @@ const EditLead = () => {
     } else {
       toast.error('Please fill all required fields correctly');
     }
+    navigate('/lead-management/lead');
   };
 
   const handleContactChange = (index, field, value) => {
@@ -287,7 +288,7 @@ const EditLead = () => {
       ]);
       setProspects(prospectData.data || []);
       setLeadRefs(leadRefData.data || []);
-      setProducts(productData.data || []);
+      // setProducts(productData.data || []);
       setStatuses(leadstatusData.data || []);
       setLeadTypes(leadTypeData.data || []);
       setStaffOptions(staffData.data || []);
@@ -355,6 +356,15 @@ const EditLead = () => {
         }
       } catch (err) {}
     };
+    const fetchProductCategory = async () => {
+      try {
+        const response = await get('SubProductCategory');
+        setProducts(response.data);
+      } catch (error) {
+        console.error('Error fetching product categories:', error);
+      }
+    };
+    fetchProductCategory();
     fetchPositions();
     fetchDepartments();
   }, []);
@@ -420,9 +430,7 @@ const EditLead = () => {
             </Button>
           </Grid>
         </Grid>
-
         <Divider sx={{ mb: 2 }} />
-
         <Grid container spacing={2}>
           <Grid item xs={12}>
             <RadioGroup row value={leadCategory} onChange={handleCategoryChange}>
@@ -494,18 +502,20 @@ const EditLead = () => {
         </Grid>
 
         <Grid container spacing={2} sx={{ mt: 1 }}>
-          <Grid item xs={12} md={6}>
-            <TextField
-              label="Company Name"
-              name="companyName"
-              value={form.companyName || ''}
-              onChange={handleChange}
-              fullWidth
-              required
-              error={!!errors.newCompanyName}
-              helperText={errors.newCompanyName}
-            />
-          </Grid>
+          {leadCategory !== 'newLead' && (
+            <Grid item xs={12} md={6}>
+              <TextField
+                label="Company Name"
+                name="companyName"
+                value={form.companyName || ''}
+                onChange={handleChange}
+                fullWidth
+                required
+                error={!!errors.newCompanyName}
+                helperText={errors.newCompanyName}
+              />
+            </Grid>
+          )}
           {/* <Grid item xs={12} md={3}>
             <TextField
               label="First Name"
@@ -729,7 +739,7 @@ const EditLead = () => {
             >
               {products.map((prod) => (
                 <MenuItem key={prod._id} value={prod._id}>
-                  {prod.productName}
+                  {prod.subProductName}
                 </MenuItem>
               ))}
             </TextField>

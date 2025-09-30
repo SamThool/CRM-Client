@@ -31,6 +31,7 @@ import { get, post, put, remove } from '../../api/api.js';
 import Breadcrumb from 'component/Breadcrumb';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { Refresh } from '@mui/icons-material';
 
 const Contacts = () => {
   const [form, setForm] = useState({
@@ -45,6 +46,7 @@ const Contacts = () => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [data, setData] = useState([]);
   const [deptOptions, setDeptOptions] = useState([]);
+  const [positions, setPosition] = useState([]);
   const [open, setOpen] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [errors, setErrors] = useState({});
@@ -84,7 +86,8 @@ const Contacts = () => {
   const fetchDepartments = async () => {
     try {
       const res = await get('department');
-      // console.log('Department data:', res.data);
+      const dres = await get('position');
+      setPosition(dres.data || []);
       setDeptOptions(res.data || []);
     } catch (err) {
       console.error(err);
@@ -161,7 +164,7 @@ const Contacts = () => {
       contactName: c.name || '',
       phoneNo: c.phone || '',
       email: c.email || '',
-      designation: c.designation || '',
+      designation: typeof c.designation === 'object' ? c.designation.designation : c.designation || '',
       department: typeof c.department === 'object' ? c.department.department : c.department || ''
     });
     setEditIndex(index);
@@ -209,7 +212,7 @@ const Contacts = () => {
           Add Contact
         </Button>
       </Grid> */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+      {/* <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h5">Contacts</Typography>
 
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -220,7 +223,7 @@ const Contacts = () => {
             </Button>
           )}
         </Box>
-      </Box>
+      </Box> */}
 
       <Dialog open={open} onClose={handleClose} fullWidth maxWidth="md">
         <DialogTitle>
@@ -235,8 +238,8 @@ const Contacts = () => {
               ['companyName', 'Company Name'],
               ['contactName', 'Contact Name'],
               ['phoneNo', 'Phone Number'],
-              ['email', 'Email'],
-              ['designation', 'Designation']
+              ['email', 'Email']
+              // ['designation', 'Designation']
             ].map(([name, label]) => (
               <Grid item xs={12} sm={6} key={name}>
                 <TextField
@@ -251,6 +254,28 @@ const Contacts = () => {
               </Grid>
             ))}
 
+            <Grid item xs={12} sm={6}>
+              <TextField
+                select
+                label="Designation"
+                name="designation"
+                value={form.designation}
+                onChange={handleChange}
+                error={!!errors.designation}
+                helperText={errors.designation}
+                fullWidth
+              >
+                {positions.length > 0 ? (
+                  positions.map((d) => (
+                    <MenuItem key={d._id} value={d.position}>
+                      {d.position}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled>No position found</MenuItem>
+                )}
+              </TextField>
+            </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
                 select
@@ -287,6 +312,30 @@ const Contacts = () => {
 
       <Card>
         <CardContent>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+            <Typography variant="h6" gutterBottom>
+              Contact List
+            </Typography>
+
+            <Box display="flex" gap={2}>
+              <TextField
+                label="Search"
+                size="small"
+                variant="outlined"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+
+              <Button variant="outlined" color="primary" startIcon={<Refresh />}>
+                Refresh
+              </Button>
+              {(contactsPermission.Add === true || isAdmin) && (
+                <Button variant="contained" color="primary" onClick={handleOpen} startIcon={<AddIcon />}>
+                  Add Contact
+                </Button>
+              )}
+            </Box>
+          </Box>
           <Box sx={{ width: '100%', overflowX: 'auto' }}>
             <Table sx={{ minWidth: 1000 }}>
               <TableHead>

@@ -37,7 +37,7 @@ import { useSelector } from 'react-redux';
 
 const Lead = () => {
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [addFollowIndex, setAddFollowIndex] = useState(null);
   const [data, setData] = useState([]);
   const [form, setForm] = useState({
@@ -363,7 +363,7 @@ const Lead = () => {
                         </TableCell>
                         <TableCell>
                           {/* handle both populated and raw id */}
-                          {row.productService?.productName || productsLabel(row.productService) || 'N/A'}
+                          {row.productService?.subProductName || productsLabel(row.productService) || 'N/A'}
                         </TableCell>
                         <TableCell>
                           <Box display="flex" alignItems="center" justifyContent="center">
@@ -412,7 +412,7 @@ const Lead = () => {
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[25, 50, 100]}
               />
             </CardContent>
           </Card>

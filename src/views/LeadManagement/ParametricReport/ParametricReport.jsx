@@ -46,7 +46,7 @@ const MenuProps = {
 const ParametricReport = () => {
   const [data, setData] = useState([]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
   const [search, setSearch] = useState('');
   const [selectedRow, setSelectedRow] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -157,22 +157,24 @@ const ParametricReport = () => {
                 <Typography variant="h6">Parametric Lead Report</Typography>
               </Grid>
 
-              {/* Search */}
-              <Grid item xs={12} sm={3}>
-                <TextField
-                  fullWidth
-                  size="small"
-                  placeholder="Search name or product"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                />
-              </Grid>
-
-              {/* Filters row */}
-              <Grid item xs={12} sm={6}>
+              {/* Filters row (Search + Dropdowns together) */}
+              <Grid item xs={12} sm={9}>
                 <Grid container spacing={2}>
+                  {/* Search field styled like dropdown */}
+                  <Grid item xs={12} sm={6} md={4}>
+                    <FormControl fullWidth size="small">
+                      <TextField
+                        placeholder="Search name or product"
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        size="small"
+                      />
+                    </FormControl>
+                  </Grid>
+
+                  {/* Dropdown filters */}
                   {['reference', 'assignTo', 'product', 'status', 'leadType'].map((key) => (
-                    <Grid item xs={6} sm={4} key={key}>
+                    <Grid item xs={12} sm={6} md={4} key={key}>
                       <FormControl fullWidth size="small">
                         <InputLabel>{key}</InputLabel>
                         <Select
@@ -200,7 +202,7 @@ const ParametricReport = () => {
             <Divider sx={{ my: 2 }} />
 
             {/* Table */}
-            <TableContainer component={Paper} sx={{ maxHeight: '65vh' }}>
+            <TableContainer component={Paper}>
               <Table stickyHeader>
                 <TableHead>
                   <TableRow>
@@ -235,8 +237,25 @@ const ParametricReport = () => {
                         </TableCell>
                         <TableCell>{lead?.Prospect?.companyName || lead?.Client?.clientName || lead?.newCompanyName || 'N/A'}</TableCell>
                         <TableCell>{lead.productService?.productName || 'N/A'}</TableCell>
-                        <TableCell sx={{ bgcolor: lead.leadstatus?.colorCode || 'transparent', color: '#fff', borderRadius: '8px' }}>
-                          {lead.leadstatus?.LeadStatus || 'N/A'}
+                        <TableCell>
+                          {/* <TableCell sx={{ bgcolor: lead.leadstatus?.colorCode || 'transparent', color: '#fff', borderRadius: '8px' }}> */}
+                          <Box
+                            sx={{
+                              backgroundColor: lead.leadstatus?.colorCode || 'transparent',
+                              color: '#000000',
+                              padding: '4px 10px',
+                              borderRadius: '10px',
+                              display: 'inline-block',
+                              fontSize: '0.75rem',
+                              fontWeight: 500,
+                              textTransform: 'capitalize',
+                              minWidth: '80px',
+
+                              textAlign: 'center'
+                            }}
+                          >
+                            {lead.leadstatus?.LeadStatus || 'N/A'}
+                          </Box>
                         </TableCell>
                         <TableCell>{lead.leadType?.LeadType || 'N/A'}</TableCell>
                         <TableCell>{lead.lastCommunication || (lead.followups?.[0]?.comment ?? 'N/A')}</TableCell>
@@ -274,7 +293,7 @@ const ParametricReport = () => {
                 onPageChange={handleChangePage}
                 rowsPerPage={rowsPerPage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
-                rowsPerPageOptions={[10, 25, 50, 100]}
+                rowsPerPageOptions={[25, 50, 100]}
               />
             </Box>
           </CardContent>

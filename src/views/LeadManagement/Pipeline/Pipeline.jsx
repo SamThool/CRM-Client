@@ -147,6 +147,15 @@ const Pipeline = () => {
     }
   };
 
+  function calculateTotalAmount(arr) {
+    if (!Array.isArray(arr)) return 0;
+
+    return arr.reduce((sum, item) => {
+      const value = Number(item.projectValue) || 0; // convert string to number, fallback to 0
+      return sum + value;
+    }, 0);
+  }
+
   return (
     <>
       <Breadcrumb title="Pipeline" className="breadcrumb">
@@ -300,7 +309,8 @@ const Pipeline = () => {
                       mb: 1
                     }}
                   >
-                    {status.LeadStatus}
+                    {status.LeadStatus} ( {groupedLeadsByStatus[status._id]?.length} Lead | INR{' '}
+                    {calculateTotalAmount(groupedLeadsByStatus[status._id])})
                   </Typography>
 
                   {(groupedLeadsByStatus[status._id] || []).map((lead) => (

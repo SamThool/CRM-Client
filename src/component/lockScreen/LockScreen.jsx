@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef } from 'react';
 import PatternLock from 'react-pattern-lock';
 import './lockscreen.css';
 
-export default function LockScreen({ onClose }) {
+const LockScreen = forwardRef(({ onClose }, ref) => {
   const [path, setPath] = useState([]);
   const [disabled, setDisabled] = useState(false);
   const [savedPattern, setSavedPattern] = useState(null);
@@ -107,4 +107,6 @@ export default function LockScreen({ onClose }) {
       </div>
     </div>
   );
-}
+});
+
+export default LockScreen;
