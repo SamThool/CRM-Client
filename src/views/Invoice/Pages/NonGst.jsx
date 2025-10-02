@@ -18,7 +18,8 @@ import {
   DialogContent,
   DialogTitle,
   InputLabel,
-  Select
+  Select,
+  Autocomplete
 } from '@mui/material';
 import { Link, Navigate } from 'react-router-dom';
 import Breadcrumb from 'component/Breadcrumb';
@@ -439,38 +440,52 @@ const NonGst = () => {
 
                   <Grid container spacing={2}>
                     <Grid item xs={12} md={4}>
-                      <TextField
-                        select
-                        label="Client Name"
-                        name="clientId"
-                        value={form.clientId}
-                        onChange={(e) => {
-                          const selectedClient = clientData.find((c) => c._id === e.target.value);
-                          setForm((prev) => ({
-                            ...prev,
-                            clientId: e.target.value,
-                            clientName: selectedClient?.clientName || '',
-                            clientGst: selectedClient?.gstNo || '',
-                            clientEmail: selectedClient?.officialMailId || '',
-                            clientAddress: selectedClient?.officeAddress || '',
-                            clientPincode: selectedClient?.pincode || '',
-                            clientState: selectedClient?.state || '',
-                            clientCity: selectedClient?.city || '',
-                            clientCountry: selectedClient?.country || ''
-                          }));
+                      <Autocomplete
+                        options={clientData || []}
+                        getOptionLabel={(option) => (typeof option === 'string' ? option : option?.clientName || '')}
+                        value={clientData.find((c) => c._id === form.clientId) || null}
+                        onChange={(e, newValue) => {
+                          if (newValue) {
+                            setForm({
+                              ...form,
+                              clientId: newValue._id,
+                              clientName: newValue.clientName || '',
+                              clientGst: newValue.gstNo || '',
+                              clientEmail: newValue.officialMailId || '',
+                              clientAddress: newValue.officeAddress || '',
+                              clientPincode: newValue.pincode || '',
+                              clientState: newValue.state || '',
+                              clientCity: newValue.city || '',
+                              clientCountry: newValue.country || ''
+                            });
+                          } else {
+                            setForm({
+                              ...form,
+                              clientId: '',
+                              clientName: '',
+                              clientGst: '',
+                              clientEmail: '',
+                              clientAddress: '',
+                              clientPincode: '',
+                              clientState: '',
+                              clientCity: '',
+                              clientCountry: ''
+                            });
+                          }
                         }}
-                        fullWidth
-                        required
-                        error={!!errors.clientId}
-                        helperText={errors.clientId}
-                      >
-                        {clientData?.map((client, index) => (
-                          <MenuItem key={index} value={client._id}>
-                            {client.clientName}
-                          </MenuItem>
-                        ))}
-                      </TextField>
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Client Name"
+                            required
+                            error={!!errors.clientId}
+                            helperText={errors.clientId}
+                            fullWidth
+                          />
+                        )}
+                      />
                     </Grid>
+
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="Invoice Number"
@@ -481,19 +496,17 @@ const NonGst = () => {
                         required
                         error={!!errors.invoiceNumber}
                         helperText={errors.invoiceNumber}
-                        InputProps={{ readOnly: true }}
+                        InputProps={{ readOnly: true }} // already read-only
                       />
                     </Grid>
+
                     <Grid item xs={12} md={4}>
                       <TextField
                         label="Email Id"
                         name="clientEmail"
                         value={form.clientEmail}
-                        onChange={handleChange}
                         fullWidth
-                        required
-                        error={!!errors.clientEmail}
-                        helperText={errors.clientEmail}
+                        InputProps={{ readOnly: true }} // prevent editing
                       />
                     </Grid>
 
@@ -508,7 +521,6 @@ const NonGst = () => {
                               fullWidth: true
                             }
                           }}
-                          renderInput={(params) => <TextField {...params} sx={{ width: '100%' }} fullWidth />}
                         />
                       </LocalizationProvider>
                     </Grid>
@@ -525,11 +537,8 @@ const NonGst = () => {
                           label={field.label}
                           name={field.name}
                           value={form[field.name]}
-                          onChange={handleChange}
                           fullWidth
-                          required
-                          error={!!errors[field.name]}
-                          helperText={errors[field.name]}
+                          InputProps={{ readOnly: true }} // disable editing
                         />
                       </Grid>
                     ))}

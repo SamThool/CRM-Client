@@ -110,7 +110,10 @@ const Lead = () => {
 
       const response = await get(url);
       console.log('response data is', response);
-      setData(response.data || []);
+
+      const sortedData = (response.data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+      setData(sortedData);
     } catch (error) {
       toast.error('Failed to fetch lead data');
       console.error(error);

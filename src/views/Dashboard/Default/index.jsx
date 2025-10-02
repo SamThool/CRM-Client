@@ -40,7 +40,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import DepartmentOpdPieChart from '../Charts/PieChart/DepartmentOPD';
 import ReusableBarChart from '../Charts/BarCharts/ReusbaleBarChart';
 import { useSelector } from 'react-redux';
-import { Delete, Edit } from '@mui/icons-material';
+import { Delete, Edit, Info as InfoIcon } from '@mui/icons-material';
 import { toast } from 'react-toastify';
 
 const inputData = [
@@ -393,7 +393,7 @@ const Default = () => {
 
   const referenceSourceData = {
     type: 'donut',
-    head: 'Refferences',
+    head: 'References',
     height: 320,
     series: [...rleadCounts],
     options: {
@@ -449,9 +449,10 @@ const Default = () => {
     },
     colors: [invoiceDataFY.colors[0], clientDataFY.colors[0], revenueDataFY.colors[0]]
   };
-  console.log(filteredLeads);
+  // console.log(filteredLeads);
 
   const paginatedLeads = filteredLeads.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+
   return (
     <Grid container spacing={gridSpacing}>
       {/* Top Summary Cards */}
@@ -528,13 +529,14 @@ const Default = () => {
                   {[
                     'SN',
                     'Company Name',
+                    'Contact Name',
+                    'Contact Phone',
                     'Status',
-                    'Date',
-                    'Time',
+                    'Follow Up Date & Time',
                     'Last Communication',
-                    'Product/Service',
+                    'Product',
                     'Assign To',
-                    'Follow Up',
+                    // 'Follow Up',
                     'Action'
                   ].map((head) => (
                     <TableCell key={head}>{head}</TableCell>
@@ -550,14 +552,18 @@ const Default = () => {
                       ? `${lead.assignTo.basicDetails.firstName || ''} ${lead.assignTo.basicDetails.lastName || ''}`.trim()
                       : 'N/A';
 
+                    const contact = lead.contact?.[0];
+
                     return (
                       <TableRow key={lead._id || index}>
                         <TableCell>{page * rowsPerPage + index + 1}</TableCell>
-                        <TableCell>{lead.companyName}</TableCell>
+                        <TableCell sx={{ minWidth: 200 }}>{lead.companyName}</TableCell>
+                        <TableCell sx={{ minWidth: 180 }}>{contact?.name}</TableCell>
+                        <TableCell>{contact?.phone}</TableCell>
                         <TableCell>
                           <Box
                             sx={{
-                              backgroundColor: '#f5f5f5',
+                              backgroundColor: lead?.leadstatus?.colorCode || '#f5f5f5',
                               color: '#000000',
                               padding: '4px 10px',
                               borderRadius: '10px',
@@ -573,17 +579,29 @@ const Default = () => {
                           </Box>
                         </TableCell>
 
-                        <TableCell sx={{ minWidth: 120 }}>{followup?.followupDate || 'N/A'}</TableCell>
-                        <TableCell>{followup?.followupTime || 'N/A'}</TableCell>
-                        <TableCell sx={{ minWidth: 180 }}>{followup?.comment || 'N/A'}</TableCell>
+                        <TableCell sx={{ minWidth: 200 }}>
+                          {followup?.updatedAt ? followup.updatedAt.slice(0, 10) : 'N/A'}&nbsp; &nbsp; &nbsp;
+                          {followup?.updatedAt
+                            ? new Date(followup.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            : 'N/A'}{' '}
+                        </TableCell>
+                        {/* <TableCell sx={{ minWidth: 80 }}>
+                          {followup?.updatedAt
+                            ? new Date(followup.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            : 'N/A'}
+                        </TableCell> */}
 
-                        <TableCell>{lead.productService?.productName || 'N/A'}</TableCell>
-                        <TableCell>{assignedName}</TableCell>
-                        <TableCell sx={{ minWidth: 150 }}>{followup?.updatedAt ? followup.updatedAt.slice(0, 10) : 'N/A'}</TableCell>
+                        <TableCell sx={{ minWidth: 300 }}>{followup?.comment || 'N/A'}</TableCell>
+
+                        <TableCell>{lead.productService?.subProductName || 'N/A'}</TableCell>
+                        <TableCell sx={{ minWidth: 160 }}>{assignedName}</TableCell>
+                        {/* <TableCell sx={{ minWidth: 150 }}>{followup?.updatedAt ? followup.updatedAt.slice(0, 10) : 'N/A'}</TableCell> */}
                         <TableCell>
-                          <Button variant="contained" color="primary" size="small" onClick={() => handleopenAddFollowUp(lead._id)}>
-                            Done
-                          </Button>
+                          {/* <Button variant="contained" color="primary" size="small" onClick={() => handleopenAddFollowUp(lead._id)}> */}
+                          <IconButton onClick={() => handleopenAddFollowUp(lead._id)}>
+                            <InfoIcon sx={{ color: 'primary.main' }} />
+                          </IconButton>
+                          {/* </Button> */}
                         </TableCell>
                       </TableRow>
                     );

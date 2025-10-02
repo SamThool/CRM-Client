@@ -28,9 +28,12 @@ import {
   ListItemText,
   OutlinedInput,
   FormControl,
-  InputLabel
+  InputLabel,
+  IconButton,
+  Tooltip
 } from '@mui/material';
 import { Link } from 'react-router-dom';
+import { Visibility } from '@mui/icons-material';
 
 const ITEM_HEIGHT = 40;
 const ITEM_PADDING_TOP = 8;
@@ -111,38 +114,41 @@ const ParametricReport = () => {
             .filter(Boolean)
         )
       ],
-      product: [...new Set(data.map((d) => d.productService?.productName).filter(Boolean))],
+      product: [...new Set(data.map((d) => d.productService?.subProductName).filter(Boolean))],
       status: [...new Set(data.map((d) => d.leadstatus?.LeadStatus).filter(Boolean))],
       leadType: [...new Set(data.map((d) => d.leadType?.LeadType).filter(Boolean))]
     };
   }, [data]);
 
   // filtering logic
-  const filtered = data.filter((lead) => {
-    if (search) {
-      const name = `${lead.firstName || ''} ${lead.lastName || ''}`.toLowerCase();
-      const product = (lead.productService?.productName || '').toLowerCase();
-      if (!name.includes(search.toLowerCase()) && !product.includes(search.toLowerCase())) {
-        return false;
+  const filtered = data
+    .filter((lead) => {
+      if (search) {
+        const name = `${lead.firstName || ''} ${lead.lastName || ''}`.toLowerCase();
+        const product = (lead.productService?.subProductName || '').toLowerCase();
+        if (!name.includes(search.toLowerCase()) && !product.includes(search.toLowerCase())) {
+          return false;
+        }
       }
-    }
 
-    // apply filters
-    const checks = {
-      reference: lead.reference?.LeadReference,
-      assignTo: lead.assignTo
-        ? `${lead.assignTo.basicDetails?.firstName || ''} ${lead.assignTo.basicDetails?.lastName || ''}`.trim()
-        : null,
-      product: lead.productService?.productName,
-      status: lead.leadstatus?.LeadStatus,
-      leadType: lead.leadType?.LeadType
-    };
+      // apply filters
+      const checks = {
+        reference: lead.reference?.LeadReference,
+        assignTo: lead.assignTo
+          ? `${lead.assignTo.basicDetails?.firstName || ''} ${lead.assignTo.basicDetails?.lastName || ''}`.trim()
+          : null,
+        product: lead.productService?.subProductName,
+        status: lead.leadstatus?.LeadStatus,
+        leadType: lead.leadType?.LeadType
+      };
 
-    return Object.entries(filters).every(([key, selected]) => {
-      if (selected.length === 0) return true; // no filter applied
-      return selected.includes(checks[key]);
-    });
-  });
+      return Object.entries(filters).every(([key, selected]) => {
+        if (selected.length === 0) return true; // no filter applied
+        return selected.includes(checks[key]);
+      });
+    })
+    // sort by createdAt (most recent first)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   const paginated = filtered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
@@ -220,6 +226,7 @@ const ParametricReport = () => {
                     <TableCell>Assign To</TableCell>
                     <TableCell>Created Date</TableCell>
                     <TableCell>Day Count</TableCell>
+                    {/* <TableCell>Action</TableCell> */}
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -227,16 +234,35 @@ const ParametricReport = () => {
                     paginated.map((lead, idx) => (
                       <TableRow key={lead._id || idx} hover>
                         <TableCell>{page * rowsPerPage + idx + 1}</TableCell>
-                        <TableCell>
-                          <Button size="small" onClick={() => openDetails(lead)}>
-                            View
-                          </Button>
-                          <Button size="small" component={Link} to={`/lead-management/EditLead/${lead._id}`}>
-                            Update
-                          </Button>
+                        <TableCell
+                        // sx={{
+                        //   display: 'flex',
+                        //   alignItems: 'center',
+                        //   justifyContent: 'center',
+                        //   gap: 1
+                        // }}
+                        >
+                          <div
+                            style={{
+                              display: 'flex'
+                            }}
+                          >
+                            <Button variant="text" size="small" onClick={() => openDetails(lead)}>
+                              View
+                            </Button>
+                            <Button variant="text" size="small" component={Link} to={`/lead-management/EditLead/${lead._id}`}>
+                              Update
+                            </Button>
+                            <Tooltip title="hello" arrow>
+                              <IconButton color="primary">
+                                <Visibility />
+                              </IconButton>
+                            </Tooltip>
+                          </div>
                         </TableCell>
+
                         <TableCell>{lead?.Prospect?.companyName || lead?.Client?.clientName || lead?.newCompanyName || 'N/A'}</TableCell>
-                        <TableCell>{lead.productService?.productName || 'N/A'}</TableCell>
+                        <TableCell>{lead.productService?.subProductName || 'N/A'}</TableCell>
                         <TableCell>
                           {/* <TableCell sx={{ bgcolor: lead.leadstatus?.colorCode || 'transparent', color: '#fff', borderRadius: '8px' }}> */}
                           <Box

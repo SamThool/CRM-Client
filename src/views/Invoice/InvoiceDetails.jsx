@@ -344,9 +344,40 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
     backgroundColor: '#3b82f6'
   };
 
+  const getLogoUrl = (logoPath) => {
+    if (!logoPath) return null;
+
+    // normalize slashes
+    const normalized = logoPath.replace(/\\/g, '/');
+
+    // replace public/images with uploads
+    const urlPath = normalized.replace('public/images', 'uploads');
+
+    // prepend backend root URL, not /api/
+    // console.log(`http://localhost:5050/api/${urlPath}`);
+
+    return `${REACT_APP_API_URL}${urlPath}`;
+  };
+
+  const savedImg = localStorage.getItem('img');
+
   return (
     <>
       <Box>
+        <Button
+          onClick={toggleHeader}
+          color="primary"
+          size="small"
+          sx={{
+            mb: 0,
+            mx: 6,
+            my: 1,
+            border: '1px solid',
+            borderColor: 'primary.main'
+          }}
+        >
+          {isHeaderOpen ? 'Hide Header' : 'Show Header'}
+        </Button>
         <div
           ref={contentRef}
           style={{
@@ -355,42 +386,45 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
           }}
         >
           <div style={containerStyle}>
-            <div style={headerStyle}>
-              <div>
-                <img src={mirai} alt="Logo" style={logoStyle} />
-              </div>
-              <div style={rightHeaderStyle}>
-                <p style={iconTextStyle}>
-                  <strong style={{ color: '#000' }}>Address:- </strong>
-                  <p style={{ ...linkStyle, color: '#555', fontWeight: 'normal', display: 'flex' }}>
-                    {company.officeAddress || 'N/A'} {company.city || 'N/A'} {company.state || 'N/A'} {company.pincode || 'N/A'}
+            {isHeaderOpen && (
+              <div style={headerStyle}>
+                <div>
+                  {/* <img src={logoPreview instanceof File ? URL.createObjectURL(logoPreview) : getLogoUrl(form.companyLogo)} alt="Logo" style={logoStyle} /> */}
+                  <img src={savedImg} alt="Logo" style={logoStyle} />
+                </div>
+                <div style={rightHeaderStyle}>
+                  <p style={iconTextStyle}>
+                    <strong style={{ color: '#000' }}>Address:- </strong>
+                    <p style={{ ...linkStyle, color: '#555', fontWeight: 'normal', display: 'flex' }}>
+                      {company.officeAddress || 'N/A'} {company.city || 'N/A'} {company.state || 'N/A'} {company.pincode || 'N/A'}
+                    </p>
                   </p>
-                </p>
-                <p style={iconTextStyle}>
-                  <strong style={{ color: '#000' }}>Website:- </strong>
-                  <a href={company?.website || '#'} style={{ ...linkStyle, color: '#555', fontWeight: 'normal' }}>
-                    {company.website || 'N/A'}
-                  </a>
-                </p>
+                  <p style={iconTextStyle}>
+                    <strong style={{ color: '#000' }}>Website:- </strong>
+                    <a href={company?.website || '#'} style={{ ...linkStyle, color: '#555', fontWeight: 'normal' }}>
+                      {company.website || 'N/A'}
+                    </a>
+                  </p>
 
-                <p style={iconTextStyle}>
-                  <strong style={{ color: '#000' }}>Contact:- </strong>
-                  <span style={{ color: '#555', fontWeight: 'normal' }}>
-                    {[company.officialPhoneNo, company.altPhoneNo].filter(Boolean).join(', ') || 'N/A'}
-                  </span>
-                </p>
+                  <p style={iconTextStyle}>
+                    <strong style={{ color: '#000' }}>Contact:- </strong>
+                    <span style={{ color: '#555', fontWeight: 'normal' }}>
+                      {[company.officialPhoneNo, company.altPhoneNo].filter(Boolean).join(', ') || 'N/A'}
+                    </span>
+                  </p>
 
-                <p style={iconTextStyle}>
-                  <strong style={{ color: '#000' }}>Mail:- </strong>
-                  <span style={{ color: '#555', fontWeight: 'normal' }}>{company.officialMailId || 'N/A'}</span>
-                </p>
+                  <p style={iconTextStyle}>
+                    <strong style={{ color: '#000' }}>Mail:- </strong>
+                    <span style={{ color: '#555', fontWeight: 'normal' }}>{company.officialMailId || 'N/A'}</span>
+                  </p>
 
-                <p style={iconTextStyle}>
-                  <strong style={{ color: '#000' }}>GST No:- </strong>
-                  <span style={{ color: '#555', fontWeight: 'normal' }}>{company.gstNo || 'N/A'}</span>
-                </p>
+                  <p style={iconTextStyle}>
+                    <strong style={{ color: '#000' }}>GST No:- </strong>
+                    <span style={{ color: '#555', fontWeight: 'normal' }}>{company.gstNo || 'N/A'}</span>
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
 
             <hr style={{ borderColor: '#ddd', marginBottom: '0.5rem' }} />
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 1 }}>
@@ -432,20 +466,6 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                   {invoiceData.clientPincode || '-'} , {invoiceData.clientState || '-'} , {invoiceData.clientCountry || '-'}
                 </p>
               </div>
-              {/* <div>
-                <p>
-                  <strong>City:</strong> {invoiceData.clientCity || '-'}
-                </p>
-                <p>
-                  <strong>State:</strong> {invoiceData.clientState || '-'}
-                </p>
-                <p>
-                  <strong>Country:</strong> {invoiceData.clientCountry || '-'}
-                </p>
-                <p>
-                  <strong>Pincode:</strong> {invoiceData.clientPincode || '-'}
-                </p>
-              </div> */}
             </div>
 
             <table style={tableStyle}>
@@ -489,10 +509,6 @@ const InvoiceDetails = ({ closeModal, invoiceData }) => {
                   <div style={labelTextStyle}>TOTAL AFTER DISCOUNT&nbsp;:</div>
                   <div>₹ {(invoiceData.totalAmount || 0).toFixed(2)}</div>
                 </div>
-                {/* <div style={{ display: 'flex', flexDirection: 'row', gap: '0.9rem' }}>
-                  <div style={labelTextStyle}>ROUND UP&nbsp;:</div>
-                  <div>₹ {(invoiceData.roundUp || 0).toFixed(2)}</div>
-                </div> */}
                 <div style={{ display: 'flex', gap: '0.9rem', alignItems: 'flex-start' }}>
                   <div style={labelTextStyle}>SUB TOTAL&nbsp;:</div>
 

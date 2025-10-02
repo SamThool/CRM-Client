@@ -313,23 +313,50 @@ const NonGstEditPage = () => {
                 </Typography>
                 <Grid container spacing={2}>
                   <Grid item xs={12} md={3}>
-                    <TextField
-                      select
-                      label="Client Name"
-                      name="clientId"
-                      value={form.clientId}
-                      onChange={handleChange}
-                      fullWidth
-                      required
-                      error={!!errors.clientId}
-                      helperText={errors.clientId}
-                    >
-                      {clientData?.map((client, index) => (
-                        <MenuItem key={client._id} value={client._id}>
-                          {client.clientName}
-                        </MenuItem>
-                      ))}
-                    </TextField>
+                    <Autocomplete
+                      options={clientData || []}
+                      getOptionLabel={(option) => option.clientName || ''}
+                      value={clientData.find((c) => c._id === form.clientId) || null}
+                      onChange={(e, newValue) => {
+                        if (newValue) {
+                          setForm((prev) => ({
+                            ...prev,
+                            clientId: newValue._id,
+                            clientName: newValue.clientName || '',
+                            clientGst: newValue.gstNo || '',
+                            clientEmail: newValue.officialMailId || '',
+                            clientAddress: newValue.officeAddress || '',
+                            clientPincode: newValue.pincode || '',
+                            clientState: newValue.state || '',
+                            clientCity: newValue.city || '',
+                            clientCountry: newValue.country || ''
+                          }));
+                        } else {
+                          setForm((prev) => ({
+                            ...prev,
+                            clientId: '',
+                            clientName: '',
+                            clientGst: '',
+                            clientEmail: '',
+                            clientAddress: '',
+                            clientPincode: '',
+                            clientState: '',
+                            clientCity: '',
+                            clientCountry: ''
+                          }));
+                        }
+                      }}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          label="Client Name"
+                          required
+                          error={!!errors.clientId}
+                          helperText={errors.clientId}
+                          fullWidth
+                        />
+                      )}
+                    />
                   </Grid>
                   <Grid item xs={12} md={3}>
                     <TextField

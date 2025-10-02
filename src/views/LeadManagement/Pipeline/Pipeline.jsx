@@ -50,7 +50,7 @@ const Pipeline = () => {
 
     const filtered = leads.filter((lead) => {
       const leadStaff = `${lead.assignTo?.basicDetails?.firstName || ''} ${lead.assignTo?.basicDetails?.lastName || ''}`.toLowerCase();
-      const leadProduct = lead.productService?.productName?.toLowerCase() || '';
+      const leadProduct = lead.productService?.subProductName?.toLowerCase() || '';
       const leadProspects = (lead.Client ? 'client' : lead.Prospect ? 'prospect' : 'new lead').toLowerCase();
       const leadStatus = typeof lead.leadstatus === 'object' ? lead.leadstatus?.LeadStatus?.toLowerCase() : lead.leadstatus?.toLowerCase();
 
@@ -210,7 +210,7 @@ const Pipeline = () => {
                       fullWidth
                     >
                       <MenuItem value="">All</MenuItem>
-                      {[...new Set(leads.map((lead) => lead.productService?.productName).filter(Boolean))].map((product, idx) => (
+                      {[...new Set(leads.map((lead) => lead.productService?.subProductName).filter(Boolean))].map((product, idx) => (
                         <MenuItem key={idx} value={product}>
                           {product}
                         </MenuItem>
@@ -221,9 +221,16 @@ const Pipeline = () => {
                   {/* Prospects Filter */}
                   <Grid item xs={12} sm={6} md={3}>
                     <Box mb={1} fontWeight="bold" textTransform="uppercase">
-                      Prospects
+                      Type Of Lead
                     </Box>
-                    <TextField select label="Prospects" name="prospects" value={filters.prospects} onChange={handleFilterChange} fullWidth>
+                    <TextField
+                      select
+                      label="Type Of Lead"
+                      name="prospects"
+                      value={filters.prospects}
+                      onChange={handleFilterChange}
+                      fullWidth
+                    >
                       <MenuItem value="">All</MenuItem>
                       {/* Use lowercase values for consistency */}
                       {['client', 'prospect', 'new lead'].map((type) => (
@@ -346,12 +353,12 @@ const Pipeline = () => {
                         {/* Delete icon if needed */}
                       </IconButton>
 
-                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#006400', mb: 1, fontSize: '1.2rem' }}>
-                        {lead.firstName} {lead.lastName}
+                      <Typography variant="subtitle1" sx={{ fontWeight: 'bold', color: '#006400', mb: 1, fontSize: '1rem' }}>
+                        {lead?.companyName}
                       </Typography>
 
                       <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>
-                        <strong>PRODUCT NAME:</strong> {lead.productService?.productName || 'N/A'}
+                        <strong>PRODUCT NAME:</strong> {lead.productService?.subProductName || 'N/A'}
                       </Typography>
 
                       <Typography variant="body2" sx={{ fontSize: '0.75rem' }}>

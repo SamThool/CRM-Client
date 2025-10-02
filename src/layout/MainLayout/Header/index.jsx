@@ -44,6 +44,7 @@ const Header = ({ drawerToggle }) => {
     // prepend backend root URL, not /api/
     // console.log(`http://localhost:5050/api/${urlPath}`);
 
+    localStorage.setItem('img', `${REACT_APP_API_URL}${urlPath}`);
     return `${REACT_APP_API_URL}${urlPath}`;
   };
 
