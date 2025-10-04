@@ -261,14 +261,16 @@ const Default = () => {
     try {
       const response = await get('lead');
 
-      // Filter leads with at least one followup
       const filteredLeads = (response.data || []).filter((lead) => Array.isArray(lead.followups) && lead.followups.length > 0);
 
-      // Sort leads based on the latest followup date (last indexed followup)
       const sortedLeads = filteredLeads.sort((a, b) => {
         const lastA = a.followups[a.followups.length - 1];
         const lastB = b.followups[b.followups.length - 1];
-        return new Date(lastB.updatedAt) - new Date(lastA.updatedAt);
+
+        const dateA = new Date(`${lastA.followupDate}T${lastA.followupTime}`);
+        const dateB = new Date(`${lastB.followupDate}T${lastB.followupTime}`);
+
+        return dateB - dateA; // descending
       });
 
       setLeads(sortedLeads);
@@ -652,14 +654,29 @@ const Default = () => {
       <Grid item xs={12}>
         <Card spacing={gridSpacing} sx={{ p: 2 }}>
           {/* Dropdown to select chart */}
-          <FormControl sx={{ mb: 2, minWidth: 200 }}>
-            <InputLabel>Select Data</InputLabel>
-            <Select value={selectedChart} label="Select Data" onChange={(e) => setSelectedChart(e.target.value)}>
-              <MenuItem value="Invoice">Invoice</MenuItem>
-              <MenuItem value="Client">Client</MenuItem>
-              <MenuItem value="Revenue">Revenue</MenuItem>
-            </Select>
-          </FormControl>
+          <Box
+            sx={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              width: '100%',
+              px: 5
+            }}
+          >
+            <FormControl sx={{ mb: 2, minWidth: 200 }}>
+              <InputLabel>Select Data</InputLabel>
+              <Select value={selectedChart} label="Select Data" onChange={(e) => setSelectedChart(e.target.value)}>
+                <MenuItem value="Invoice">Invoice</MenuItem>
+                <MenuItem value="Client">Client</MenuItem>
+                <MenuItem value="Revenue">Revenue</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ mb: 2, minWidth: 200 }}>
+              <InputLabel>Select Date</InputLabel>
+              <Select value={'Mar 2025 - Mar 2026'} label="Select Data">
+                <MenuItem value="Mar 2025 - Mar 2026">Mar 2025 - Mar 2026</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
 
           <Dialog open={openAddFollowUp} onClose={handleInfoClose} maxWidth="lg" fullWidth>
             <DialogTitle>{isEditMode ? 'Edit Follow-Up' : 'Add Follow-Up'}</DialogTitle>

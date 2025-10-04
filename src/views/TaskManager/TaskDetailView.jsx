@@ -36,7 +36,7 @@ const TaskDetailView = () => {
 
   // when you need it
   const company = JSON.parse(localStorage.getItem('company') || '{}');
-  console.log(company);
+  // console.log(company);
 
   const toggleDetails = () => {
     setShowDetails((prev) => !prev);
@@ -56,7 +56,7 @@ const TaskDetailView = () => {
   const fetchTicketDetails = async () => {
     try {
       const response = await get(`task-manager/${id}`);
-      console.log('response is status', response);
+      // console.log('response is status', response);
       if (response.success === true) {
         setTaskData(response.data);
         setStatusChanged(response.data.status._id);
@@ -74,7 +74,7 @@ const TaskDetailView = () => {
   };
 
   const handleSubmit = async () => {
-    console.log('task data is', taskData);
+    // console.log('task data is', taskData);
     try {
       const statusData = {
         user: taskData?.assignedTo.map((item) => `${item.basicDetails.firstName} ${item.basicDetails.lastName}`).join(', '),
@@ -86,9 +86,9 @@ const TaskDetailView = () => {
         toast.error('comment is required!');
         return;
       }
-      console.log('status data is', statusData);
+      // console.log('status data is', statusData);
       const response = await put(`task-manager/status/${id}`, statusData);
-      console.log('response is', response);
+      // console.log('response is', response);
       if (response) {
         toast.success('Status updated successfully');
         setComment('');
@@ -105,7 +105,7 @@ const TaskDetailView = () => {
     fetchTicketDetails();
   }, []);
 
-  console.log('statusHistory', statusHistory);
+  // console.log('statusHistory', taskData);
 
   return (
     <>
@@ -168,7 +168,7 @@ const TaskDetailView = () => {
                       { label: 'Priority', value: taskData?.priority.priorityName, isChip: true, chipColor: '#f43f5e' },
                       // { label: 'Product', value: taskData?.product, isChip: true },
                       // { label: 'Phone Number', value: taskData?.phoneNumber },
-                      { label: 'Employee Name', value: taskData?.employeeName },
+                      // { label: 'Employee Name', value: taskData?.employeeName },
                       { label: 'Created By', value: company?.Name }
                     ].map((field, index) => (
                       <Grid container py={1} key={index}>
@@ -201,7 +201,7 @@ const TaskDetailView = () => {
                       </Grid>
                       <Grid item xs={7}>
                         <Chip
-                          label={new Date(taskData?.startDate).toLocaleDateString('en-US')}
+                          label={new Date(taskData?.statusHistory[0].timestamp).toLocaleDateString('en-US')}
                           size="small"
                           sx={{ bgcolor: '#9ca3af', color: 'white', fontWeight: 500 }}
                         />
@@ -226,7 +226,7 @@ const TaskDetailView = () => {
                 )}
 
                 <Box sx={{ border: '1px solid #e0e0e0', mt: 2, p: 1 }}>
-                  <Typography variant="body2">{new Date(taskData?.createdAt).toLocaleString()}</Typography>
+                  <Typography variant="body2">{new Date(taskData?.statusHistory[0].timestamp).toLocaleString()}</Typography>
                   <Typography variant="body2" mt={1}>
                     {new Date(taskData?.updatedAt).toLocaleString()}
                   </Typography>

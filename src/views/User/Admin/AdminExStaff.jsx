@@ -137,13 +137,12 @@ const AdminExStaff = () => {
   };
 
   useEffect(() => {
-
     const loginRole = localStorage.getItem('loginRole');
     if (loginRole === 'admin') {
       setAdmin(true);
     }
-    if (systemRights?.actionPermissions?.["company-exstaff"]) {
-      setExStaffPermission(systemRights.actionPermissions["company-exstaff"]);
+    if (systemRights?.actionPermissions?.['company-exstaff']) {
+      setExStaffPermission(systemRights.actionPermissions['company-exstaff']);
     }
     fetchAdministrativeData();
   }, [systemRights]);
@@ -205,6 +204,7 @@ const AdminExStaff = () => {
                             <TableCell>Designation</TableCell>
                             <TableCell>Contact No.</TableCell>
                             <TableCell>Gender</TableCell>
+                            <TableCell>Suspend User</TableCell>
                             <TableCell>Action</TableCell>
                           </TableRow>
                         </TableHead>
@@ -226,7 +226,9 @@ const AdminExStaff = () => {
                               <TableCell>{item.employmentDetails?.designation?.designationName || 'NA'}</TableCell>
                               <TableCell>{item.basicDetails.contactNumber || 'NA'}</TableCell>
                               <TableCell>{item.basicDetails.gender || 'NA'}</TableCell>
-
+                              <TableCell>
+                                <SuspendUser userId={item._id} />
+                              </TableCell>
                               {/* <TableCell>
                                 {item.dateOfBirth ? new Date(item.basicDetails.dateOfBirth).toLocaleDateString('en-GB') : 'NA'}
                               </TableCell> */}
@@ -244,13 +246,9 @@ const AdminExStaff = () => {
                                   {(exstaffPermission.Edit === true || isAdmin) && (
                                     <EditBtn onClick={() => navigate(`/users/administrativeUpdatePage/${item._id}`)} />
                                   )}
-                                  {(exstaffPermission.Delete === true || isAdmin) && (
-                                    <DeleteBtn onClick={() => handleDeleteClick(item)} />
-                                  )}
+                                  {(exstaffPermission.Delete === true || isAdmin) && <DeleteBtn onClick={() => handleDeleteClick(item)} />}
                                   <ViewBtn onClick={() => navigate(`/users/viewUserDetails/administrative/${item._id}`)} />
                                 </Box>
-
-
                               </TableCell>
                             </TableRow>
                           ))}
@@ -275,9 +273,11 @@ const AdminExStaff = () => {
           <Button onClick={() => setDeleteModalOpen(false)} color="secondary">
             Cancel
           </Button>
-          {(exstaffPermission.Delete === true || isAdmin) && <Button onClick={confirmDelete} color="error">
-            Delete
-          </Button>}
+          {(exstaffPermission.Delete === true || isAdmin) && (
+            <Button onClick={confirmDelete} color="error">
+              Delete
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
       <ToastContainer />

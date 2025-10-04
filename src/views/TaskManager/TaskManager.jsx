@@ -216,6 +216,9 @@ const TaskManager = () => {
   };
 
   const handleOpen = () => {
+    const loginData = JSON.parse(localStorage.getItem('loginData')) || {};
+    const employeeName = loginData?.name || '';
+
     setOpen(true);
     setForm({
       title: '',
@@ -223,8 +226,8 @@ const TaskManager = () => {
       client: '',
       description: '',
       status: '',
-      employeeName: '',
-      startDate: null,
+      employeeName: employeeName, // still stored
+      startDate: new Date(), // still stored
       endDate: null,
       createdBy: '',
       assignedTo: []
@@ -689,18 +692,7 @@ const TaskManager = () => {
                 ))}
               </TextField>
             </Grid>
-            <Grid item xs={4}>
-              <TextField
-                label="Employee Name"
-                name="employeeName"
-                value={form.employeeName}
-                onChange={handleChange}
-                error={!!errors.employeeName}
-                helperText={errors.employeeName}
-                fullWidth
-                required
-              />
-            </Grid>
+
             <Grid item xs={4}>
               <TextField
                 select
@@ -759,16 +751,7 @@ const TaskManager = () => {
                 required
               />
             </Grid>
-            <Grid item xs={4}>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <DatePicker
-                  label="Start Date"
-                  value={form.startDate}
-                  onChange={(value) => handleDateChange('startDate', value)}
-                  slotProps={{ textField: { fullWidth: true } }}
-                />
-              </LocalizationProvider>
-            </Grid>
+
             <Grid item xs={4}>
               <LocalizationProvider dateAdapter={AdapterDateFns}>
                 <DatePicker

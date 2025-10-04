@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react';
 import {
   Card,
   CardHeader,
@@ -21,109 +21,109 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle
-} from '@mui/material'
-import Breadcrumb from 'component/Breadcrumb'
-import { Link, useNavigate } from 'react-router-dom'
-import { gridSpacing } from 'config.js'
-import { get, put } from 'api/api'
-import REACT_APP_API_URL from 'api/api'
-import Loader from 'component/Loader/Loader'
-import EditBtn from 'component/buttons/EditBtn'
-import DeleteBtn from 'component/buttons/DeleteBtn'
-import ViewBtn from 'component/buttons/ViewBtn'
-import { toast, ToastContainer } from 'react-toastify'
-import SuspendUser from '../SuspendUser'
+} from '@mui/material';
+import Breadcrumb from 'component/Breadcrumb';
+import { Link, useNavigate } from 'react-router-dom';
+import { gridSpacing } from 'config.js';
+import { get, put } from 'api/api';
+import REACT_APP_API_URL from 'api/api';
+import Loader from 'component/Loader/Loader';
+import EditBtn from 'component/buttons/EditBtn';
+import DeleteBtn from 'component/buttons/DeleteBtn';
+import ViewBtn from 'component/buttons/ViewBtn';
+import { toast, ToastContainer } from 'react-toastify';
+import SuspendUser from '../SuspendUser';
 
 const ConsultantMainPage = () => {
-  const [data, setData] = useState([])
-  const [filteredData, setFilteredData] = useState([])
-  const [searchQuery, setSearchQuery] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [isDataFetched, setIsDataFetched] = useState(false)
+  const [data, setData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [isDataFetched, setIsDataFetched] = useState(false);
 
-  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
-  const [selectedItem, setSelectedItem] = useState(null)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const goToAddPage = () => {
-    navigate('/users/add-consultant')
-  }
+    navigate('/users/add-consultant');
+  };
 
   const fetchData = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const response = await get('newConsultant')
-      console.log(response)
-      setData(response.data || [])
-      setFilteredData(response.data || [])
+      const response = await get('newConsultant');
+      console.log(response);
+      setData(response.data || []);
+      setFilteredData(response.data || []);
     } catch (error) {
-      console.error('Error fetching data:', error)
+      console.error('Error fetching data:', error);
     } finally {
-      setLoading(false)
-      setIsDataFetched(true)
+      setLoading(false);
+      setIsDataFetched(true);
     }
-  }
+  };
 
-  const handleSearch = event => {
-    const query = event.target.value.toLowerCase()
-    setSearchQuery(query)
+  const handleSearch = (event) => {
+    const query = event.target.value.toLowerCase();
+    setSearchQuery(query);
     const filtered = data.filter(
-      item =>
+      (item) =>
         item.basicDetails.firstName.toLowerCase().includes(query) ||
         item.basicDetails.lastName.toLowerCase().includes(query) ||
         item.basicDetails.email.toLowerCase().includes(query)
-    )
-    setFilteredData(filtered)
-  }
+    );
+    setFilteredData(filtered);
+  };
 
-  const handleDeleteClick = item => {
-    setSelectedItem(item)
-    setDeleteModalOpen(true)
-  }
+  const handleDeleteClick = (item) => {
+    setSelectedItem(item);
+    setDeleteModalOpen(true);
+  };
 
   const confirmDelete = async () => {
     if (!selectedItem) {
-      toast.error('No item selected for deletion')
-      return
+      toast.error('No item selected for deletion');
+      return;
     }
 
     try {
-      const response = await put(`newConsultant/delete/${selectedItem._id}`)
+      const response = await put(`newConsultant/delete/${selectedItem._id}`);
 
       if (response?.success) {
         // Use `message` from the backend response for success toast
-        toast.success(response?.message || 'Item deleted successfully')
-        fetchData() // Refresh data after successful deletion
+        toast.success(response?.message || 'Item deleted successfully');
+        fetchData(); // Refresh data after successful deletion
       } else {
         // Use `message` from the backend response for error toast
-        toast.error(response?.message || 'Failed to delete the item')
-        console.warn('Unexpected response:', response)
+        toast.error(response?.message || 'Failed to delete the item');
+        console.warn('Unexpected response:', response);
       }
     } catch (error) {
       // Generic error message for any unexpected error
-      toast.error('An error occurred while deleting the item, please try again later')
-      console.error('Error during delete request:', error.message)
+      toast.error('An error occurred while deleting the item, please try again later');
+      console.error('Error during delete request:', error.message);
     } finally {
       // Reset modal and selected item states
-      setDeleteModalOpen(false)
-      setSelectedItem(null)
+      setDeleteModalOpen(false);
+      setSelectedItem(null);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
-  console.log(data)
+  console.log(data);
 
   return (
     <>
       <Breadcrumb>
-        <Typography component={Link} to='/' variant='subtitle2' color='inherit' className='link-breadcrumb'>
+        <Typography component={Link} to="/" variant="subtitle2" color="inherit" className="link-breadcrumb">
           Home
         </Typography>
-        <Typography variant='subtitle2' color='primary' className='link-breadcrumb'>
+        <Typography variant="subtitle2" color="primary" className="link-breadcrumb">
           Consultant
         </Typography>
       </Breadcrumb>
@@ -133,19 +133,19 @@ const ConsultantMainPage = () => {
           <Card>
             <CardHeader
               title={
-                <Grid container alignItems='center' justifyContent='space-between'>
+                <Grid container alignItems="center" justifyContent="space-between">
                   <Grid item>
-                    <Button variant='contained' color='primary' onClick={goToAddPage}>
+                    <Button variant="contained" color="primary" onClick={goToAddPage}>
                       Add
                     </Button>
                   </Grid>
                   <Grid item>
                     <TextField
-                      label='Search'
-                      variant='outlined'
+                      label="Search"
+                      variant="outlined"
                       value={searchQuery}
                       onChange={handleSearch}
-                      size='small'
+                      size="small"
                       style={{ width: '300px' }}
                     />
                   </Grid>
@@ -159,7 +159,7 @@ const ConsultantMainPage = () => {
               ) : (
                 <>
                   {isDataFetched && filteredData.length === 0 ? (
-                    <Typography variant='h6' align='center' color='textSecondary'>
+                    <Typography variant="h6" align="center" color="textSecondary">
                       No Records Found
                     </Typography>
                   ) : (
@@ -224,17 +224,17 @@ const ConsultantMainPage = () => {
           <DialogContentText>Are you sure you want to delete this record?</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteModalOpen(false)} color='secondary'>
+          <Button onClick={() => setDeleteModalOpen(false)} color="secondary">
             Cancel
           </Button>
-          <Button onClick={confirmDelete} color='error'>
+          <Button onClick={confirmDelete} color="error">
             Delete
           </Button>
         </DialogActions>
       </Dialog>
       <ToastContainer />
     </>
-  )
-}
+  );
+};
 
-export default ConsultantMainPage
+export default ConsultantMainPage;
