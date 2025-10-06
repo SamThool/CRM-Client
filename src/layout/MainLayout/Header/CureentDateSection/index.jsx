@@ -13,21 +13,41 @@ export default function CurrentDate() {
     return () => clearInterval(timer); // Cleanup interval on unmount
   }, []);
 
-  const formattedDate = format(currentDate, "eeee, dd'th' MMM yyyy - hh:mm:ssaaa ");
+  const datePart = format(currentDate, 'dd MMM yyyy'); // e.g., 20 Jun 2025
+  const timePart = format(currentDate, 'hh:mm:ss a'); // e.g., 11:34:45 AM
+  const weekdayPart = format(currentDate, 'EEE');
 
   return (
-    <Box sx={{ textAlign: 'center', marginRight: '2rem !important' }}>
+    <Box
+      sx={{
+        marginRight: '2rem !important',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start' // Left-align content
+      }}
+    >
       <Typography
         variant="h6"
         sx={{
-          fontSize: { xs: '12px', sm: '14px', md: '16px', lg: '16px' },
-          fontWeight: '400',
-          color: '#000',
+          fontSize: { xs: '12px', sm: '12px', md: '14px', lg: '14px' },
+          fontWeight: '500',
+          color: '#fff',
           letterSpacing: '0.5px',
           lineHeight: '1.5'
         }}
       >
-        {formattedDate}
+        {weekdayPart} {datePart}
+      </Typography>
+      <Typography
+        variant="body2"
+        sx={{
+          fontSize: { xs: '12px', sm: '14px', md: '14px', lg: '14px' },
+          color: '#fff',
+          fontWeight: 400,
+          letterSpacing: '0.3px'
+        }}
+      >
+        {timePart}
       </Typography>
     </Box>
   );

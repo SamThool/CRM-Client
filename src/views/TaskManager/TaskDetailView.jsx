@@ -196,7 +196,7 @@ const TaskDetailView = () => {
                     <Grid container py={1}>
                       <Grid item xs={5}>
                         <Typography variant="body2" color="text.secondary">
-                          Start Date
+                          Created on
                         </Typography>
                       </Grid>
                       <Grid item xs={7}>

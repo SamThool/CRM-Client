@@ -39,7 +39,7 @@ const Login = () => {
           const adminRes = await axios.post(`${REACT_APP_API_URL}admin/login`, values, { withCredentials: true });
           if (adminRes.data.role === 'admin') {
             response = adminRes;
-            console.log('✅ Admin login successful:', response);
+            // console.log('✅ Admin login successful:', response);
             localStorage.setItem('companyId', response?.data?.adminId);
           } else {
             throw new Error('Not an admin');
@@ -52,7 +52,7 @@ const Login = () => {
             const superRes = await axios.post(`${REACT_APP_API_URL}superAdmin/login`, values, { withCredentials: true });
             if (superRes.data.role === 'super-admin') {
               response = superRes;
-              console.log('✅ Super Admin login successful:', response);
+              // console.log('✅ Super Admin login successful:', response);
             } else {
               throw new Error('Not a super admin');
             }
@@ -64,7 +64,7 @@ const Login = () => {
               const staffRes = await axios.post(`${REACT_APP_API_URL}administrative/staff-login`, values, { withCredentials: true });
               if (staffRes.data.role === 'staff') {
                 response = staffRes;
-                console.log('✅ Staff login successful:', response);
+                // console.log('✅ Staff login successful:', response);
                 localStorage.setItem('companyId', response?.data?.companyId);
                 localStorage.setItem('empId', response?.data?.empId);
               } else {
@@ -78,7 +78,7 @@ const Login = () => {
         }
 
         if (!response) throw new Error('Login failed. Please try again!');
-        console.log(response);
+        // console.log(response);
         const data = response.data;
         const role = data.role;
         const token = data.token;
@@ -112,7 +112,7 @@ const Login = () => {
           loginData = data.login || {};
 
           refId = data.login?.refId || ''; // Use adminId as refId
-          console.log('🔍 data.login.refId:', refId);
+          // console.log('🔍 data.login.refId:', refId);
           localStorage.setItem('refId', JSON.stringify(refId));
 
           localStorage.setItem('departmentName', data.departmentName || '');
@@ -161,27 +161,27 @@ const Login = () => {
         localStorage.setItem('loginRole', role);
         localStorage.setItem('loginData', JSON.stringify(loginData));
 
-        console.log('Token:', token);
-        console.log('Role:', role);
-        console.log('ID:', id);
-        console.log('✅ RefID:', refId);
-        console.log('✅ loginData:', loginData);
-        console.log('Cookies after login:', document.cookie);
+        // console.log('Token:', token);
+        // console.log('Role:', role);
+        // console.log('ID:', id);
+        // console.log('✅ RefID:', refId);
+        // console.log('✅ loginData:', loginData);
+        // console.log('Cookies after login:', document.cookie);
 
         // Navigate
         sessionStorage.removeItem('alreadyRedirected');
         if (role === 'admin' || role === 'staff') {
-          console.log('✅ Navigating to change-password for:', role);
-          console.log('✅ About to navigate');
-          console.log('Role:', role);
-          console.log('Current Path:', window.location.pathname);
-          console.log('Login Token in LocalStorage:', localStorage.getItem('token'));
-          console.log('Login Cookie:', document.cookie);
+          // console.log('✅ Navigating to change-password for:', role);
+          // console.log('✅ About to navigate');
+          // console.log('Role:', role);
+          // console.log('Current Path:', window.location.pathname);
+          // console.log('Login Token in LocalStorage:', localStorage.getItem('token'));
+          // console.log('Login Cookie:', document.cookie);
 
           navigate('/');
         } else {
-          console.log('Cookies:', document.cookie);
-          console.log('LocalStorage token:', localStorage.getItem('token'));
+          // console.log('Cookies:', document.cookie);
+          // console.log('LocalStorage token:', localStorage.getItem('token'));
           navigate('/');
         }
       } catch (error) {
@@ -203,7 +203,7 @@ const Login = () => {
   }, []);
 
   if (checking) {
-    console.log('⏳ Still checking auth state...');
+    // console.log('⏳ Still checking auth state...');
     return null;
   }
 

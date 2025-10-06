@@ -87,6 +87,7 @@ const Default = () => {
   const [isAdmin, setAdmin] = useState(false);
   const systemRights = useSelector((state) => state.systemRights.systemRights);
   const [productCategories, setProductCategories] = useState([]);
+  const [chartInvoicePaidMoney, setChartInvoicePaidMoney] = useState([]);
 
   const [form, setForm] = useState({
     followupDate: '',
@@ -263,6 +264,8 @@ const Default = () => {
 
       const filteredLeads = (response.data || []).filter((lead) => Array.isArray(lead.followups) && lead.followups.length > 0);
 
+      const now = new Date();
+
       const sortedLeads = filteredLeads.sort((a, b) => {
         const lastA = a.followups[a.followups.length - 1];
         const lastB = b.followups[b.followups.length - 1];
@@ -270,7 +273,15 @@ const Default = () => {
         const dateA = new Date(`${lastA.followupDate}T${lastA.followupTime}`);
         const dateB = new Date(`${lastB.followupDate}T${lastB.followupTime}`);
 
-        return dateB - dateA; // descending
+        const isPastA = dateA < now;
+        const isPastB = dateB < now;
+
+        // Past first
+        if (isPastA && !isPastB) return -1;
+        if (!isPastA && isPastB) return 1;
+
+        // Inside same group → sort ascending (nearest first)
+        return dateA - dateB;
       });
 
       setLeads(sortedLeads);
@@ -325,6 +336,7 @@ const Default = () => {
 
   const getLeadNos = async () => {
     const res = await get('lead/status');
+
     setLeadColours(res?.colors || []);
     setLeadCounts(res?.counts || []);
     setLeadLabels(res?.labels || []);
@@ -335,6 +347,8 @@ const Default = () => {
   };
   const getInvoiceNos = async () => {
     const res = await get('invoiceRegistration/status');
+    console.log(res);
+    setChartInvoicePaidMoney(res?.monthlyPaidTotals);
     setPaid(res?.summary?.paid);
     setUnpaid(res?.summary?.unpaid);
     setPending(res?.summary?.pending);
@@ -367,7 +381,6 @@ const Default = () => {
   };
 
   const handleopenAddFollowUp = (leadId) => {
-    console.log(leadId);
     setAddFollowIndex(leadId);
     fetchFollowUps(leadId);
     setOpenAddFollowUp(true);
@@ -377,7 +390,7 @@ const Default = () => {
 
   const leadStatusData = {
     type: 'donut',
-    head: 'Lead Status',
+    head: ' Lead Status',
     height: 320,
     series: [...leadCounts],
     // series: [],
@@ -395,7 +408,7 @@ const Default = () => {
 
   const referenceSourceData = {
     type: 'donut',
-    head: 'References',
+    head: ' Lead References',
     height: 320,
     series: [...rleadCounts],
     options: {
@@ -427,9 +440,12 @@ const Default = () => {
   const revenueDataFY = {
     title: 'Monthly Revenue (FY)',
     xLabels: invoiceDataFY.xLabels,
-    seriesData: [[...chartInvoiceMoney]],
-    seriesLabelMap: { Revenue: 'Revenue' },
-    colors: ['#FB8C00']
+    seriesData: [[...chartInvoiceMoney], [...chartInvoicePaidMoney]],
+    seriesLabelMap: {
+      Revenue: 'Revenue',
+      Paid: 'Paid'
+    },
+    colors: ['#FB8C00', '#43A047']
   };
 
   // map for easy access
@@ -582,16 +598,16 @@ const Default = () => {
                         </TableCell>
 
                         <TableCell sx={{ minWidth: 200 }}>
-                          {followup?.updatedAt ? followup.updatedAt.slice(0, 10) : 'N/A'}&nbsp; &nbsp; &nbsp;
-                          {followup?.updatedAt
-                            ? new Date(followup.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                            : 'N/A'}{' '}
+                          <Box
+                            sx={{
+                              color: followup?.followupDate && new Date(followup.followupDate) < new Date() ? 'red' : 'inherit'
+                            }}
+                          >
+                            {followup?.followupDate ? followup.followupDate.slice(0, 10) : 'N/A'}
+                            &nbsp; &nbsp; &nbsp;
+                            {followup?.followupTime ? followup.followupTime : 'N/A'}
+                          </Box>
                         </TableCell>
-                        {/* <TableCell sx={{ minWidth: 80 }}>
-                          {followup?.updatedAt
-                            ? new Date(followup.updatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                            : 'N/A'}
-                        </TableCell> */}
 
                         <TableCell sx={{ minWidth: 300 }}>{followup?.comment || 'N/A'}</TableCell>
 
@@ -672,8 +688,8 @@ const Default = () => {
             </FormControl>
             <FormControl sx={{ mb: 2, minWidth: 200 }}>
               <InputLabel>Select Date</InputLabel>
-              <Select value={'Mar 2025 - Mar 2026'} label="Select Data">
-                <MenuItem value="Mar 2025 - Mar 2026">Mar 2025 - Mar 2026</MenuItem>
+              <Select value={'Apr 2025 - Mar 2026'} label="Select Data">
+                <MenuItem value="Apr 2025 - Mar 2026">Apr 2025 - Mar 2026</MenuItem>
               </Select>
             </FormControl>
           </Box>
