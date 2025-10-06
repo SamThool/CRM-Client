@@ -3,6 +3,8 @@ import { Card, Grid, MenuItem, Select, Typography } from '@mui/material';
 import { gridSpacing } from 'config';
 import ReusableBarChart from 'views/Dashboard/Charts/BarCharts/ReusbaleBarChart';
 import DepartmentOpdPieChart from 'views/Dashboard/Charts/PieChart/DepartmentOPD';
+import REACT_APP_API_URL, { get, post } from 'api/api';
+import axios from 'axios';
 
 const AnalyticalReport = () => {
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -10,41 +12,118 @@ const AnalyticalReport = () => {
   const years = Array.from({ length: 11 }, (_, i) => currentYear - 5 + i);
   const staffNames = ['John', 'Emma', 'Raj', 'Priya', 'Alex', 'Sara'];
 
-  const generateRandomData = (count = 12, max = 250) => Array.from({ length: count }, () => Math.floor(Math.random() * max) + 10);
+  const companyId = localStorage.getItem('companyId');
 
-  // 1️⃣ Daily Lead Graph
-  const [selectedMonth1, setSelectedMonth1] = useState('January');
+  const generateRandomData = (count = 12, max = 250) => Array.from({ length: count }, () => Math.floor(Math.random() * max) + 10);
+  // 1️⃣ Daily Lead Graph (connected to backend)
+  const [availableMonths, setAvailableMonths] = useState([]);
+  const [selectedMonth1, setSelectedMonth1] = useState(null);
+  const [selectedYear1, setSelectedYear1] = useState(null);
+
   const [dailyLeadData, setDailyLeadData] = useState({
-    title: 'Daily Leads - January',
-    xLabels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-    seriesData: [generateRandomData(7, 50)],
+    title: 'Daily Leads',
+    xLabels: [],
+    seriesData: [[]],
     seriesLabelMap: { 'Daily Leads': 'Daily Leads' },
     colors: ['#36A2EB']
   });
-  useEffect(() => {
-    setDailyLeadData((prev) => ({
-      ...prev,
-      title: `Daily Leads - ${selectedMonth1}`,
-      seriesData: [generateRandomData(7, 50)]
-    }));
-  }, [selectedMonth1]);
 
-  // 2️⃣ Monthly Lead Graph
+  // Fetch available months for dropdown
+  useEffect(() => {
+    const fetchMonths = async () => {
+      try {
+        const res = await post('lead/analytics/daily-leads'); // your API
+        // Check actual data
+        console.log('Response:', res);
+
+        if (res?.success) {
+          const months = res.months || [];
+          setAvailableMonths(months);
+
+          const latest = months[0];
+          if (latest?.value) {
+            setSelectedMonth1(latest.value.month);
+            setSelectedYear1(latest.value.year);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching months:', err);
+      }
+    };
+    fetchMonths();
+  }, []);
+
+  // Fetch chart data for selected month
+
+  useEffect(() => {
+    const fetchDailyLeads = async () => {
+      if (!selectedMonth1 || !selectedYear1 || !companyId) return;
+      try {
+        const res = await post('lead/analytics/daily-leads', {
+          month: selectedMonth1,
+          year: selectedYear1,
+          companyId
+        });
+
+        if (res.success) {
+          const chartData = res.chartData;
+          setDailyLeadData({
+            title: `Daily Leads - ${res.months.find((m) => m.value.month === selectedMonth1 && m.value.year === selectedYear1)?.label}`,
+            xLabels: chartData.map((d) => d.day),
+            seriesData: [chartData.map((d) => d.totalLeads)],
+            seriesLabelMap: { 'Daily Leads': 'Daily Leads' },
+            colors: ['#36A2EB']
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching daily leads:', err);
+      }
+    };
+    fetchDailyLeads();
+  }, [selectedMonth1, selectedYear1, companyId]);
+
+  // 2️⃣ Monthly Lead Graph (connected to backend)
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [monthlyLeadData, setMonthlyLeadData] = useState({
     title: `Monthly Leads - ${currentYear}`,
-    xLabels: months,
-    seriesData: [generateRandomData()],
+    xLabels: months, // Jan to Dec
+    seriesData: [Array(12).fill(0)], // initial empty data
     seriesLabelMap: { 'Monthly Leads': 'Monthly Leads' },
     colors: ['#FF6384']
   });
+
+  // Fetch monthly leads when selectedYear or companyId changes
   useEffect(() => {
-    setMonthlyLeadData((prev) => ({
-      ...prev,
-      title: `Monthly Leads - ${selectedYear}`,
-      seriesData: [generateRandomData()]
-    }));
-  }, [selectedYear]);
+    const fetchMonthlyLeads = async () => {
+      if (!companyId) return;
+
+      try {
+        const res = await post(
+          'lead/analytics/monthly-leads',
+          {
+            year: selectedYear
+          },
+          {
+            params: { companyId }
+          }
+        );
+
+        if (res.success) {
+          setMonthlyLeadData({
+            title: `Monthly Leads - ${selectedYear}`,
+            xLabels: months,
+            seriesData: [res.chartData], // chartData should be array of 12 months
+            seriesLabelMap: { 'Monthly Leads': 'Monthly Leads' },
+            colors: ['#FF6384']
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching monthly leads:', err);
+      }
+    };
+
+    fetchMonthlyLeads();
+  }, [selectedYear, companyId]);
 
   // 3️⃣ Another Monthly Graph
   const [selectedMonth2, setSelectedMonth2] = useState('January');
@@ -98,21 +177,82 @@ const AnalyticalReport = () => {
   }, [selectedMonth3]);
 
   // 6️⃣ Product-wise Leads
-  const [selectedMonth4, setSelectedMonth4] = useState('January');
+  // 6️⃣ Product-wise Leads (dynamic, from backend)
+  const [selectedProductMonth, setSelectedProductMonth] = useState(null);
+  const [selectedProductYear, setSelectedProductYear] = useState(null);
+
   const [productWiseData, setProductWiseData] = useState({
-    title: 'Product-wise Leads - January',
-    xLabels: ['Product A', 'Product B', 'Product C', 'Product D'],
-    seriesData: [generateRandomData(4, 120)],
+    title: 'Product-wise Leads',
+    xLabels: [], // will be sub-product names
+    seriesData: [[]], // number of leads for each sub-product
     seriesLabelMap: { 'Product Leads': 'Product Leads' },
     colors: ['#9C27B0']
   });
+
+  // Fetch all months/years for dropdown based on leads
+  const [productAvailableMonths, setProductAvailableMonths] = useState([]);
+
   useEffect(() => {
-    setProductWiseData((prev) => ({
-      ...prev,
-      title: `Product-wise Leads - ${selectedMonth4}`,
-      seriesData: [generateRandomData(4, 120)]
-    }));
-  }, [selectedMonth4]);
+    const fetchProductMonths = async () => {
+      if (!companyId) return;
+
+      try {
+        const res = await post(
+          'lead/analytics/product-leads-months',
+          {},
+          {
+            params: { companyId }
+          }
+        );
+
+        if (res.success) {
+          setProductAvailableMonths(res.months || []);
+          const latest = res.months[0];
+          if (latest?.value) {
+            setSelectedProductMonth(latest.value.month);
+            setSelectedProductYear(latest.value.year);
+          }
+        }
+      } catch (err) {
+        console.error('Error fetching product months:', err);
+      }
+    };
+    fetchProductMonths();
+  }, [companyId]);
+
+  // Fetch product-wise leads for selected month/year
+  useEffect(() => {
+    const fetchProductLeads = async () => {
+      if (!selectedProductMonth || !selectedProductYear || !companyId) return;
+
+      try {
+        const res = await post(
+          'lead/analytics/product-leads',
+          {
+            month: selectedProductMonth,
+            year: selectedProductYear
+          },
+          {
+            params: { companyId }
+          }
+        );
+
+        if (res.success) {
+          setProductWiseData({
+            title: `Product-wise Leads - ${res.monthLabel}`,
+            xLabels: res.subProducts, // array of sub-product names
+            seriesData: [res.leadsCount], // number of leads per sub-product
+            seriesLabelMap: { 'Product Leads': 'Product Leads' },
+            colors: ['#9C27B0']
+          });
+        }
+      } catch (err) {
+        console.error('Error fetching product-wise leads:', err);
+      }
+    };
+
+    fetchProductLeads();
+  }, [selectedProductMonth, selectedProductYear, companyId]);
 
   // 7️⃣ Lead Open vs Closed (no dropdown)
   const leadOpenCloseData = {
@@ -154,14 +294,22 @@ const AnalyticalReport = () => {
       {/* Each section now independent */}
       <Grid item xs={12}>
         <Card sx={{ p: 2 }}>
-          {/* <Typography variant="h6">Daily Leads</Typography> */}
-          <Select value={selectedMonth1} onChange={(e) => setSelectedMonth1(e.target.value)} sx={{ mb: 2, minWidth: 200 }}>
-            {months.map((m) => (
-              <MenuItem key={m} value={m}>
-                {m}
+          <Select
+            value={`${selectedMonth1 || ''}-${selectedYear1 || ''}`}
+            onChange={(e) => {
+              const [m, y] = e.target.value.split('-');
+              setSelectedMonth1(Number(m));
+              setSelectedYear1(Number(y));
+            }}
+            sx={{ mb: 2, minWidth: 220 }}
+          >
+            {availableMonths.map((m) => (
+              <MenuItem key={`${m.value.month}-${m.value.year}`} value={`${m.value.month}-${m.value.year}`}>
+                {m.label}
               </MenuItem>
             ))}
           </Select>
+
           <ReusableBarChart {...dailyLeadData} />
         </Card>
       </Grid>
@@ -176,6 +324,7 @@ const AnalyticalReport = () => {
               </MenuItem>
             ))}
           </Select>
+
           <ReusableBarChart {...monthlyLeadData} />
         </Card>
       </Grid>
@@ -224,14 +373,22 @@ const AnalyticalReport = () => {
 
       <Grid item xs={12}>
         <Card sx={{ p: 2 }}>
-          {/* <Typography variant="h6">Product-wise Leads</Typography> */}
-          <Select value={selectedMonth4} onChange={(e) => setSelectedMonth4(e.target.value)} sx={{ mb: 2, minWidth: 200 }}>
-            {months.map((m) => (
-              <MenuItem key={m} value={m}>
-                {m}
+          <Select
+            value={`${selectedProductMonth || ''}-${selectedProductYear || ''}`}
+            onChange={(e) => {
+              const [m, y] = e.target.value.split('-');
+              setSelectedProductMonth(Number(m));
+              setSelectedProductYear(Number(y));
+            }}
+            sx={{ mb: 2, minWidth: 220 }}
+          >
+            {productAvailableMonths.map((m) => (
+              <MenuItem key={`${m.value.month}-${m.value.year}`} value={`${m.value.month}-${m.value.year}`}>
+                {m.label}
               </MenuItem>
             ))}
           </Select>
+
           <ReusableBarChart {...productWiseData} />
         </Card>
       </Grid>
