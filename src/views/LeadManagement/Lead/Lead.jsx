@@ -50,7 +50,8 @@ const Lead = () => {
   const [followUpData, setFollowUpData] = useState([]);
   const [statusOptions, setStatusOptions] = useState([]);
   const [openAddFollowUp, setOpenAddFollowUp] = useState(false);
-
+  const [sortConfig, setSortConfig] = useState({ key: '', direction: 'asc' });
+  const [searchQuery, setSearchQuery] = useState('');
   const [isEditMode, setIsEditMode] = useState(false);
   const [editFollowUpId, setEditFollowUpId] = useState(null);
   const [isDisableConvertClient, setDisableConvertClient] = useState(null);
@@ -284,6 +285,48 @@ const Lead = () => {
     return statusObj?.colorCode || '#9e9e9e';
   };
 
+  const handleSort = (key) => {
+    let direction = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const filteredData = data.filter((row) =>
+    (row.Prospect?.companyName || row.Client?.clientName || row.newCompanyName || '').toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const sortedData = [...filteredData].sort((a, b) => {
+    if (!sortConfig.key) return 0;
+
+    const getValue = (row, key) => {
+      switch (key) {
+        case 'organization':
+          return row.Prospect?.companyName || row.Client?.clientName || row.newCompanyName || '';
+        case 'number':
+          return row.phoneNo || '';
+        case 'city':
+          return row.city || '';
+        case 'category':
+          return row.Client ? 'Client' : row.Prospect ? 'Prospect' : 'New Lead';
+        case 'leadstatus':
+          return row.leadstatus?.LeadStatus || '';
+        case 'product':
+          return row.productService?.subProductName || productsLabel(row.productService) || '';
+        default:
+          return '';
+      }
+    };
+
+    const aVal = getValue(a, sortConfig.key);
+    const bVal = getValue(b, sortConfig.key);
+
+    if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   // console.log(followUpData);
   // console.log(addFollowIndex);
 
@@ -307,26 +350,35 @@ const Lead = () => {
                 <Typography variant="h6" gutterBottom>
                   Lead List
                 </Typography>
-                {(leadPermission.Add === true || isAdmin) && (
-                  <Button variant="contained" color="primary" component={Link} to="/lead-management/AddLead">
-                    <AddIcon /> Add Lead
-                  </Button>
-                )}
+                <Box display="flex" gap={1}>
+                  <TextField
+                    size="small"
+                    placeholder="Search by organization"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  {(leadPermission.Add === true || isAdmin) && (
+                    <Button variant="contained" color="primary" component={Link} to="/lead-management/AddLead">
+                      <AddIcon /> Add Lead
+                    </Button>
+                  )}
+                </Box>
               </Box>
+
               <Table>
                 <TableHead>
                   <TableRow>
                     <TableCell>Id</TableCell>
-                    {/* <TableCell>Name</TableCell> */}
-                    <TableCell>Organization</TableCell>
-                    <TableCell>Number</TableCell>
-                    <TableCell>City</TableCell>
-                    <TableCell>Category</TableCell>
-                    <TableCell>Leadstatus</TableCell>
-                    <TableCell>Product</TableCell>
+                    <TableCell onClick={() => handleSort('organization')}>Organization</TableCell>
+                    <TableCell onClick={() => handleSort('number')}>Number</TableCell>
+                    <TableCell onClick={() => handleSort('city')}>City</TableCell>
+                    <TableCell onClick={() => handleSort('category')}>Category</TableCell>
+                    <TableCell onClick={() => handleSort('leadstatus')}>Leadstatus</TableCell>
+                    <TableCell onClick={() => handleSort('product')}>Product</TableCell>
                     <TableCell align="center">Action</TableCell>
                   </TableRow>
                 </TableHead>
+
                 <TableBody>
                   {data.length === 0 ? (
                     <TableRow>
@@ -335,7 +387,7 @@ const Lead = () => {
                       </TableCell>
                     </TableRow>
                   ) : (
-                    data.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                    sortedData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                       <TableRow key={row._id}>
                         <TableCell>{index + 1}</TableCell>
                         {/* <TableCell>

@@ -212,7 +212,7 @@ const Status = () => {
       </Dialog>
 
       {/* Table */}
-      {data.length > 0 && (
+      {data?.length > 0 && (
         <Card>
           <CardContent>
             <Box sx={{ overflowX: 'auto' }}>

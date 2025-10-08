@@ -156,6 +156,8 @@ const InvoiceManagement = () => {
     const data = invoiceCategory === 'gst' ? gstData : nonGstData;
 
     // console.log(data);
+
+    // console.log(data);
     return (
       <Box sx={{ width: '100%' }}>
         <Table>
@@ -165,7 +167,8 @@ const InvoiceManagement = () => {
               <TableCell>Client Name</TableCell>
               <TableCell>Invoice No.</TableCell>
               <TableCell>Date</TableCell>
-              <TableCell>Amount</TableCell>
+              <TableCell>Total Amount</TableCell>
+              <TableCell>Balance Amount</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
@@ -178,7 +181,8 @@ const InvoiceManagement = () => {
                   <TableCell>{invoice.clientName}</TableCell>
                   <TableCell>{invoice.invoiceNumber}</TableCell>
                   <TableCell>{new Date(invoice.date).toLocaleDateString()}</TableCell>
-                  <TableCell>{invoice.totalAmount}</TableCell>
+                  <TableCell>{invoice.roundUp}</TableCell>
+                  <TableCell>{invoice.roundUp - invoice.totalPaidAmount}</TableCell>
                   <TableCell>
                     {invoice.status === 'paid' ? (
                       <Button variant="contained" color="success" size="small" disabled>
