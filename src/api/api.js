@@ -1,8 +1,8 @@
 import axios from 'axios';
 
 // const REACT_APP_API_URL = 'https://mirai.isyncerp.com/api/';
-// const REACT_APP_API_URL = 'https://crm-server-l9o7.onrender.com/api/';
-const REACT_APP_API_URL = 'http://localhost:5050/api/';
+const REACT_APP_API_URL = 'https://crm-server-l9o7.onrender.com/api/';
+// const REACT_APP_API_URL = 'http://localhost:5050/api/';
 export default REACT_APP_API_URL;
 
 // Get token
